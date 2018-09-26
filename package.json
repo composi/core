@@ -1,5 +1,5 @@
 {
-  "name": "composi",
+  "name": "@composi/core",
   "version": "0.5.0",
   "description": "A JavaScript library for creating websites, PWAs and hybrid apps.",
   "main": "src/index.js",
