@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mount and Render</title>
+  <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/test/styles.css">
+  <link rel="icon" type="image/png" href="/test/favicon-16x16.png" sizes="16x16" />
+  <link rel="icon" type="image/png" href="/test/favicon-32x32.png" sizes="32x32" />
+</head>
+<body>
+  <nav onclick="location.pathname='/test/index.html'">
+    <h1>Mocha Tests - Composi render, hydrate &amp; unmount Functions</h1>
+  </nav>
+  <section>
+    <div id="mocha"></div>
+    <div id="messages"></div>
+    <div id="fixtures"></div>
+    <div id="hide-tests">
+      <div id='h1-test'></div>
+      <div id="list-test"></div>
+      <div id="alert-test"></div>
+      <div id="render-test"></div>
+      <div id="unmount"></div>
+      <div id="lifecycle"></div>
+      <div id="hydrate">
+        <ul id="listToHydrate">
+          <li>One</li>
+          <li>Two</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+  <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
+  <script src='/dist/composi.js'></script>
+  <script>mocha.setup('bdd')</script>
+  <script>
+    const {h, render, hydrate, unmount} = composi
+    let expect = chai.expect
+
+    function H1(){
+      return h('h1', {id: 'title'}, 'The Title')
+    }
+
+    render(H1(), '#h1-test', null)
+
+    function List() {
+      return h('ul', {class: 'list'},[
+        h('li', {}, 'one'),
+        h('li', {}, 'two'),
+        h('li', {}, 'three')
+      ])
+    }
+
+    render(List(), '#list-test')
+
+    function Alert(message) {
+      return h('h2', {style: {color: 'red'}} , `Alert: ${message}!`)
+    }
+    render(Alert('this is a message'), '#alert-test')
+
+    const things = [
+      {name: 'Apple', key: 101},
+      {name: 'Chair', key: 102},
+      {name: 'Horse', key: 103}
+    ]
+    function List2(data) {
+      return h(
+        'ul',
+        {},
+        data.map(item => h('li', {key: item.key}, item.name))
+      )
+    }
+    let vNode = List2(things)
+    let list2 = render(List2(things), '#render-test')
+
+    setTimeout(() => {
+      things.push({name: 'Popcorn', key: 104})
+      vNode = List2(things)
+      list2 = render(List2(things), '#render-test', list2)
+    }, 3000)
+
+    describe('Create virtual node for list', function() {
+      it('virtual node should have three children', function() {
+        expect(vNode.children.length).to.equal(3)
+      })
+      it('virtual node children should equal "Apple", "Chair" and "Horse"', function() {
+        expect(vNode.children[0].children[0].type).to.equal('Apple')
+        expect(vNode.children[1].children[0].type).to.equal('Chair')
+        expect(vNode.children[2].children[0].type).to.equal('Horse')
+      })
+      it('virtual node children should have following keys: "101", "102", "103"', function() {
+        expect(vNode.children[0].key).to.equal(101)
+        expect(vNode.children[1].key).to.equal(102)
+        expect(vNode.children[2].key).to.equal(103)
+      })
+    })
+
+    describe("Mount h1", function() {
+      const title = document.querySelector('#title')
+      it('title should be "h1"', function() {
+        expect(title.nodeName).to.equal('H1')
+      });
+      it('title should have id equal to "title"', function() {
+        expect(title.id).to.equal('title')
+      })
+      it('title content should be "The Title"', function() {
+        expect(title.textContent).to.equal('The Title')
+      })
+      it('Mounted component element should have property "isMounted"', function() {
+        expect(title.isMounted).to.equal(true)
+      })
+    })
+    
+    describe('Mount list', function() {
+      const list = document.querySelector('ul')
+      it('list should be of type "UL"', function() {
+        expect(list.nodeName).to.equal('UL')
+      })
+      it('list should have class of "list"', function() {
+        expect(list.className).to.equal('list')
+      })
+      it('list should have three children', function() {
+        expect(list.childNodes).to.have.lengthOf(3)
+      })
+      it('list item one should be type "LI"', function() {
+        expect(list.childNodes[0].nodeName).to.equal('LI')
+      })
+      it('list 1 item content should be "one"', function() {
+        expect(list.childNodes[0].textContent).to.equal('one')
+      })
+      it('list 2 item content should be "two"', function() {
+        expect(list.childNodes[1].textContent).to.equal('two')
+      })
+      it('list 3 item content should be "three"', function() {
+        expect(list.childNodes[2].textContent).to.equal('three')
+      })
+    })
+    
+    describe('Mount alert', function() {
+      const alert = document.querySelector('h2')
+      it('alert should be of type "H2"', function() {
+        expect(alert.nodeName).to.equal('H2')
+      })
+      it('alert content should be "Alert: this is a message!"', function() {
+        expect(alert.textContent).to.equal("Alert: this is a message!")
+      })
+      it('alert should have style of "color: red"', function() {
+        expect(alert.style.color).to.equal('red')
+      })
+    })
+
+    describe('Mount list to update later', function() {
+      const list = document.querySelector('#render-test ul')
+
+      it('should have just three children', function() {
+        expect(list.children.length).to.equal(3)
+      })
+      it('list items should contain "Apple", "Chair" and "Horse"', function() {
+        expect(list.children[0].textContent).to.equal('Apple')
+        expect(list.children[1].textContent).to.equal('Chair')
+        expect(list.children[2].textContent).to.equal('Horse')
+      })
+
+    })
+
+    describe('Update list with render function', function() {
+      it('list virtual node should have four children', function(done) {
+        setTimeout(() => {
+          expect(vNode.children.length).to.equal(4)
+        }, 3000)
+        done()
+      })
+      it('list virtual node now have four items"', function(done) {
+        setTimeout(() => {
+          expect(vNode.children.length).to.equal(4)
+        }, 3000)
+        done()
+      })
+      const list = document.querySelector('#render-test ul')
+      it('virtual node children should be "Apple", "Chair", "Horse" and "Popcorn', function(done) {
+        setTimeout(() => {
+          expect(vNode.children[0].children[0].type).to.equal('Apple')
+          expect(vNode.children[1].children[0].type).to.equal('Chair')
+          expect(vNode.children[2].children[0].type).to.equal('Horse')
+          expect(vNode.children[3].children[0].type).to.equal('Popcorn')
+        }, 3000)
+        done()
+      })
+      it('virtual node children keys should be "101", "102", "103", "104"', function(done) {
+        setTimeout(() => {
+        expect(vNode.children[0].key).to.equal(101)
+        expect(vNode.children[1].key).to.equal(102)
+        expect(vNode.children[2].key).to.equal(103)
+        expect(vNode.children[3].key).to.equal(104)
+        }, 3000)
+        done()
+      })
+      it('DOM list should have four list items', function(done) {
+        setTimeout(() => {
+          expect(list.children.length).to.equal(4)
+        }, 3000)
+        done()
+      })
+      it('DOM list items should contain "Apple", "Chair", "Horse" and "Popcorn"', function(done) {
+        setTimeout(() => {
+          expect(list.children[0].textContent).to.equal('Apple')
+          expect(list.children[1].textContent).to.equal('Chair')
+          expect(list.children[2].textContent).to.equal('Horse')
+          expect(list.children[3].textContent).to.equal('Popcorn')
+        }, 3000)
+        done()
+      })
+    })
+
+    describe('Component should execute thee lifecycle hooks', function() {
+      let componentDidMount = false
+      let componentDidUpdate = false
+      let componentDidUnmount = false
+      let unmountedComponents = 0
+      function LifecycleTest(data) {
+        function testMount() {
+          componentDidMount = true
+        }
+        function testUpdate() {
+          componentDidUpdate = true
+          unmountedComponents += 1
+        }
+        function testUnmount(done, el) {
+          componentDidUnmount = true
+          done()
+        }
+        function listItems(items) {
+          console.log(items)
+          return items.map(item => h('li', {onunmount: (done, el) => testUnmount(done, el)}, item))
+        }
+        return (
+          h(
+            'ul',
+            {
+              onmount: () => {
+                testMount()
+              },
+              onupdate: () => {
+                testUpdate()
+              }
+            },
+            listItems(data)
+          )
+        )
+      }
+      let testComponent = render(LifecycleTest([1,2]), '#lifecycle')
+
+      it('Functional component should execute "onmount" when it is mounted', function(done) {
+        setTimeout(() => {
+          expect(componentDidMount).to.be.true
+          expect(testComponent.children.length).to.equal(2)
+        }, 1000)
+        done()
+      })
+      it('Functional component should execute "onupdate" when it is updated', function(done) {
+        setTimeout(() => {
+          testComponent = render(LifecycleTest([1,2,3]), '#lifecycle', testComponent)
+          expect(componentDidUpdate).to.be.true
+          expect(testComponent.children.length).to.equal(3)
+        }, 1500)
+        done()
+      })
+      it('List component\'s list items should execute "onunmount" when they are deleted', function(done) {
+        setTimeout(() => {
+          testComponent = render(LifecycleTest([1]), '#lifecycle', testComponent)
+          expect(componentDidUnmount).to.be.true
+          expect(testComponent.children.length).to.equal(1)
+          expect(unmountedComponents).to.equal(2)
+        }, 2000)
+        done()
+      })
+    })
+
+    describe('Hydrate existing DOM node using render function', function () {
+      const list = document.querySelector('#listToHydrate')
+      const listToHydrate = hydrate(list)
+      function hydrateTheList() {
+        return (
+          h(
+            'ul',
+            {
+              id: 'listToHydrate'
+            },
+            [
+              h(
+                'li',
+                { key: 101 },
+                ['Apple']
+              ),
+              h(
+                'li',
+                { key: 102 },
+                ['Orange']
+              ),
+              h(
+                'li',
+                { key: 103 },
+                ['Banana']
+              )
+            ]
+          )
+        )
+      }
+
+      it('The list to hydrate should have an id of "listToHydrate"', function () {
+        expect(list.id).to.equal('listToHydrate')
+      })
+
+      it('The list to hydrate should have two children', function () {
+        expect(list.children.length).to.equal(2)
+      })
+      it('The list to hydrate should have children with content of "One" and "Two"', function () {
+        expect(list.children[0].textContent).to.equal('One')
+        expect(list.children[1].textContent).to.equal('Two')
+      })
+
+      it('The hydrated list should have three children', function (done) {
+        setTimeout(() => {
+          render(hydrateTheList(), '#hydrate', listToHydrate)
+          const hydratedList = document.querySelector('#listToHydrate')
+          expect(hydratedList.children.length).to.equal(3)
+        }, 1500)
+        done()
+      })
+
+      it('The hydrated list should have and id of "hydratedList"', function (done) {
+        setTimeout(() => {
+          const hydratedList = document.querySelector('#listToHydrate')
+          expect(hydratedList.id).to.equal('listToHydrate')
+        }, 1000)
+        done()
+      })
+
+      it('The hydrated list should contain "Apple", "Orange", "Banana"', function (done) {
+        setTimeout(() => {
+          const hydratedList = document.querySelector('#listToHydrate')
+          expect(hydratedList.children[0].textContent).to.equal('Apple')
+          expect(hydratedList.children[1].textContent).to.equal('Orange')
+          expect(hydratedList.children[2].textContent).to.equal('Banana')
+        }, 2500)
+        done()
+      }, 2500)
+    })
+
+    describe('Component should render, unmount, render again and update with render function', function() {
+      function MountTest(props) {
+        return (
+          h(
+            'p',
+            {
+              id: 'unmountBase',
+            },
+            props.message
+          )
+        )
+      }
+      let mountTest = render(MountTest({ id: 'unmountBase', message: 'whatever'}), '#unmount')
+      let mountTestContainer = document.querySelector('#unmount')
+
+      it('Component should be mounted.', function() {
+        expect(mountTest.element.nodeType).to.equal(1)
+        expect(mountTest.element.id).to.equal('unmountBase')
+        expect(mountTest.element.isMounted).to.equal(true)
+        expect(mountTestContainer.textContent).to.equal('whatever')
+      })
+      it('Unmount should remove component from DOM', function(done) {
+        setTimeout(() => {
+          unmount(mountTest)
+          expect(mountTestContainer.children.length).to.equal(0)
+          expect(mountTest.element).to.equal(null)
+        }, 1000)
+        done()
+      })
+      it('Should be able to re-render unmounted component', function(done) {
+        setTimeout(() => {
+          mountTest = render(MountTest({ id: 'unmountBase', message: 'new message' }), '#unmount')
+          expect(mountTest.element.nodeType).to.equal(1)
+          expect(mountTest.element.id).to.equal('unmountBase')
+          expect(mountTest.element.isMounted).to.equal(true)
+          expect(mountTestContainer.textContent).to.equal('new message')
+        }, 2000)
+        done()
+      })
+      it('Should be able to use render to update re-mounted component', function (done) {
+        setTimeout(() => {
+          mountTest = render(MountTest({ id: 'unmountBase', message: 'updated message' }), '#unmount', mountTest)
+          expect(mountTestContainer.textContent).to.equal('updated message')
+        }, 3000)
+        done()
+      })
+    })
+
+    mocha.run()
+  </script>
+</body>
+</html>

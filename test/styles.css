@@ -1,0 +1,96 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+body {
+  height: 100%;
+  overflow-y: hidden;
+}
+section {
+  /* padding-top: 120px; */
+  margin-top: 120px;
+  overflow-y: scroll;
+}
+nav {
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  position: fixed;
+  z-index: 1000000;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+#hide-tests {
+  display: none;
+}
+
+/****************/
+/* Mocha styles */
+/****************/
+
+#mocha {
+  font: 20px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 10px 50px 60px 50px;
+  display: flex;
+  flex-direction: column;
+}
+#mocha p:first-child {
+  display: none;
+}
+#mocha-stats {
+  position: relative;
+  font-size: 12px;
+  margin: 0;
+  color: #666;
+  z-index: 1;
+}
+#mocha-stats > li {
+  margin-top: -20px;
+}
+#mocha-stats .progress {
+  position: relative !important;
+  top: -10px;
+  /**
+   * Set safe initial values, so mochas .progress does not inherit these
+   * properties from Bootstrap .progress (which causes .progress height to
+   * equal line height set in Bootstrap).
+   */
+  height: auto;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  background-color: initial;
+}
+#mocha-stats em {
+  color: #666;
+}
+
+#mocha-stats a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#mocha-stats a:hover {
+  border-bottom: 1px solid #eee;
+}
+
+#mocha-stats li {
+  display: inline-block;
+  margin: 0px 5px;
+  list-style: none;
+  padding-top: 11px;
+  position: relative;
+  top: -20px;
+}
+#mocha-stats li:first-of-type {
+  top: -5px;
+  float: none !important;
+}
+
+#mocha-stats canvas {
+  width: 40px;
+  height: 40px;
+}
