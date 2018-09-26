@@ -375,7 +375,7 @@ To hydrate content you'll need to import it from Composi core. Then use it to co
 import { h, render, hydrate } from '@composi/core'
 
 // Convert server-rendered list into a virtual node:
-serverList = hydrate('#list)
+serverList = hydrate(#list)
 
 function List({data}) {
   return (
