@@ -31,6 +31,7 @@
           <li>Two</li>
         </ul>
       </div>
+      <div id="fragment-test"></div>
     </div>
   </section>
 
@@ -398,6 +399,30 @@
         }, 3000)
         done()
       })
+    })
+
+    describe('Cannot insert array of elements directly into DOM', function () {
+      function ListItems() {
+        return [
+          h('li', {}, 'One'),
+          h('li', {}, 'Two'),
+          h('li', {}, 'Three')
+        ]
+      }
+      try {
+        render(ListItems(), document.querySelector('#fragment-test'))
+      } catch (err) {
+        renderError = err
+      }
+      it('Render should generate an error message when attempting to insert Fragment tag directly into DOM', function () {
+        expect(typeof renderError).to.equal('object')
+        expect(renderError.message).to.equal('Cannot insert Fragment tag directly into DOM.')
+      })
+      it('Container in DOM should remain empty', function () {
+        const el = document.querySelector('#fragment-test')
+        expect(el.children.length).to.equal(0)
+      })
+
     })
 
     mocha.run()

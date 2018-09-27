@@ -5,7 +5,7 @@ import { ELEMENT_NODE } from './constants'
  * Creates a virtual node representing a node or text node to be created.
  * @typedef {import('./vnode').VNode} VNode
  * @param {string | Function} type
- * @param {Object.<string, any>} props
+ * @param {Object.<string, any>} [props]
  * @return {VNode}
  */
 export function h(type, props, ...children) {

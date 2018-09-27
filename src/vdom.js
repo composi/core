@@ -424,6 +424,19 @@ export function patchElement(
 }
 
 /**
+ * Class to throw error message when attempting to insert Fragement tag directly into DOM.
+ * @return {string} message
+ */
+export class FragmentError {
+  constructor() {
+    this.message = 'Cannot insert Fragment tag directly into DOM.'
+    this.toString = function() {
+      return this.message
+    }
+  }
+}
+
+/**
  * Function to either mount an element the first time or patch it in place. This behavior depends on the value of the old VNode. If it is null, a new element will be created, otherwise it compares the new VNode with the old one and patches it.
  * @param {VNode} newVNode
  * @param {Element | string} container
@@ -437,6 +450,7 @@ export function patch(newVNode, container, oldVNode) {
   const lifecycle = []
 
   if (!oldVNode) {
+    if (Array.isArray(newVNode)) throw new FragmentError()
     const el = createElement(newVNode, lifecycle)
     container.appendChild(el)
     newVNode.element = el
