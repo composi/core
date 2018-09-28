@@ -1,6 +1,6 @@
 {
   "name": "@composi/core",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A JavaScript library for creating websites, PWAs and hybrid apps.",
   "main": "src/index.js",
   "scripts": {
@@ -36,13 +36,15 @@
     "url": "https://github.com/composor/composi/issues"
   },
   "homepage": "https://github.com/composor/composi#readme",
+  "dependencies": {
+    "@composi/get-type": "^1.0.1",
+    "@composi/merge-objects": "^1.0.4"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.1",
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-transform-parameters": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
-    "@composi/get-type": "^1.0.0",
-    "@composi/merge-objects": "^1.0.4",
     "browser-sync": "^2.21.0",
     "eslint": "^4.19.1",
     "gzip-cli": "^0.1.3",
