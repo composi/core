@@ -1,5 +1,9 @@
 # Composi
 
+![GitHub top language](https://img.shields.io/github/languages/top/badges/shields.svg)
+![npm (scoped)](https://img.shields.io/npm/v/@composi/core.svg)
+![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)
+
  1. [Introduction](#Introduction)
  2. [Installation](#Installation)
  3. [h](#h)
