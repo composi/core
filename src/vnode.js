@@ -59,12 +59,13 @@ export function createTextVNode(text, element) {
  * @return {VNode} VNode
  */
 export function hydrate(element) {
-  if (typeof element === 'string') element = document.querySelector(element)
+  let elem = element
+  if (typeof elem === 'string') elem = document.querySelector(elem)
   return createVNode(
-    element.nodeName.toLowerCase(),
+    elem.nodeName.toLowerCase(),
     EMPTY_OBJECT,
-    EMPTY_ARRAY.map.call(element.childNodes, vnodeFromChild),
-    element,
+    EMPTY_ARRAY.map.call(elem.childNodes, vnodeFromChild),
+    elem,
     null,
     RECYCLED_NODE
   )

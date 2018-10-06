@@ -8,12 +8,12 @@ import { ELEMENT_NODE } from './constants'
  * @param {Object.<string, any>} [props]
  * @return {VNode}
  */
-export function h(type, props, ...children) {
+export function h(type, properties, ...children) {
+  const props = properties || {}
   let node
   const tempBox = []
   const childNodes = []
   let length = children.length
-  props = props || {}
   const key = props.key
 
   while (length-- > 0) tempBox.push(children[length])

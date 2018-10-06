@@ -1,6 +1,6 @@
 {
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 6,
     "sourceType": "module",
     "ecmaFeatures": {
       "globalReturn": true
@@ -8,6 +8,8 @@
   },
   "rules": {
     "constructor-super": 2,
+    "curly": 0,
+    "eol-last": 2,
     "no-case-declarations": 2,
     "no-class-assign": 2,
     "no-compare-neg-zero": 2,
@@ -35,15 +37,24 @@
     "no-invalid-regexp": 2,
     "no-irregular-whitespace": 2,
     "no-mixed-spaces-and-tabs": 2,
+    "no-multi-spaces": 2,
+    "no-magic-numbers": 0,
     "no-new-symbol": 2,
     "no-obj-calls": 2,
     "no-octal": 2,
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
     "no-redeclare": 2,
     "no-regex-spaces": 2,
     "no-self-assign": 2,
     "no-sparse-arrays": 2,
     "no-this-before-super": 2,
     "no-undef": 2,
+    "no-undef-init": 2,
     "no-unexpected-multiline": 2,
     "no-unreachable": 2,
     "no-unsafe-finally": 2,
@@ -54,11 +65,18 @@
     "require-yield": 2,
     "use-isnan": 2,
     "valid-typeof": 2,
-    "arrow-body-style": [2, "as-needed"],
-    "arrow-parens": [2, "as-needed"],
+    "arrow-body-style": [
+      2,
+      "as-needed"
+    ],
+    "arrow-parens": [
+      2,
+      "as-needed"
+    ],
     "yoda": 2
   },
   "env": {
+    "es6": true,
     "browser": true
   }
 }
