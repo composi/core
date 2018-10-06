@@ -47,7 +47,7 @@ function createKeyMap(children, start, end) {
 /**
  * Update the properties and attributes of a VNode based on new data.
  * @param {Element} element
- * @param {string} prop
+ * @param {string} property
  * @param {any} oldValue
  * @param {any} newValue
  * @param {boolean} isSVG
