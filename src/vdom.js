@@ -178,7 +178,11 @@ function removeChildren(node) {
  */
 function removeElement(parent, vnode) {
   function done() {
-    if (parent && parent.nodeType) parent.removeChild(removeChildren(vnode))
+    if (parent && parent.nodeType) try {
+      parent.removeChild(removeChildren(vnode))
+    } catch(err) {
+      console.log(err)
+    }
   }
 
   const cb = vnode.props && vnode.props['onunmount']
@@ -208,20 +212,20 @@ function updateElement(
   isSVG,
   isRecycled
 ) {
+  let elem = element
   for (let prop in mergeObjects(oldProps, newProps)) {
     if (
-      (prop === 'value' || prop === 'checked'
-        ? element[prop]
-        : oldProps[prop]) !== newProps[prop]
+      (prop === 'value' || prop === 'checked' ? elem[prop] : oldProps[prop]) !==
+      newProps[prop]
     ) {
-      setProp(element, prop, oldProps[prop], newProps[prop], isSVG)
+      setProp(elem, prop, oldProps[prop], newProps[prop], isSVG)
     }
   }
 
   const cb = isRecycled ? newProps['onmount'] : newProps['onupdate']
   if (cb != null) {
     lifecycle.push(function() {
-      cb(element, oldProps, newProps)
+      cb(elem, oldProps, newProps)
     })
   }
 }
@@ -244,10 +248,11 @@ export function patchElement(
   lifecycle,
   isSVG
 ) {
-  let elem = element
   let testSVG = isSVG
+  let elem = element
   // Abort if vnodes are identical.
   if (newVNode === oldVNode) {
+    return
   } else if (
     oldVNode != null &&
     oldVNode.flag === TEXT_NODE &&
@@ -446,23 +451,25 @@ export class FragmentError {
  * Function to either mount an element the first time or patch it in place. This behavior depends on the value of the old VNode. If it is null, a new element will be created, otherwise it compares the new VNode with the old one and patches it.
  * @param {VNode} newVNode
  * @param {Element | string} container
- * @param {VNode} [oldVNode]
- * @return {VNode} VNode
+ * @param {Element} [element]
+ * @return {Element} element
  */
-export function patch(newVNode, container, oldVNode) {
+export function patch(newVNode, container, element) {
   let cont = container
+  let elem = element
   if (typeof cont === 'string') {
     cont = document.querySelector(cont)
   }
+  let oldVNode = elem && elem['vnode']
   const lifecycle = []
 
   if (!oldVNode) {
     if (Array.isArray(newVNode)) throw new FragmentError()
     const el = createElement(newVNode, lifecycle)
-    cont.appendChild(el)
+    elem = cont.appendChild(el)
     newVNode.element = el
   } else {
-    patchElement(cont, oldVNode['element'], oldVNode, newVNode, lifecycle)
+    patchElement(cont, elem, oldVNode, newVNode, lifecycle)
   }
 
   if (newVNode !== oldVNode) {
@@ -470,5 +477,6 @@ export function patch(newVNode, container, oldVNode) {
   }
 
   newVNode.element['isMounted'] = true
-  return newVNode
+  elem['vnode'] = newVNode
+  return elem
 }

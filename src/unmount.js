@@ -9,20 +9,23 @@
  * unmount(title)
  ```
  * @typedef {import('./vnode').VNode} VNode
- * @param {VNode} vnode The virtual node of the component to unmount.
+ * @param {Element} element The virtual node of the component to unmount.
  * @return {void} undefined
  */
-export function unmount(vnode) {
+export function unmount(element) {
+  let vnode = element['vnode']
+  let elem = element
   /**
    * Function to remove the base element of a functional component from the DOM.
    * @return {void} undefined
    */
   function doneUnmounting() {
-    vnode.element.parentNode.removeChild(vnode.element)
-    vnode.element = null
+    elem.remove()
+    return 
   }
   if (vnode.props['onunmount']) {
     vnode.props['onunmount'](doneUnmounting, vnode.element)
+    element= null
   } else {
     doneUnmounting()
   }

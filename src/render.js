@@ -13,9 +13,9 @@ import { patch } from './vdom'
  * @typedef {import('./vnode').VNode} VNode
  * @param {VNode} newVNode
  * @param {Element | string} container
- * @param {VNode} [oldVNode]
- * @return {VNode} VNode
+ * @param {Element} [element]
+ * @return {Element} element
  */
-export function render(newVNode, container, oldVNode) {
-  return patch(newVNode, container, oldVNode)
+export function render(newVNode, container, element) {
+  return patch(newVNode, container, element)
 }

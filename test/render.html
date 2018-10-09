@@ -26,10 +26,10 @@
       <div id="unmount"></div>
       <div id="lifecycle"></div>
       <div id="hydrate">
-        <ul id="listToHydrate">
+        <ol id="listToHydrate">
           <li>One</li>
           <li>Two</li>
-        </ul>
+        </ol>
       </div>
       <div id="fragment-test"></div>
     </div>
@@ -82,7 +82,7 @@
     setTimeout(() => {
       things.push({name: 'Popcorn', key: 104})
       vNode = List2(things)
-      list2 = render(List2(things), '#render-test', list2)
+      render(List2(things), '#render-test', list2)
     }, 3000)
 
     describe('Create virtual node for list', function() {
@@ -265,7 +265,7 @@
       })
       it('Functional component should execute "onupdate" when it is updated', function(done) {
         setTimeout(() => {
-          testComponent = render(LifecycleTest([1,2,3]), '#lifecycle', testComponent)
+          render(LifecycleTest([1,2,3]), '#lifecycle', testComponent)
           expect(componentDidUpdate).to.be.true
           expect(testComponent.children.length).to.equal(3)
         }, 1500)
@@ -273,7 +273,7 @@
       })
       it('List component\'s list items should execute "onunmount" when they are deleted', function(done) {
         setTimeout(() => {
-          testComponent = render(LifecycleTest([1]), '#lifecycle', testComponent)
+          render(LifecycleTest([1]), '#lifecycle', testComponent)
           expect(componentDidUnmount).to.be.true
           expect(testComponent.children.length).to.equal(1)
           expect(unmountedComponents).to.equal(2)
@@ -290,7 +290,7 @@
           h(
             'ul',
             {
-              id: 'listToHydrate'
+              id: 'updated-list'
             },
             [
               h(
@@ -316,7 +316,6 @@
       it('The list to hydrate should have an id of "listToHydrate"', function () {
         expect(list.id).to.equal('listToHydrate')
       })
-
       it('The list to hydrate should have two children', function () {
         expect(list.children.length).to.equal(2)
       })
@@ -328,23 +327,24 @@
       it('The hydrated list should have three children', function (done) {
         setTimeout(() => {
           render(hydrateTheList(), '#hydrate', listToHydrate)
-          const hydratedList = document.querySelector('#listToHydrate')
+          const hydratedList = document.querySelector('#updated-list')
           expect(hydratedList.children.length).to.equal(3)
         }, 1500)
         done()
       })
 
-      it('The hydrated list should have and id of "hydratedList"', function (done) {
+     
+      it('The hydrated list should have and id of "updated-list"', function (done) {
         setTimeout(() => {
-          const hydratedList = document.querySelector('#listToHydrate')
-          expect(hydratedList.id).to.equal('listToHydrate')
-        }, 1000)
+          const hydratedList = document.querySelector('#updated-list')
+          expect(hydratedList.id).to.equal('updated-list')
+        }, 1500)
         done()
       })
 
       it('The hydrated list should contain "Apple", "Orange", "Banana"', function (done) {
         setTimeout(() => {
-          const hydratedList = document.querySelector('#listToHydrate')
+          const hydratedList = document.querySelector('#updated-list')
           expect(hydratedList.children[0].textContent).to.equal('Apple')
           expect(hydratedList.children[1].textContent).to.equal('Orange')
           expect(hydratedList.children[2].textContent).to.equal('Banana')
@@ -353,6 +353,7 @@
       }, 2500)
     })
 
+    
     describe('Component should render, unmount, render again and update with render function', function() {
       function MountTest(props) {
         return (
@@ -366,35 +367,39 @@
         )
       }
       let mountTest = render(MountTest({ id: 'unmountBase', message: 'whatever'}), '#unmount')
+      window.mountTest = mountTest
       let mountTestContainer = document.querySelector('#unmount')
 
       it('Component should be mounted.', function() {
-        expect(mountTest.element.nodeType).to.equal(1)
-        expect(mountTest.element.id).to.equal('unmountBase')
-        expect(mountTest.element.isMounted).to.equal(true)
+        expect(mountTest.nodeType).to.equal(1)
+        expect(mountTest.id).to.equal('unmountBase')
+        expect(mountTest.isMounted).to.equal(true)
         expect(mountTestContainer.textContent).to.equal('whatever')
       })
       it('Unmount should remove component from DOM', function(done) {
         setTimeout(() => {
-          unmount(mountTest)
+          mountTest = unmount(mountTest)
           expect(mountTestContainer.children.length).to.equal(0)
-          expect(mountTest.element).to.equal(null)
+          expect(mountTest).to.be.an('undefined')
         }, 1000)
         done()
       })
+      
       it('Should be able to re-render unmounted component', function(done) {
         setTimeout(() => {
           mountTest = render(MountTest({ id: 'unmountBase', message: 'new message' }), '#unmount')
-          expect(mountTest.element.nodeType).to.equal(1)
-          expect(mountTest.element.id).to.equal('unmountBase')
-          expect(mountTest.element.isMounted).to.equal(true)
+          expect(mountTest.nodeType).to.equal(1)
+          expect(mountTest.id).to.equal('unmountBase')
+          expect(mountTest.isMounted).to.equal(true)
           expect(mountTestContainer.textContent).to.equal('new message')
         }, 2000)
         done()
       })
+
+      
       it('Should be able to use render to update re-mounted component', function (done) {
         setTimeout(() => {
-          mountTest = render(MountTest({ id: 'unmountBase', message: 'updated message' }), '#unmount', mountTest)
+          render(MountTest({ id: 'unmountBase', message: 'updated message' }), '#unmount', mountTest)
           expect(mountTestContainer.textContent).to.equal('updated message')
         }, 3000)
         done()
@@ -424,7 +429,7 @@
       })
 
     })
-
+    
     mocha.run()
   </script>
 </body>

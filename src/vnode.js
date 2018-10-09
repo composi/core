@@ -56,12 +56,12 @@ export function createTextVNode(text, element) {
 /**
  * Create a virtual node represeting an element and its children.
  * @param {Element} element
- * @return {VNode} VNode
+ * @return {Element} element
  */
 export function hydrate(element) {
   let elem = element
   if (typeof elem === 'string') elem = document.querySelector(elem)
-  return createVNode(
+  const vnode = createVNode(
     elem.nodeName.toLowerCase(),
     EMPTY_OBJECT,
     EMPTY_ARRAY.map.call(elem.childNodes, vnodeFromChild),
@@ -69,6 +69,8 @@ export function hydrate(element) {
     null,
     RECYCLED_NODE
   )
+  elem['vnode'] = vnode
+  return elem
 }
 
 /**
