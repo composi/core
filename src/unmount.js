@@ -21,11 +21,10 @@ export function unmount(element) {
    */
   function doneUnmounting() {
     elem.remove()
-    return 
+    return
   }
   if (vnode.props['onunmount']) {
     vnode.props['onunmount'](doneUnmounting, vnode.element)
-    element= null
   } else {
     doneUnmounting()
   }

@@ -178,11 +178,12 @@ function removeChildren(node) {
  */
 function removeElement(parent, vnode) {
   function done() {
-    if (parent && parent.nodeType) try {
-      parent.removeChild(removeChildren(vnode))
-    } catch(err) {
-      console.log(err)
-    }
+    if (parent && parent.nodeType)
+      try {
+        parent.removeChild(removeChildren(vnode))
+      } catch (err) {
+        console.log(err)
+      }
   }
 
   const cb = vnode.props && vnode.props['onunmount']
