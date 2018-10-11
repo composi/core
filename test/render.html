@@ -12,7 +12,7 @@
 </head>
 <body>
   <nav onclick="location.pathname='/test/index.html'">
-    <h1>Mocha Tests - Composi render, hydrate &amp; unmount Functions</h1>
+    <h1>Mocha Tests - Composi h &amp; render Functions</h1>
   </nav>
   <section>
     <div id="mocha"></div>
@@ -23,13 +23,12 @@
       <div id="list-test"></div>
       <div id="alert-test"></div>
       <div id="render-test"></div>
-      <div id="unmount"></div>
       <div id="lifecycle"></div>
       <div id="hydrate">
-        <ol id="listToHydrate">
+        <ul id="listToHydrate">
           <li>One</li>
           <li>Two</li>
-        </ol>
+        </ul>
       </div>
       <div id="fragment-test"></div>
     </div>
@@ -40,7 +39,7 @@
   <script src='/dist/composi.js'></script>
   <script>mocha.setup('bdd')</script>
   <script>
-    const {h, render, hydrate, unmount} = composi
+    const { h, render, hydrate } = composi
     let expect = chai.expect
 
     function H1(){
@@ -77,12 +76,12 @@
       )
     }
     let vNode = List2(things)
-    let list2 = render(List2(things), '#render-test')
+    render(List2(things), '#render-test')
 
     setTimeout(() => {
       things.push({name: 'Popcorn', key: 104})
       vNode = List2(things)
-      render(List2(things), '#render-test', list2)
+      render(List2(things), '#render-test')
     }, 3000)
 
     describe('Create virtual node for list', function() {
@@ -217,7 +216,7 @@
         done()
       })
     })
-
+    
     describe('Component should execute thee lifecycle hooks', function() {
       let componentDidMount = false
       let componentDidUpdate = false
@@ -290,7 +289,7 @@
           h(
             'ul',
             {
-              id: 'updated-list'
+              id: 'listToHydrate'
             },
             [
               h(
@@ -316,96 +315,45 @@
       it('The list to hydrate should have an id of "listToHydrate"', function () {
         expect(list.id).to.equal('listToHydrate')
       })
+      
       it('The list to hydrate should have two children', function () {
         expect(list.children.length).to.equal(2)
       })
+      
       it('The list to hydrate should have children with content of "One" and "Two"', function () {
         expect(list.children[0].textContent).to.equal('One')
         expect(list.children[1].textContent).to.equal('Two')
       })
-
+      
       it('The hydrated list should have three children', function (done) {
         setTimeout(() => {
-          render(hydrateTheList(), '#hydrate', listToHydrate)
-          const hydratedList = document.querySelector('#updated-list')
+          render(hydrateTheList(), '#hydrate', '#listToHydrate')
+          const hydratedList = document.querySelector('#listToHydrate')
           expect(hydratedList.children.length).to.equal(3)
         }, 1500)
         done()
       })
-
-     
-      it('The hydrated list should have and id of "updated-list"', function (done) {
+      
+      it('The hydrated list should have and id of "hydratedList"', function (done) {
         setTimeout(() => {
-          const hydratedList = document.querySelector('#updated-list')
-          expect(hydratedList.id).to.equal('updated-list')
-        }, 1500)
+          const hydratedList = document.querySelector('#listToHydrate')
+          expect(hydratedList.id).to.equal('listToHydrate')
+        }, 1000)
         done()
       })
-
+      
       it('The hydrated list should contain "Apple", "Orange", "Banana"', function (done) {
         setTimeout(() => {
-          const hydratedList = document.querySelector('#updated-list')
+          const hydratedList = document.querySelector('#listToHydrate')
           expect(hydratedList.children[0].textContent).to.equal('Apple')
           expect(hydratedList.children[1].textContent).to.equal('Orange')
           expect(hydratedList.children[2].textContent).to.equal('Banana')
         }, 2500)
         done()
       }, 2500)
+      
     })
-
     
-    describe('Component should render, unmount, render again and update with render function', function() {
-      function MountTest(props) {
-        return (
-          h(
-            'p',
-            {
-              id: 'unmountBase',
-            },
-            props.message
-          )
-        )
-      }
-      let mountTest = render(MountTest({ id: 'unmountBase', message: 'whatever'}), '#unmount')
-      window.mountTest = mountTest
-      let mountTestContainer = document.querySelector('#unmount')
-
-      it('Component should be mounted.', function() {
-        expect(mountTest.nodeType).to.equal(1)
-        expect(mountTest.id).to.equal('unmountBase')
-        expect(mountTest.isMounted).to.equal(true)
-        expect(mountTestContainer.textContent).to.equal('whatever')
-      })
-      it('Unmount should remove component from DOM', function(done) {
-        setTimeout(() => {
-          mountTest = unmount(mountTest)
-          expect(mountTestContainer.children.length).to.equal(0)
-          expect(mountTest).to.be.an('undefined')
-        }, 1000)
-        done()
-      })
-      
-      it('Should be able to re-render unmounted component', function(done) {
-        setTimeout(() => {
-          mountTest = render(MountTest({ id: 'unmountBase', message: 'new message' }), '#unmount')
-          expect(mountTest.nodeType).to.equal(1)
-          expect(mountTest.id).to.equal('unmountBase')
-          expect(mountTest.isMounted).to.equal(true)
-          expect(mountTestContainer.textContent).to.equal('new message')
-        }, 2000)
-        done()
-      })
-
-      
-      it('Should be able to use render to update re-mounted component', function (done) {
-        setTimeout(() => {
-          render(MountTest({ id: 'unmountBase', message: 'updated message' }), '#unmount', mountTest)
-          expect(mountTestContainer.textContent).to.equal('updated message')
-        }, 3000)
-        done()
-      })
-    })
-
     describe('Cannot insert array of elements directly into DOM', function () {
       function ListItems() {
         return [
@@ -427,9 +375,8 @@
         const el = document.querySelector('#fragment-test')
         expect(el.children.length).to.equal(0)
       })
-
     })
-    
+
     mocha.run()
   </script>
 </body>

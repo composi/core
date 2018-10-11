@@ -8,21 +8,21 @@ import { ELEMENT_NODE } from './constants'
  * @param {Object.<string, any>} [props]
  * @return {VNode}
  */
-export function h(type, properties, ...children) {
-  const props = properties || {}
+export function h(type, props, ...children) {
+  const __props = props || {}
   let node
   const tempBox = []
   const childNodes = []
   let length = children.length
-  const key = props.key
+  const key = __props.key
 
   while (length-- > 0) tempBox.push(children[length])
 
-  if (props.children != null) {
+  if (__props.children != null) {
     if (tempBox.length <= 0) {
-      tempBox.push(props.children)
+      tempBox.push(__props.children)
     }
-    delete props.children
+    delete __props.children
   }
 
   while (tempBox.length > 0) {
@@ -35,11 +35,11 @@ export function h(type, properties, ...children) {
       childNodes.push(typeof node === 'object' ? node : createTextVNode(node))
     }
   }
-  delete props.key
+  delete __props.key
 
   if (typeof type === 'function') {
-    return type(props, (props.children = childNodes))
+    return type(__props, (__props.children = childNodes))
   } else {
-    return createVNode(type, props, childNodes, null, key, ELEMENT_NODE)
+    return createVNode(type, __props, childNodes, null, key, ELEMENT_NODE)
   }
 }

@@ -8,6 +8,7 @@
  2. [Installation](#Installation)
  3. [h](#h)
  4. [render](#render)
+ 5. [One Component per Container](#One-Component-per-Container)
  5. [Keys](#Keys)
  6. [Lifecycle Hooks](#Lifecycle-Hooks)
  7. [onmount](#onmount)
@@ -101,7 +102,7 @@ JSX will always be more compact and readable than writing out a hyperscript func
 
 ## render
 
-You use the `render` function to mount and update a functional component. It takes two to three arguments. For the first render you only need to pass two arguments--the comonent to render and the container to insert it in:
+You use the `render` function to mount and update a functional component. It takes two arguments: the component to render, and the container to render it in.
 
 ```javascript
 import { h, render } from '@composi/core'
@@ -128,7 +129,7 @@ render(<Title greet='Everybody'/>, document.querySelector('header'))
 render(<Title greet='Everybody'/>, 'header')
 ```
 
-The `render` function returns a vitual node representing the current state of the component. If you are going to update a component after its initial render, you'll want to capture the initial render in a variable so you can reuse it in further renders. In fact, each time you render a functional component you'll need to capture its state in the variable again. Notice how we do this below:
+The first time the `render` processes a component, it caches the component's vnode on its container. For all other renders, the `render` function grabs the vnode from the container to diff and patch the DOM agains the newest version of the component.
 
 ```javascript
 import { h, render } from '@composi/core'
@@ -141,16 +142,24 @@ function Title({greet}) {
   )
 }
 
-// Mount the component.
-// Capture component reference in variable `title`.
-let title = render(<Title greet='Joe'/>, document.body)
+// Render the component the first time.
+render(<Title greet='Joe'/>, document.body)
 
 // Update the component 5 seconds later.
-// Notice how we pass variable `title` from above as third argument.
 setTimeout(() => {
-  title = render(<Title greet='Everybody Else'/>, document.body, title)
+  render(<Title greet='Everybody Else'/>, document.body)
 }, 5000)
 ```
+
+## One Component per Container
+
+Because Composi uses the component's container to cache it last vnode state, there can only be one component per container. You could have other static content in the container with the component. When Composi renders a component, it appends it to the container, so the component will come after whatever is already there.
+
+If you want to be able to output several different components into the same container, then compose your components into on parent component that is just a wraper for the others and render it in the container.
+
+Note that each component requires its own element as the base of the node tree that it will create. 
+
+
 
 ## Keys
 
@@ -195,7 +204,7 @@ const fruits = [
 ]
 
 // Render the list:
-let list = render(<List data={fruits} />, document.body)
+render(<List data={fruits} />, document.body)
 ```
 
 ## Lifecycle Hooks
@@ -225,11 +234,11 @@ import { h, render } from '@composi/core'
 function Clock({time}) {
   if (!time) time = new Date()
   return (
-      <div onmount={initClock}>
-        <h3>The Current Time</h3>
-        <p>It is {time.toLocaleTimeString()}.</p>
-      </div>
-    )
+    <div onmount={initClock}>
+      <h3>The Current Time</h3>
+      <p>It is {time.toLocaleTimeString()}.</p>
+    </div>
+  )
 }
 
 // Start tick interval after mount:
@@ -237,17 +246,14 @@ function initClock() {
   const timerId = setInterval(
     () => {
       // Re-render the clock at each tick.
-      // Notice how we pass the clock reference as last argument.
-      clock = render(<Clock />, document.body, clock)
+      render(<Clock />, document.body, clock)
     }),
     1000
   )
 }
 
-// Mount clock.
-// Capture first render in variable `clock`.
-// We'll reuse this reference in initClock funciton above.
-let clock = render(<Clock />, document.body)
+// Mount the clock.
+render(<Clock />, document.body)
 ```
 In the above example, the component will be updated every second. But only the text node with the time value will change due to virtual DOM patching.
 
@@ -265,7 +271,7 @@ function Form() {
     form.querySelector('input').focus()
   }
   return (
-    <form onmount={form => init(form)}>
+    <form onmount={init}>
       <p>
         <input type='text' />
       </p>
@@ -294,7 +300,7 @@ function List({data}) {
     })
   }
   return (
-    <ul onmount={list => init(list)}>
+    <ul onmount={init}>
       {
         data.map(item => <li>{item.value}</li>)
       }
@@ -324,14 +330,16 @@ function Title({greet}) {
   )
 }
 
-// Mount component:
-let title = render(<Title greet='World'/>, document.body)
+// Mount the component:
+render(<Title greet='World'/>, document.body)
 
 // Update component in 5 seconds:
 setTimeout(() => {
-  title = render(<Title greet='World'/>, document.body, title)
+  render(<Title greet='World'/>, document.body, title)
 }, 5000)
 ```
+### About Props
+When `onupdate` fires on an element, it only has access to the props that were assigned to that element. So, in order to access whatever data you want to be checking, make sure that data is available on that element as a prop. The prop doesn't need to be actually used with that element. 
 
 ## onunmount
 
@@ -344,12 +352,15 @@ import { h, render } from '@composi/core'
 
 function List({data}) {
   function deleteItem(id) {
-    const newData = data.filter(item => item.id != id)
-    list = render(<List data={fruits}/>, document.body, list)
+    // Because we are reassigning the filerted results,
+    // the variable fruits needs to be initialized with `let`, not `const`.
+    // Otherwise you'd get an error about assigning to a read only property.
+    fruits = data.filter(item => item.id != id)
+    render(<List data={fruits}/>, document.body)
   }
 
   // Animate list item when deleted.
-  function animate(item, done) {
+  function animate(done, item) {
     item.style.cssText = 'transition: all .5s ease-out; height: 0px; transform: translateX(-300px);'
     // Don't forget to call `done()` or the element won't be removed!
     done()
@@ -366,17 +377,17 @@ function List({data}) {
   )
 }
 
-let list = render(<List data={fruits}/>, document.body)
+render(<List data={fruits}/>, document.body)
 ```
 
 ## hydrate
 
-You can hydrate server-rendered content. Composi core lets you create a virtual DOM based on the server content and then update that with your functional component.
+You can hydrate server-rendered content. Composi core lets you pass a third argument to the `render` function for the element in the DOM you want to hydrate. This can be an actual node reference, such as with `document.querySelector`, or a valid string selector for that element. When you hydrate an element, Composi converts it into a virtual node that it then uses to patch with the component. This allows you to quickly load rendered content from the server and then bring it to life with dynamic content and events as efficiently as possible.
 
 To hydrate content you'll need to import it from Composi core. Then use it to convert the DOM node into a virtual node and pass it as the third argument of the `render` function.
 
 ```javascript
-import { h, render, hydrate } from '@composi/core'
+import { h, render } from '@composi/core'
 
 // Convert server-rendered list into a virtual node:
 serverList = hydrate(#list)
@@ -407,37 +418,8 @@ const fruits = [
 let list = render(<List data={fruits} />, 'section', serverList)
 ```
 
-## unmount
-
-You can unmount a component using the `unmount` function. This takes one argument--the virtual node of the rendered component. This is the value you have stored in a variable when you render a component. 
-
-Most of the time you should be able to unmount a component using conditional logic. For that rare case when this won't work, you can use this. Removing a component with `unmount` deletes its structure from the DOM and reduces the variable value to null. If you need to, you can pass that variable to the `render` function later to remount the component. After doing so the component will works as it did before.
-
-### Example
-
-```javascript
-import { h, render, unmount } from '@composi/core'
-
-function Title({greet}) {
-  return (
-    <nav>
-      <h1>Hello, {greet}!</h1>
-    </nav>
-  )
-}
-
-// Render component:
-let title = render(<Title greet='World' />, 'header')
-
-// Sometime later unmount the component:
-unmount(title)
-
-// Sometime later remount component:
-title = render(<Title greet='Everyone' />, 'header', title)
-```
-
 ## Summary
 
 Composi is all about components. These provide a great way to organize your code into modular and reusable chunks. The virtual DOM means you never have to touch the DOM to change the structure.
 
-Because Composi uses JSX, there are many similarities to React patterns. Please note that Composi is not a React clone. It is not trying to be compatible with React and the React ecosystem the way Preact and Inferno do. Composi core does not have PropTypes. Events are not synthetic. Functional component have three lifecycle hooks, whereas React functional components have none. However, because of using a virtual DOM and JSX, the similarities are greater than the differences. The API is very small--comprising four functions: `h`, `render`, `hydrate` and `unmount`, and three lifecycle hooks that are similar to the ones React has for class components. If you are familiar with React, Inferno or Preact, you can note the differences and be productive with Composi core in less than an hour. 
+Because Composi uses JSX, there are many similarities to React patterns. Please note that Composi is not a React clone. It is not trying to be compatible with React and the React ecosystem the way Preact and Inferno do. Composi core does not have PropTypes. Events are not synthetic. Functional component have three lifecycle hooks, whereas React functional components have none. However, because of using a virtual DOM and JSX, the similarities are greater than the differences. The API is very small--comprising two functions: `h` and `render` and three lifecycle hooks that are similar to the ones React has for class components. If you are familiar with React, Inferno or Preact, you can note the differences and be productive with Composi core in less than an hour. 
