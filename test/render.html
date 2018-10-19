@@ -253,7 +253,9 @@
           )
         )
       }
-      let testComponent = render(LifecycleTest([1,2]), '#lifecycle')
+      let lifecyleTest = document.querySelector('#lifecycle')
+      render(LifecycleTest([1,2]), lifecyleTest)
+      const testComponent = lifecyleTest.querySelector('ul')
 
       it('Functional component should execute "onmount" when it is mounted', function(done) {
         setTimeout(() => {
@@ -264,7 +266,7 @@
       })
       it('Functional component should execute "onupdate" when it is updated', function(done) {
         setTimeout(() => {
-          render(LifecycleTest([1,2,3]), '#lifecycle', testComponent)
+          render(LifecycleTest([1,2,3]), lifecyleTest)
           expect(componentDidUpdate).to.be.true
           expect(testComponent.children.length).to.equal(3)
         }, 1500)
@@ -272,7 +274,7 @@
       })
       it('List component\'s list items should execute "onunmount" when they are deleted', function(done) {
         setTimeout(() => {
-          render(LifecycleTest([1]), '#lifecycle', testComponent)
+          render(LifecycleTest([1]), lifecyleTest)
           expect(componentDidUnmount).to.be.true
           expect(testComponent.children.length).to.equal(1)
           expect(unmountedComponents).to.equal(2)
