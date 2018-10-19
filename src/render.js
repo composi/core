@@ -14,6 +14,7 @@ import { hydrate } from './vnode'
  * }, 5000)```
  * @typedef {import('./vnode').VNode} VNode
  * @param {Element | string} container
+ * @param { Element | string } [hydrateThis]
  * @param {VNode} VNode
  * @return {void} undefined
  */
