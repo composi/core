@@ -42,12 +42,7 @@
     "no-new-symbol": 2,
     "no-obj-calls": 2,
     "no-octal": 2,
-    "no-param-reassign": [
-      "error",
-      {
-        "props": false
-      }
-    ],
+    "no-param-reassign": 0,
     "no-redeclare": 2,
     "no-regex-spaces": 2,
     "no-self-assign": 2,

@@ -11,32 +11,26 @@ import { hydrate } from './vnode'
  * // Update the title component 5 seconds later:
  * setTimeout(() => {
  *   render(<Title message='Hello Everyone!'/>, 'section')
- * }, 5000)```
+ * }, 5000)
+ * ```
  * @typedef {import('./vnode').VNode} VNode
  * @param {Element | string} container
  * @param { Element | string } [hydrateThis]
- * @param {VNode} VNode
  * @return {void} undefined
  */
 export function render(VNode, container, hydrateThis) {
-  let __container = container
-  if (typeof __container === 'string') {
-    __container = document.querySelector(/** @type {string} */ (container))
+  if (typeof container === 'string') {
+    container = document.querySelector(container)
   }
-  // Hydrate an existing element.
+  let oldVNode
   if (hydrateThis) {
-    let hyd = hydrateThis
-    if (typeof hyd === 'string') {
-      hyd = /** @type {Element} */ (__container).querySelector(hyd)
+    if (typeof hydrateThis === 'string') {
+      hydrateThis = document.querySelector(hydrateThis)
     }
-    hyd = hydrate(hyd)
-    __container['vnode'] = patch(__container, VNode, hyd)
-  } else if (__container['vnode']) {
-    // Patch an already rendered component.
-    patch(__container, VNode, __container['vnode'])
-    __container['vnode'] = VNode
+    oldVNode = hydrate(hydrateThis)
   } else {
-    // Render component first time.
-    __container['vnode'] = patch(__container, VNode)
+    oldVNode = Reflect.get(container, 'vnode')
   }
+  const vnode = patch(oldVNode, VNode, container)
+  container['vnode'] = vnode
 }

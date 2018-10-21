@@ -4,6 +4,7 @@ import {
   TEXT_NODE,
   RECYCLED_NODE
 } from './constants'
+
 /**
  * @typedef {Object.<string, any> | {}} Props
  * @property {Children} Props.children
@@ -59,13 +60,14 @@ export function createTextVNode(text, element) {
  * @return {VNode} VNode
  */
 export function hydrate(element) {
-  let elem = element
-  if (typeof elem === 'string') elem = document.querySelector(elem)
+  if (typeof element === 'string') {
+    element = document.querySelector(element)
+  }
   return createVNode(
-    elem.nodeName.toLowerCase(),
+    element.nodeName.toLowerCase(),
     EMPTY_OBJECT,
-    EMPTY_ARRAY.map.call(elem.childNodes, vnodeFromChild),
-    elem,
+    EMPTY_ARRAY.map.call(element.childNodes, vnodeFromChild),
+    element,
     null,
     RECYCLED_NODE
   )
@@ -74,7 +76,7 @@ export function hydrate(element) {
 /**
  * Cycle through the child nodes of an element and create virtual nodes of them.
  * @param {Element} element
- * @return {VNode}
+ * @return {VNode} VNode
  */
 function vnodeFromChild(element) {
   if (element.nodeType === 3) {
