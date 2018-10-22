@@ -31,6 +31,7 @@ export function h(type, props, ...children) {
         tempBox.push(node[length])
       }
     } else if (node === false || node === true || node == null) {
+      return
     } else {
       childNodes.push(typeof node === 'object' ? node : createTextVNode(node))
     }
