@@ -6,11 +6,11 @@ import minify from 'rollup-plugin-babel-minify'
 export default {
   input: 'src/index.js',
   output: {
-    file: 'dist/composi.js',
+    file: 'dist/composi-core.js',
     format: 'umd',
     name: 'composi',
     sourcemap: true,
-    sourcemapFile: 'dist/composi.js.map'
+    sourcemapFile: 'dist/composi-core.js.map'
   },
   plugins:
     [

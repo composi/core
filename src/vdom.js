@@ -81,6 +81,7 @@ function setProp(element, prop, oldValue, newValue, isSVG) {
       if (
         prop in element &&
         prop !== 'list' &&
+        prop !== 'type' &&
         prop !== 'draggable' &&
         prop !== 'spellcheck' &&
         prop !== 'translate' &&

@@ -61,7 +61,7 @@
     "use-isnan": 2,
     "valid-typeof": 2,
     "arrow-body-style": [
-      2,
+      0,
       "as-needed"
     ],
     "arrow-parens": [

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mount and Render</title>
+  <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/test/styles.css">
+  <link rel="icon" type="image/png" href="/test/favicon-16x16.png" sizes="16x16" />
+  <link rel="icon" type="image/png" href="/test/favicon-32x32.png" sizes="32x32" />
+</head>
+<body>
+  <nav onclick="location.pathname='/test/index.html'">
+    <h1>Mocha Tests - Composi Runtime &amp; Union</h1>
+  </nav>
+  <section>
+    <div id="mocha"></div>
+    <div id="messages"></div>
+    <div id="fixtures"></div>
+    <div id="hide-tests">
+      <div id='h1-test'></div>
+      <div id='component-click2'></div>
+      <div id="msg-with-data"></div>
+      <div id="list1-test"></div>
+      <div id='component-click3'></div>
+      <div id='component-click4'></div>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+  <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
+  <script src='/dist/composi-core.js'></script>
+  <script>mocha.setup('bdd')</script>
+  <script>
+    const { h, render, run, union } = composi
+    let expect = chai.expect
+
+    function trigger(target, event) {
+      var evt = new Event(event)
+      target.dispatchEvent(evt)
+    }
+
+    const things = [
+      {name: 'Apple', key: 101},
+      {name: 'Chair', key: 102},
+      {name: 'Horse', key: 103}
+    ]
+    function List2(data) {
+      return h(
+        'ul',
+        {},
+        data.map(item => h('li', {key: item.key}, item.name))
+      )
+    }
+
+    describe('Runtime should render component with state.', () => {
+      function H1(greeting) {
+        return h('h1', { id: 'title' }, `Hello, ${greeting}!`)
+      }
+      const program = {
+        init: ['World'],
+        update(msg, state) {
+
+        },
+        view(state, send) {
+          render(H1(state), '#h1-test')
+        }
+      }
+      const endProgram = run(program)
+      it('Runtime should render Hello World.', function() {
+        const title = document.querySelector('#title')
+        expect(title.textContent).to.equal('Hello, World!')
+        endProgram()
+      })
+    })
+    describe('Should be able to send message from view to the update function.', () => {
+      function Component(state, send) {
+        return h(
+          'div', 
+          {}, 
+          h(
+            'button',
+            {
+              id: 'send-msg1',
+              onclick: () => send({type:'click'})
+            }
+          )
+          ,
+          h(
+            'p',
+            {id: 'click-result1'},
+            `${state}`
+          )
+        )
+      }
+    
+      const program = {
+        init: ['no message'],
+        update(msg, state) {
+          switch (msg.type) {
+            case 'click':
+              state = 'Button was clicked'
+              return [state]
+              break
+          }
+        },
+        view(state, send) {
+          render(Component(state, send), '#component-click2')
+        }
+      }
+      const endProgram = run(program)
+      it('Should be able to update state and view by sending message to the update function.', done => {
+        const btn = document.querySelector('#send-msg1')
+        const el = document.querySelector('#click-result1')
+        expect(el.textContent).to.equal('no message')
+        trigger(btn, 'click')
+        setTimeout(() => {
+          expect(el.textContent).to.equal('Button was clicked')
+        })
+        done()
+        endProgram()
+      })
+    })
+
+    describe('Should be able to send data with message', () => {
+      function Component(state, send) {
+        return h(
+          'div',
+          {},
+          h(
+            'button',
+            {
+              id: 'send-msg2',
+              onclick: () => send({ type: 'click', data: 'Button was clicked' })
+            }
+          )
+          ,
+          h(
+            'p',
+            { id: 'click-result2' },
+            `${state}`
+          )
+        )
+      }
+
+      const program = {
+        init: ['no message'],
+        update(msg, state) {
+          switch (msg.type) {
+            case 'click':
+              state = msg.data
+              return [state]
+              break
+          }
+        },
+        view(state, send) {
+          render(Component(state, send), '#msg-with-data')
+        }
+      }
+      const endProgram = run(program)
+      it('Action should update state with data sent with message.', done => {
+        const btn = document.querySelector('#send-msg2')
+        const el = document.querySelector('#click-result2')
+        expect(el.textContent).to.equal('no message')
+        trigger(btn, 'click')
+        setTimeout(() => {
+          expect(el.textContent).to.equal('Button was clicked')
+        })
+        done()
+        endProgram()
+      })
+    })
+
+    describe('Should be able to run effect at startup.', () => {
+      it('effect should run at startup.', done => {
+        let effectResult = false
+        function effect() {
+          effectResult = true
+        }
+        const program = {
+          init: [0, effect],
+          update() {
+            return [state]
+          },
+          view() {
+            return
+          }
+        }
+        run(program) 
+        setTimeout(() => {
+          expect(effectResult).to.equal(true)
+        })
+        done()
+      })
+    })
+
+
+  describe('Should be able to stop program.', () => {
+    it('Capture program refrence and end program.', done => {
+      let setIntervalID
+      let count = 0
+      function effect() {
+        setIntervalID = setInterval(() => {
+          count += 1
+        }, 100)
+      }
+      const program = {
+        init: [0, effect],
+        update() {},
+        view() {},
+        done() {
+          clearInterval(setIntervalID)
+          expect(count).to.equal(9)
+        }
+      }
+      const stopProgram = run(program)
+      setTimeout(() => {
+        stopProgram()
+      }, 1000)
+      done()
+    })
+  })
+
+  describe('Should be able to use tagged union to define actions.', () => {
+    const Msg3 = union(['click'])
+    function Component(state, send) {
+      return h(
+        'div',
+        {},
+        h(
+          'button',
+          {
+            id: 'send-msg3',
+            onclick: () => send(Msg3.click())
+          }
+        )
+        ,
+        h(
+          'p',
+          { id: 'click-result3' },
+          `${state}`
+        )
+      )
+    }
+    let taggedEffectFired = false
+    const program = {
+      init: ['no message'],
+      update(msg, state) {
+        return Msg3.match(msg, {
+          'click': () => {
+            taggedEffectFired = true
+            return [state]
+          }
+        })
+      },
+      view(state, send) {
+        render(Component(state, send), '#component-click3')
+      }
+    }
+    const endProgram = run(program)
+    it('Should be able to use a tagged action as argument of a view send event.', done => {
+      const btn = document.querySelector('#send-msg3')
+      trigger(btn, 'click')
+      setTimeout(() => {
+        expect(taggedEffectFired).to.equal(true)
+      })
+      endProgram()
+      done()
+    })
+  })
+
+  describe('Should be able to pass data with tagged union function.', () => {
+    const Msg4 = union(['click'])
+    function Component(state, send) {
+      return h(
+        'div',
+        {},
+        h(
+          'button',
+          {
+            id: 'send-msg4',
+            onclick: () => send(Msg4.click('button was clicked'))
+          }
+        )
+        ,
+        h(
+          'p',
+          { id: 'click-result4' },
+          `${state}`
+        )
+      )
+    }
+    let taggedEffectFired = ''
+    const program = {
+      init: ['no message'],
+      update(msg, state) {
+        return Msg4.match(msg, {
+          'click': message => {
+            taggedEffectFired = message
+            return [state]
+          }
+        })
+      },
+      view(state, send) {
+        render(Component(state, send), '#component-click4')
+      }
+    }
+    const endProgram = run(program)
+    it('Action should get data from tagged union member.', done => {
+      const btn = document.querySelector('#send-msg4')
+      trigger(btn, 'click')
+      setTimeout(() => {
+        expect(taggedEffectFired).to.equal('button was clicked')
+        endProgram()
+      })
+      done()
+    })
+  })
+
+
+
+    mocha.run()
+  </script>
+</body>
+</html>
