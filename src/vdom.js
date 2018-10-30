@@ -406,7 +406,9 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
     }
   }
 
-  newVNode.element = element
+  if (element) {
+    newVNode.element = element
+  }
   return newVNode
 }
 
