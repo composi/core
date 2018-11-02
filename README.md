@@ -631,7 +631,7 @@ const state = {
 // Tagged union for actions,
 // This will match string values to functions.
 // Capture the union in the Msg object.
-const Msg = union(['AddItem', 'DeleteItem'])
+const Msg = union(['addItem', 'deleteItem'])
 
 
 // Business Logic.
@@ -641,7 +641,7 @@ const Msg = union(['AddItem', 'DeleteItem'])
 // That will cause the view to update.
 function actions(msg, state) {
   return Msg.match(msg, {
-    'AddItem': value => {
+    'addItem': value => {
       if (value) {
         state.fruits.push({ key: state.newKey++, value })
         return [state]
@@ -650,7 +650,7 @@ function actions(msg, state) {
         return [state]
       }
     },
-    'DeleteItem': key => {
+    'deleteItem': key => {
       state.fruits = state.fruits.filter(item => item.key != key)
       return [state]
     }
@@ -673,14 +673,14 @@ function List({state, send}) {
     <div class='list-container'>
       <p class='list-form'>
         <input value={state.inputVal} onupdate={focusInput} onchange={getInputValue} type="text"/>
-        <button class='add-item' onclick={() => send(Msg.AddItem(inputValue))}>Add</button>
+        <button class='add-item' onclick={() => send(Msg.addItem(inputValue))}>Add</button>
       </p>
       <ul>
         {
           state.fruits.map(item => (
             <li key={item.key}>
               <span>{item.value}</span>
-              <button class="DeleteItem" onclick={() => send(Msg.DeleteItem(item.key))}>X</button>
+              <button class="deleteItem" onclick={() => send(Msg.deleteItem(item.key))}>X</button>
             </li>
           ))
         }
