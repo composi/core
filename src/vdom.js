@@ -212,7 +212,7 @@ function updateElement(
   const cb = isRecycled ? newProps['onmount'] : newProps['onupdate']
   if (cb != null) {
     lifecycle.push(function() {
-      cb(element, oldProps)
+      cb(element, oldProps, newProps)
     })
   }
 }
