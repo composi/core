@@ -418,6 +418,298 @@ const fruits = [
 let list = render(<List data={fruits} />, 'section', serverList)
 ```
 
+## Run
+
+@composi/core run creates a runtime for Redux-style state management for functional components. To use it, you do need to import it:
+
+```javascript
+import { h, render, run } from '@composi/core'
+```
+
+Run takes one argument, the program to run. This is where it gets interesting. A program has at least three properties:
+
+1. init
+2. update
+3. view
+
+Init holds the program's state and optionally an effect to run at startup. That's why its called init.
+
+Update is like a Redux reducer. It executes various actions conditionally. The can modify and return the programs state. When it returns the state, it gets passed to the view.
+
+View is a function that can return some kind of presentation of the state. This is where you would use render to output a functional component.
+
+```javascript
+import { h, render, run } from '@composi/core'
+// Minimal valid program to run:
+const program = {
+  init: [],
+  update() {},
+  view() {}
+}
+run(program)
+```
+
+Each property expects certain arguments.
+
+Init must be an array. Its first value is the state for the program. The second, which is optional, is an effect to run at startup. This might be a setInterval timer, or a code to fetch data.
+
+Update get two arguments: message and state. Message is any message sent to it by the view. Message get sent when events are triggered in the UI, possibly by the user.
+
+View gets passed two arguments: state and send. The state is used by the view's template function to render. The send function is used to send messages from the view to the update method. You let the update method know what action occured and any data that the action might need.
+
+Here's an simple clicker example:
+
+```javascript
+import { h, render, run } from '@composi/core'
+const section = document.querySelector('section')
+
+// Counter for view:
+function Counter({state, send}) {
+  return (
+    <p>
+      <button class='counter' onclick={() => send()}>{state}</button>
+    </p>
+  )
+}
+
+// Assemble programe together:
+const program = {
+  // Initial state:
+  init: [0],
+  update(msg, state) {
+    return [state + 1]
+  },
+  view(state, send) {
+    render(<Counter {...{state, send}} />, section)
+  }
+}
+
+// Run program:
+run(program)
+```
+
+[Live example on Codepen](https://codepen.io/rbiggs/pen/gBqxER)
+
+The above example was very simplistic, but it shows how to send a message from the view to the update method. Now lets look at an example where we implement several possible actions for the update method, a Todo list:
+
+```javascript
+import { h, render, run } from '@composi/core'
+
+const section = document.querySelector('section')
+
+// State for program:
+const state = {
+  newKey: 104,
+  inputVal: '',
+  fruits: [
+    {
+      key: 101,
+      value: 'Apples'
+    },
+    {
+      key: 102,
+      value: 'Oranges'
+    },
+    {
+      key: 103,
+      value: 'Bananas'
+    }
+  ]
+}
+
+// Actions for Update:
+function actions(msg, state) {
+  switch (msg.type) {
+    case 'add-item':
+      const value = msg.inputValue
+      if (value) {
+        state.fruits.push({ key: state.newKey++, value })
+        return [state]
+      } else {
+        alert('Please provide a value!')
+        return [state]
+      }
+      break
+    case 'delete-item': 
+      state.fruits = state.fruits.filter(item => item.key != msg.key)
+      return [state]
+      break
+  }
+}
+
+// Functional list component for view:
+function List({state, send}) {
+  let inputValue
+  const focusInput = input => {
+    input.focus()
+  }
+  const getInputValue = e => (inputValue = e.target.value)
+  return (
+    <div class='list-container'>
+      <p class='list-form'>
+        <input value={state.inputVal} onupdate={focusInput} onchange={getInputValue} type="text"/>
+        <button class='add-item' onclick={() => send({type: 'add-item', inputValue})}>Add</button>
+      </p>
+      <ul>
+        {
+          state.fruits.map(item => (
+            <li key={item.key}>
+              <span>{item.value}</span>
+              <button class="delete-item" onclick={() => send({
+                type: 'delete-item',
+                key: item.key
+              })}>X</button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  )
+}
+
+// Assemble programe together:
+const program = {
+  init: [state],
+  update(msg, state) {
+    return actions(msg, state)
+  },
+  view(state, send) {
+    return render(<List {...{state, send}} />, section)
+  }
+}
+
+// Run program:
+run(program)
+```
+
+[Live example on Codepen](https://codepen.io/rbiggs/pen/gBZEQp?editors=1010)
+
+In the above example, we now have a dedicated actions function that handles different possible updates: add-item, delete-item. Notice that an action always returns state:
+```javascript
+return [state]
+```
+If an action fails to return state, the program will throw an exception and the view will fail to render. Even if you make no changes to state, you have to return it.
+
+The program's view method gets two arguments, the state and the send function. This is used interally by the runtime. You use it in the view to send messages to the update method. These messages can be objects with a type and data for the action to use.
+
+Although this is manageable, we can make this actions and events more implicit by using tagged unions. This is explained next.
+
+## Union
+
+@composi/core's union function lets you create tagged unions. Basically, a tagged union allows you to associate one value, usually a string, with another value. For actions and events this will be the action function to run.
+
+The union function takes one argument, an array of strings to use. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function. 
+
+Here's the previous todo list redone using tagged unions. Notice that in the view, when we send, we send a tagged union function. This makes it clearer what the event is doing. When we invoke a tagged union function inside an event's send method, it actually sends a packet with a type and data to the update function. So tagged unions are doing the same as we did in the first example of the todo list, but the show what is being invoked inside the update function.
+
+```javascript
+import { h, render, run } from '@composi/core'
+
+const section = document.querySelector('section')
+
+// The State.
+// An object defining the state for the app.
+const state = {
+  newKey: 104,
+  inputVal: '',
+  fruits: [
+    {
+      key: 101,
+      value: 'Apples'
+    },
+    {
+      key: 102,
+      value: 'Oranges'
+    },
+    {
+      key: 103,
+      value: 'Bananas'
+    }
+  ]
+}
+
+// Tagged union for actions,
+// This will match string values to functions.
+// Capture the union in the Msg object.
+const Msg = union(['AddItem', 'DeleteItem'])
+
+
+// Business Logic.
+// Intercept actions dispatched by view.
+// Use those actions to transform state.
+// Then return the new state.
+// That will cause the view to update.
+function actions(msg, state) {
+  return Msg.match(msg, {
+    'AddItem': value => {
+      if (value) {
+        state.fruits.push({ key: state.newKey++, value })
+        return [state]
+      } else {
+        alert('Please provide a value!')
+        return [state]
+      }
+    },
+    'DeleteItem': key => {
+      state.fruits = state.fruits.filter(item => item.key != key)
+      return [state]
+    }
+  })
+}
+
+// The view: a list component.
+// I knows nothing about state or update.
+// It catches user interactions and 
+// dispatches the results.
+// It also uses lifecycle events to handle
+// visual effects, such as input focus.
+function List({state, send}) {
+  let inputValue
+  const focusInput = input => {
+    input.focus()
+  }
+  const getInputValue = e => (inputValue = e.target.value)
+  return (
+    <div class='list-container'>
+      <p class='list-form'>
+        <input value={state.inputVal} onupdate={focusInput} onchange={getInputValue} type="text"/>
+        <button class='add-item' onclick={() => send(Msg.AddItem(inputValue))}>Add</button>
+      </p>
+      <ul>
+        {
+          state.fruits.map(item => (
+            <li key={item.key}>
+              <span>{item.value}</span>
+              <button class="DeleteItem" onclick={() => send(Msg.DeleteItem(item.key))}>X</button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  )
+}
+
+// Assemble program to run:
+const program = {
+  init: [state],
+  update(msg, state) {
+    return actions(msg, state)
+  },
+  view(state, send) {
+    render(<List state={state} send={send} />, section)
+  },
+  done() {
+    cancel()
+  } 
+}
+
+// Run program:
+run(program)
+```
+[Live example on Codepen](https://codepen.io/rbiggs/pen/QZzPWM?editors=1010)
+
+As you can see in the above example, tagged unions make the connection between view events and update actions more implicit.
+
 ## Summary
 
 Composi is all about components. These provide a great way to organize your code into modular and reusable chunks. The virtual DOM means you never have to touch the DOM to change the structure.

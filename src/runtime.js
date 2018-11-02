@@ -39,6 +39,7 @@ export function run(program) {
     if (effect) {
       effect(send)
     }
+    program.init[0] = state
     view(state, send)
   }
 
