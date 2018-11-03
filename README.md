@@ -426,13 +426,13 @@ let list = render(<List data={fruits} />, 'section', serverList)
 import { h, render, run } from '@composi/core'
 ```
 
-Run takes one argument, the program to run. This is where it gets interesting. A program has at least three properties:
+Run takes one argument, the program to run. This is where it gets interesting. A program has at least three methods:
 
 1. init
 2. update
 3. view
 
-Init holds the program's state and optionally an effect to run at startup. That's why its called init.
+Init is a function that returns the program's state and optionally an effect to run at startup. That's why its called init.
 
 Update is like a Redux reducer. It executes various actions conditionally. The can modify and return the programs state. When it returns the state, it gets passed to the view.
 
@@ -451,7 +451,7 @@ run(program)
 
 Each property expects certain arguments.
 
-Init must be an array. Its first value is the state for the program. The second, which is optional, is an effect to run at startup. This might be a setInterval timer, or a code to fetch data.
+Init is a function that returns an array. The first entry in that array is the state for the program. The second entry, which is optional, is an effect to run at startup. This might be a setInterval timer, or a code to fetch data.
 
 Update get two arguments: message and state. Message is any message sent to it by the view. Message get sent when events are triggered in the UI, possibly by the user.
 
@@ -474,8 +474,10 @@ function Counter({state, send}) {
 
 // Assemble programe together:
 const program = {
-  // Initial state:
-  init: [0],
+  // Set initial state:
+  init() {
+    return [0]
+  },
   update(msg, state) {
     return [state + 1]
   },
@@ -569,7 +571,9 @@ function List({state, send}) {
 
 // Assemble programe together:
 const program = {
-  init: [state],
+  init() {
+    return [state]
+  },
   update(msg, state) {
     return actions(msg, state)
   },
@@ -691,7 +695,9 @@ function List({state, send}) {
 
 // Assemble program to run:
 const program = {
-  init: [state],
+  init() {
+    return [state]
+  },
   update(msg, state) {
     return actions(msg, state)
   },

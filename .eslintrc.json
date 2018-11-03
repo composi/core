@@ -29,7 +29,7 @@
     "no-empty": 0,
     "no-ex-assign": 2,
     "no-extra-boolean-cast": 2,
-    "no-extra-semi": 2,
+    "no-extra-semi": 0,
     "no-fallthrough": 2,
     "no-func-assign": 2,
     "no-global-assign": 2,

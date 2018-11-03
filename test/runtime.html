@@ -59,7 +59,9 @@
         return h('h1', { id: 'title' }, `Hello, ${greeting}!`)
       }
       const program = {
-        init: ['World'],
+        init()  {
+          return ['World']
+        },
         update(msg, state) {
 
         },
@@ -96,7 +98,9 @@
       }
     
       const program = {
-        init: ['no message'],
+        init() {
+          return ['no message']
+        },
         update(msg, state) {
           switch (msg.type) {
             case 'click':
@@ -145,7 +149,9 @@
       }
 
       const program = {
-        init: ['no message'],
+        init() {
+          return ['no message']
+        },
         update(msg, state) {
           switch (msg.type) {
             case 'click':
@@ -179,7 +185,9 @@
           effectResult = true
         }
         const program = {
-          init: [0, effect],
+          init() {
+            return[0, effect]
+          },
           update() {
             return [state]
           },
@@ -206,7 +214,9 @@
         }, 100)
       }
       const program = {
-        init: [0, effect],
+        init() {
+          return [0, effect]
+        },
         update() {},
         view() {},
         done() {
@@ -245,7 +255,9 @@
     }
     let taggedEffectFired = false
     const program = {
-      init: ['no message'],
+      init() {
+        return ['no message']
+      },
       update(msg, state) {
         return Msg3.match(msg, {
           'click': () => {
@@ -293,7 +305,9 @@
     }
     let taggedEffectFired = ''
     const program = {
-      init: ['no message'],
+      init() {
+        return ['no message']
+      },
       update(msg, state) {
         return Msg4.match(msg, {
           'click': message => {

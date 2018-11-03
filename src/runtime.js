@@ -1,12 +1,12 @@
 /**
  * The @composi/runtime.
- * @typedef {any[]} State
+ * @typedef {any} State
  * @typedef {Function} Effect
  * @typedef {Object<string, any>} Program
- * @prop {Array<State, Effect>} Program.init
- * @prop {function} Program.update
- * @prop {function} Program.view
- * @prop {function} [Program.done]
+ * @prop {Function} Program.init
+ * @prop {Function} Program.update
+ * @prop {Function} Program.view
+ * @prop {Function} [Program.done]
  * @param {Program} program
  * @return {() => void} Function to terminate runtime.
  */
@@ -14,12 +14,12 @@ export function run(program) {
   const update = program.update
   const view = program.view
   const done = program.done
-  let state
+  let state, effect
   let isRunning = true
 
   /**
    * Send a message.
-   * @param {*} message A message of any type.
+   * @param {any} message A message of any type.
    * @return {void} undefined
    */
   function send(message) {
@@ -30,20 +30,22 @@ export function run(program) {
 
   /**
    * Handle changes to state and executing effects.
-   * @param {any[]} change
+   * @param {any[]} update
    * @return {void} undefined
    */
-  function change(change) {
-    state = change[0]
-    let effect = change[1]
+  function change(update) {
+    if (update) {
+      ;[state, effect] = update
+    } else {
+      ;[state, effect] = program.init()
+    }
     if (effect) {
       effect(send)
     }
-    program.init[0] = state
     view(state, send)
   }
 
-  change(program.init)
+  change(state)
 
   /**
    * Function to end runtime.
