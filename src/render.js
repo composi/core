@@ -19,8 +19,20 @@ import { hydrate } from './vnode'
  * @return {void} undefined
  */
 export function render(VNode, container, hydrateThis) {
+  let cont
   if (typeof container === 'string') {
-    container = document.querySelector(container)
+    cont = document.querySelector(container)
+  } else {
+    cont = container
+  }
+  if (!cont) {
+    console.error(
+      '@composi/core Error: You need to provide a valid container to render the component in. Check the element or selector you provided and make sure that it exists in the DOM before trying to render.'
+    )
+    console.error(
+      `@composi/core Message: The container you provided was "${container}"`
+    )
+    return
   }
   let oldVNode
   if (hydrateThis) {
@@ -29,8 +41,8 @@ export function render(VNode, container, hydrateThis) {
     }
     oldVNode = hydrate(hydrateThis)
   } else {
-    oldVNode = Reflect.get(container, 'vnode')
+    oldVNode = cont && Reflect.get(cont, 'vnode')
   }
-  const vnode = patch(oldVNode, VNode, container)
-  container['vnode'] = vnode
+  const vnode = patch(oldVNode, VNode, cont)
+  cont['vnode'] = vnode
 }

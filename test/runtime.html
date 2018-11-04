@@ -207,10 +207,12 @@
   describe('Should be able to stop program.', () => {
     it('Capture program refrence and end program.', done => {
       let setIntervalID
+      let isRunning = false
       let count = 0
       function effect() {
         setIntervalID = setInterval(() => {
           count += 1
+          isRunning = true
         }, 100)
       }
       const program = {
@@ -220,13 +222,15 @@
         update() {},
         view() {},
         done() {
+          expect(isRunning).to.equal(true)
           clearInterval(setIntervalID)
-          expect(count).to.equal(9)
+          isRunning = false
         }
       }
       const stopProgram = run(program)
       setTimeout(() => {
         stopProgram()
+        expect(isRunning).to.equal(false)
       }, 1000)
       done()
     })
