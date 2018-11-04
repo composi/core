@@ -34,10 +34,13 @@ export function run(program) {
    * @return {void} undefined
    */
   function change(update) {
+    let init = program.init()
     if (update) {
       ;[state, effect] = update
+    } else if (init && init.length) {
+      ;[state, effect] = init
     } else {
-      ;[state, effect] = program.init()
+      state = []
     }
     if (effect) {
       effect(send)

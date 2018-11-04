@@ -442,7 +442,7 @@ View is a function that can return some kind of presentation of the state. This 
 import { h, render, run } from '@composi/core'
 // Minimal valid program to run:
 const program = {
-  init: [],
+  init() {},
   update() {},
   view() {}
 }
