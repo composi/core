@@ -24,7 +24,7 @@ export function run(program) {
    */
   function send(message) {
     if (isRunning) {
-      change(update(message, state))
+      updateView(update(message, state))
     }
   }
 
@@ -33,7 +33,7 @@ export function run(program) {
    * @param {any[]} update
    * @return {void} undefined
    */
-  function change(update) {
+  function updateView(update) {
     let init = program.init()
     if (update) {
       ;[state, effect] = update
@@ -48,13 +48,13 @@ export function run(program) {
     view(state, send)
   }
 
-  change(state)
+  updateView(state)
 
   /**
    * Function to end runtime.
    * @return {void} undefined
    */
-  function end() {
+  function endProgram() {
     if (isRunning) {
       isRunning = false
       if (done) {
@@ -62,5 +62,5 @@ export function run(program) {
       }
     }
   }
-  return end
+  return endProgram
 }
