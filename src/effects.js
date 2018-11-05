@@ -5,14 +5,10 @@
  * @return {Function} Function
  */
 export function mapEffect(effect, callback) {
-  if (!effect) {
-    return
+  return send => intercept => message => {
+    send(callback(message))
+    return effect(intercept)
   }
-  return send =>
-    function intercept(message) {
-      send(callback(message))
-      return effect(intercept)
-    }
 }
 
 /**
