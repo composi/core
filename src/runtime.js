@@ -54,7 +54,7 @@ export function run(program) {
    * Function to end runtime.
    * @return {void} undefined
    */
-  function endProgram() {
+  return () => {
     if (isRunning) {
       isRunning = false
       if (done) {
@@ -62,5 +62,4 @@ export function run(program) {
       }
     }
   }
-  return endProgram
 }
