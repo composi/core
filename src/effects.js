@@ -14,3 +14,11 @@ export function mapEffect(effect, callback) {
       return effect(intercept)
     }
 }
+
+/**
+ * Function to batch effects together.
+ * @param {Function[]} effects
+ * @return {Function} Function
+ */
+export const batchEffects = effects => send =>
+  effects.map(effect => effect(send))
