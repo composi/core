@@ -490,7 +490,7 @@ const program = {
 run(program)
 ```
 
-[Live example on Codepen](https://codepen.io/rbiggs/pen/gBqxER)
+[Live example on Codepen](https://codepen.io/rbiggs/pen/EOYOEJ)
 
 The above example was very simplistic, but it shows how to send a message from the view to the update method. Now lets look at an example where we implement several possible actions for the update method, a Todo list:
 
@@ -712,7 +712,7 @@ const program = {
 // Run program:
 run(program)
 ```
-[Live example on Codepen](https://codepen.io/rbiggs/pen/QZzPWM?editors=1010)
+[Live example on Codepen](https://codepen.io/rbiggs/pen/zMOmON)
 
 As you can see in the above example, tagged unions make the connection between view events and update actions more implicit.
 
