@@ -3,7 +3,9 @@ const hasOwnProperty = Object.prototype.hasOwnProperty
 function safeUnion(types, options) {
   const prefix = (options && options.prefix) || ''
   const prefixSize = prefix.length
+  const variants = Object.create(null)
   let stripPrefix
+
   if (prefixSize) {
     stripPrefix = tag =>
       tag &&
@@ -15,7 +17,7 @@ function safeUnion(types, options) {
   }
 
   const matcher = (handlers, catchAll) => {
-    return function _matcher(tag, context) {
+    return (tag, context) => {
       const tagType = stripPrefix(tag)
       const match = hasOwnProperty.call(handlers, tagType) && handlers[tagType]
       return match ? match(tag.data, context) : catchAll(context)
@@ -33,11 +35,12 @@ function safeUnion(types, options) {
     }
   }
 
-  const variants = Object.create(null)
-  for (let i = 0; i < types.length; i++) {
-    const type = types[i]
+  let idx = 0
+  while (idx < types.length) {
+    const type = types[idx]
     const prefixedType = prefix + type
     variants[type] = data => ({ type: prefixedType, data })
+    idx++
   }
 
   return { variants, methods }

@@ -27,7 +27,8 @@ export function h(type, props, ...children) {
 
   while (tempBox.length > 0) {
     if (Array.isArray((node = tempBox.pop()))) {
-      for (length = node.length; length-- > 0; ) {
+      let length = node.length
+      while (length-- > 0) {
         tempBox.push(node[length])
       }
     } else if (node === false || node === true || node == null) {

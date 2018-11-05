@@ -33,10 +33,11 @@ function createKeyMap(children, startCount, end) {
   let key
   let vnode
 
-  for (; startCount <= end; startCount++) {
+  while (startCount <= end) {
     if ((key = (vnode = children[startCount]).key) != null) {
       out[key] = vnode
     }
+    startCount++
   }
 
   return out
@@ -136,9 +137,11 @@ function createElement(vnode, lifecycle, isSVG) {
       props['onmount'](element)
     })
   }
-
-  for (let i = 0, length = vnode.children.length; i < length; i++) {
-    element.appendChild(createElement(vnode.children[i], lifecycle, isSVG))
+  let idx = 0
+  const length = vnode.children.length
+  while (idx < length) {
+    element.appendChild(createElement(vnode.children[idx], lifecycle, isSVG))
+    idx++
   }
 
   for (let prop in props) {
@@ -154,8 +157,11 @@ function createElement(vnode, lifecycle, isSVG) {
  * @return {Element}
  */
 function removeChildren(node) {
-  for (let i = 0, length = node.children.length; i < length; i++) {
-    removeChildren(node.children[i])
+  let idx = 0
+  const length = node.children.length
+  while (idx < length) {
+    removeChildren(node.children[idx])
+    idx++
   }
 
   return node.element
