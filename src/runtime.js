@@ -35,10 +35,10 @@ export function run(program) {
    */
   function updateView(update) {
     let init = program.init()
-    if (update) {
-      ;[state, effect] = update
-    } else if (init && init.length) {
+    if (init && init.length) {
       ;[state, effect] = init
+    } else if (update) {
+      ;[state, effect] = update
     } else {
       state = []
     }
