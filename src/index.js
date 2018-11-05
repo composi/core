@@ -1,6 +1,5 @@
 export { h } from './h'
 export { render } from './render'
-export { hydrate } from './vnode'
 export { run } from './runtime'
 export { union } from './union'
 export { mapEffect } from './mapEffect'
