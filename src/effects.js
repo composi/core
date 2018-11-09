@@ -17,4 +17,4 @@ export function mapEffect(effect, callback) {
  * @return {Function} Function
  */
 export const batchEffects = effects => send =>
-  effects.map(effect => effect(send))
+  effects.map(effect => effect && effect(send))
