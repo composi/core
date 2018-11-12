@@ -25,6 +25,7 @@
       <div id="list1-test"></div>
       <div id='component-click3'></div>
       <div id='component-click4'></div>
+      <div id='send-test'></div>
     </div>
   </section>
 
@@ -376,6 +377,30 @@
         expect(count).to.equal(0)
       }, 600)
       done()
+    })
+  })
+
+  describe('Program should expose "send" function for dispatch to program update from outside.', function() {
+    it('', function() {
+      function View(state) {
+        return h('div', {}, state)
+      }
+      const program = {
+        init() {
+          return ['first']
+        },
+        view(state) {
+          render(View(state), '#send-test')
+        },
+        update(msg, state) {
+          if (msg) return [msg]
+        }
+      }
+      run(program)
+      const result = document.querySelector('#send-test')
+      expect(result.textContent).to.equal('first')
+      program.send('second')
+      expect(result.textContent).to.equal('second')
     })
   })
 

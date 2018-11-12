@@ -29,6 +29,13 @@ export function run(program) {
   }
 
   /**
+   * Expose send as static function on program object.
+   * This is to let you send messages to the program
+   * from other contexts, such as in a @composi/router action.
+   */
+  program['send'] = send
+
+  /**
    * Handle changes to state and executing effects.
    * @param {any[]} update
    * @return {void} undefined
