@@ -32,6 +32,18 @@ A component's markup is written with JSX. This means you can create custom tags 
 
 Unlike React, properties are standard HTML versions--`class` instead of `className`, etc., and inline events are lowercase, not camel case. However, self-closing tags do need to have a final back slash to be valid.
 
+## CDN
+
+If you want, you can load @composi/core from a CDN and use it in the browser without a need to install anything or have a build process. You can do this for fast prototyping. This works on any modern evergreen browser: Chrome, Edge, Firefox or Safari. To do this, create a folder and in it create an index.html file and a JavaScript file. At the top of the JavaScript file you will import @composi/core as follows:
+
+```javascript
+import { h, render, run, union } from 'https://unpkg.com/@composi/core@0.10.0/dist/composi-core.mjs?module'
+import { htm } from 'https://unpkg.com/htm.mjs?module'
+import { mergeObjects } from 'https://unpkg.com/@composi/merge-objects@1.1.0/src/index.js?module'
+```
+
+Visit the website for more details on how to use [@composi/core in the browser](https://composi.github.io/en/docs/core/cdn.html) when loading from a CDN.
+
 ## Installation
 
 To add Composi core to your project, install from NPM:
