@@ -1,55 +1,42 @@
 const hasOwnProperty = Object.prototype.hasOwnProperty
 
-function safeUnion(types, options) {
-  const prefix = (options && options.prefix) || ''
-  const prefixSize = prefix.length
+/**
+ * Create a union of string tags.
+ * @param {string[]} types
+ */
+function createUnion(types) {
   const variants = Object.create(null)
-  let stripPrefix
-
-  if (prefixSize) {
-    stripPrefix = tag =>
-      tag &&
-      tag.type &&
-      tag.type.startsWith(prefix) &&
-      tag.type.slice(prefixSize)
-  } else {
-    stripPrefix = x => x && x.type
-  }
+  let checkTag = x => x && x.type
 
   const matcher = (handlers, catchAll) => {
     return (tag, context) => {
-      const tagType = stripPrefix(tag)
+      const tagType = checkTag(tag)
       const match = hasOwnProperty.call(handlers, tagType) && handlers[tagType]
       return match ? match(tag.data, context) : catchAll(context)
     }
   }
 
-  const methods = {
-    match(tag, handlers, catchAll) {
-      return matcher(handlers, catchAll)(tag)
-    },
-    matcher,
-    matches(tag, type) {
-      const tagType = stripPrefix(tag)
-      return !!(typeof tagType === 'string' && variants[tagType] === type)
-    }
+  function match(tag, handlers, catchAll) {
+    return matcher(handlers, catchAll)(tag)
   }
 
   let idx = 0
   while (idx < types.length) {
     const type = types[idx]
-    const prefixedType = prefix + type
+    const prefixedType = type
     variants[type] = data => ({ type: prefixedType, data })
     idx++
   }
 
-  return { variants, methods }
+  return { variants, match }
 }
 
-export function union(types, options) {
-  const { variants, methods } = safeUnion(types, options)
-  for (const key in methods) {
-    variants[key] = methods[key]
-  }
+/**
+ * Create a union of types for matching up with functions.
+ * @param {string[]} types
+ */
+export function union(types) {
+  const { variants, match } = createUnion(types)
+  variants.match = match
   return variants
 }

@@ -1,13 +1,37 @@
 /**
  * The @composi/runtime.
- * @typedef {any} State
- * @typedef {Function} Effect
- * @typedef {Object<string, any>} Program
+ * @example
+ *
+ * ```
+ * // Create a runtime program
+ * const program = {
+ *   // Define state:
+ *   init() {
+ *     return [{count: 0}]
+ *   },
+ *   // Define view to render.
+ *   // Notice event to send message 'incr'.
+ *   view(state, send) {
+ *      return render(<div onclick={send('incr')}>The count is: {state.count}</div>, document.body)
+ *   },
+ *   // Define action to update state:
+ *   update(msg, state) {
+ *     if (msg === 'incr') {
+ *        return [state.count++]
+ *     }
+ *   }
+ * }
+ * // Run the program:
+ * run(program)
+ * ```
+ * @typedef {any} State - type any.
+ * @typedef {Function} Effect - A function to execute.
+ * @typedef {Object<string, any>} Program A program to run.
  * @prop {Function} Program.init
  * @prop {Function} Program.update
  * @prop {Function} Program.view
  * @prop {Function} [Program.done]
- * @param {Program} program
+ * @param {Program} program A program to run with three methods: `init`, `view` and `update`.
  * @return {() => void} Function to terminate runtime.
  */
 export function run(program) {
