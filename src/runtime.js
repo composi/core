@@ -48,7 +48,7 @@ export function run(program) {
    */
   function send(message) {
     if (isRunning) {
-      updateView(update(message, state))
+      updateView(update(state, message))
     }
   }
 
