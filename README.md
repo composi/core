@@ -17,7 +17,7 @@
  8. [onupdate](#onupdate)
  9. [onunmount](#onunmount)
 10. [hydrate](#hydrate)
-11. [unmount](#unmount)
+11. [run](#run)
 12. [Summary](#Summary)
 
 ## Introduction
