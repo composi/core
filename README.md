@@ -490,7 +490,7 @@ const program = {
   init() {
     return [0]
   },
-  update(msg, state) {
+  update(state, msg) {
     return [state + 1]
   },
   view(state, send) {
@@ -532,7 +532,7 @@ const state = {
 }
 
 // Actions for Update:
-function actions(msg, state) {
+function actions(state, msg) {
   switch (msg.type) {
     case 'add-item':
       const value = msg.inputValue
@@ -586,8 +586,8 @@ const program = {
   init() {
     return [state]
   },
-  update(msg, state) {
-    return actions(msg, state)
+  update(state, msg) {
+    return actions(state, msg)
   },
   view(state, send) {
     return render(<List {...{state, send}} />, section)
@@ -655,7 +655,7 @@ const Msg = union(['addItem', 'deleteItem'])
 // Use those actions to transform state.
 // Then return the new state.
 // That will cause the view to update.
-function actions(msg, state) {
+function actions(state, msg) {
   return Msg.match(msg, {
     'addItem': value => {
       if (value) {
@@ -710,8 +710,8 @@ const program = {
   init() {
     return [state]
   },
-  update(msg, state) {
-    return actions(msg, state)
+  update(state, msg) {
+    return actions(state, msg)
   },
   view(state, send) {
     render(<List state={state} send={send} />, section)

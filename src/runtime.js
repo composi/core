@@ -15,7 +15,7 @@
  *      return render(<div onclick={send('incr')}>The count is: {state.count}</div>, document.body)
  *   },
  *   // Define action to update state:
- *   update(msg, state) {
+ *   update(state, msg) {
  *     if (msg === 'incr') {
  *        return [state.count++]
  *     }
