@@ -45,7 +45,7 @@
     "no-param-reassign": 0,
     "no-redeclare": 2,
     "no-regex-spaces": 2,
-    "no-self-assign": 2,
+    "no-self-assign": 0,
     "no-sparse-arrays": 2,
     "no-this-before-super": 2,
     "no-undef": 2,
