@@ -1,5 +1,5 @@
 /**
- * Map effects to ease composition of runtime programs.
+ * Map effects to enable composition of runtime programs.
  * @param {Function} effect
  * @param {Function} callback
  * @return {Function} Function

@@ -438,17 +438,22 @@ let list = render(<List data={fruits} />, 'section', serverList)
 import { h, render, run } from '@composi/core'
 ```
 
-Run takes one argument, the program to run. This is where it gets interesting. A program has at least three methods:
+Run takes one argument, the program to run. This is where it gets interesting. A program has five methods. The first three are required, the last two are optional:
 
 1. init
 2. update
 3. view
+4. subscriptions - optional
+5. done - optional
 
 Init is a function that returns the program's state and optionally an effect to run at startup. That's why its called init.
 
 Update is like a Redux reducer. It executes various actions conditionally. The can modify and return the programs state. When it returns the state, it gets passed to the view.
 
 View is a function that can return some kind of presentation of the state. This is where you would use render to output a functional component.
+
+With `init`, `view` and `update` you have everything you need to make a valid program that you can run:
+
 
 ```javascript
 import { h, render, run } from '@composi/core'
@@ -460,6 +465,81 @@ const program = {
 }
 run(program)
 ```
+## Optional functions
+
+Subscriptions is an optional function that contains effects to run when the program starts. Using @composi/core's `batchEffects` function it is possible to run more than one effect at the same time, say, start a timer and fetch data at the same time. Subscriptions is optional. In fact, it's just a more convenient and explicit way of running an effect the same way passing an effect as the second value in `init` is. Many people will feel more comfortable using a dedicated function for subscriptions that simply tagging on an extra value to `init`.
+
+Done is an optional function that allows you to do clean when you stop a program, such as stopping timers, animations, etc. When you pass a program to `run`, it returns a function that you can use to stop a program. The following is a simple program that does only one thing--it starts a setInterval. At any time we can stop the program and terminate the interval. Notice how we use `done` to do this.
+
+
+```javascript
+import { h, render, run } from '@composi/core'
+
+const section = document.querySelector('section')
+
+// Define clock component for view:
+function Clock(state) {
+  return (
+    <h2>The time is {state}</h2>
+  )
+}
+
+// Define effect to run at program start.
+// It will start a loop that runs every second,
+// sending a message to the update function.
+// Put it after state in init:
+let setIntervalID
+function startLoop(send) {
+  let count = 0
+  setIntervalID = setInterval(() => {
+    console.log(count++)
+    send('update-time')
+  }, 1000)
+}
+
+// Define funtion to stop setInterval:
+function stopLoop() {
+  clearInterval(setIntervalID)
+}
+
+function action(state, msg) {
+  if (msg === 'update-time') {
+    state = new Date().toLocaleTimeString()
+    // Return new state to re-render view:
+    return [state]
+  }
+}
+
+// Assemble program:
+const program = {
+  init() {
+    return [new Date().toLocaleTimeString()]
+  },
+  view(state) {
+    return render(Clock(state), section)
+  },
+  update(state, msg) {
+    return action(state, msg)
+  },
+  // Setup subscription:
+  subscriptions() {
+    return startLoop
+  }
+  // ADD DONE FUNCTION FOR EFFECT CLEANUP:
+  done() {
+    stopLoop()
+  }
+}
+
+// Run program.
+// While doing so, capture program in stopProgram variable, 
+// so we can stop it.
+const stopProgram = run(program)
+// Some time later we stop the program.
+// Doing so invokes the `done` function, thereby terminating the loop.
+stopProgram()
+```
+
 
 Each property expects certain arguments.
 
@@ -484,7 +564,7 @@ function Counter({state, send}) {
   )
 }
 
-// Assemble programe together:
+// Assemble program:
 const program = {
   // Set initial state:
   init() {
@@ -494,7 +574,7 @@ const program = {
     return [state + 1]
   },
   view(state, send) {
-    render(<Counter {...{state, send}} />, section)
+    return render(<Counter {...{state, send}} />, section)
   }
 }
 
@@ -504,7 +584,7 @@ run(program)
 
 [Live example on Codepen](https://codepen.io/rbiggs/pen/EOYOEJ)
 
-The above example was very simplistic, but it shows how to send a message from the view to the update method. Now lets look at an example where we implement several possible actions for the update method, a Todo list:
+The above example was very simplistic, but it shows how to send a message from the view to the update method. Although we sent a message, it was not of any value, so it was undefined. If your program is very simple and only has one action like this, then you can just send an empty message. However, if your program needs more than one action/message, you'll need to use a standard interface for the messages you send. In the following Todo list example we implement several actions for the update method by sending message objects that we can test to see which one was received:
 
 ```javascript
 import { h, render, run } from '@composi/core'
@@ -581,7 +661,7 @@ function List({state, send}) {
   )
 }
 
-// Assemble programe together:
+// Assemble program together:
 const program = {
   init() {
     return [state]
@@ -714,7 +794,7 @@ const program = {
     return actions(state, msg)
   },
   view(state, send) {
-    render(<List state={state} send={send} />, section)
+    return render(<List state={state} send={send} />, section)
   },
   done() {
     cancel()
