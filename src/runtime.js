@@ -67,13 +67,15 @@ export function run(program) {
    * @return {void} undefined
    */
   function updateView(update) {
+    let sub
     let init = program.init()
     if (update) {
       ;[state, effect] = update
     } else if (init && init.length) {
       ;[state, effect] = init
       if (subscriptions) {
-        effect = subscriptions()
+        sub = subscriptions()
+        sub(send)
       }
     } else {
       state = []
