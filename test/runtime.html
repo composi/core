@@ -381,7 +381,7 @@
   })
 
   describe('Program should expose "send" function for dispatch to program update from outside.', function() {
-    it('', function() {
+    it('Should be able to send message from program reference.', function() {
       function View(state) {
         return h('div', {}, state)
       }
@@ -404,7 +404,33 @@
     })
   })
 
-
+  describe('Should be able to launch subscriptions at start.', function() {
+    it('subscription should run at startup.', done => {
+      let effectResult = false
+      function effect() {
+        effectResult = true
+      }
+      const program = {
+        init() {
+          return [0]
+        },
+        update() {
+          return [state]
+        },
+        view() {
+          return
+        },
+        subscriptions() {
+          return effect
+        }
+      }
+      run(program)
+      setTimeout(() => {
+        expect(effectResult).to.equal(true)
+      })
+      done()
+    })
+  })
     mocha.run()
   </script>
 </body>
