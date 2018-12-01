@@ -15,7 +15,7 @@
  *      return render(<div onclick={send('incr')}>The count is: {state.count}</div>, document.body)
  *   },
  *   // Define action to update state:
- *   update(msg, state) {
+ *   update(state, msg) {
  *     if (msg === 'incr') {
  *        return [state.count++]
  *     }
@@ -30,6 +30,7 @@
  * @prop {Function} Program.init
  * @prop {Function} Program.update
  * @prop {Function} Program.view
+ * @prop {Function} [Program.subscriptions]
  * @prop {Function} [Program.done]
  * @param {Program} program A program to run with three methods: `init`, `view` and `update`.
  * @return {() => void} Function to terminate runtime.
@@ -37,6 +38,7 @@
 export function run(program) {
   const update = program.update
   const view = program.view
+  const subscriptions = program.subscriptions
   const done = program.done
   let state, effect
   let isRunning = true
@@ -48,7 +50,7 @@ export function run(program) {
    */
   function send(message) {
     if (isRunning) {
-      updateView(update(message, state))
+      updateView(update(state, message))
     }
   }
 
@@ -70,6 +72,9 @@ export function run(program) {
       ;[state, effect] = update
     } else if (init && init.length) {
       ;[state, effect] = init
+      if (subscriptions) {
+        effect = subscriptions()
+      }
     } else {
       state = []
     }

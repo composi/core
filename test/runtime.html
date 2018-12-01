@@ -63,7 +63,7 @@
         init()  {
           return ['World']
         },
-        update(msg, state) {
+        update(state, msg) {
 
         },
         view(state, send) {
@@ -102,7 +102,7 @@
         init() {
           return ['no message']
         },
-        update(msg, state) {
+        update(state, msg) {
           switch (msg.type) {
             case 'click':
               state = 'Button was clicked'
@@ -153,7 +153,7 @@
         init() {
           return ['no message']
         },
-        update(msg, state) {
+        update(state, msg) {
           switch (msg.type) {
             case 'click':
               state = msg.data
@@ -263,7 +263,7 @@
       init() {
         return ['no message']
       },
-      update(msg, state) {
+      update(state, msg) {
         return Msg3.match(msg, {
           'click': () => {
             taggedEffectFired = true
@@ -313,7 +313,7 @@
       init() {
         return ['no message']
       },
-      update(msg, state) {
+      update(state, msg) {
         return Msg4.match(msg, {
           'click': message => {
             taggedEffectFired = message
@@ -392,7 +392,7 @@
         view(state) {
           render(View(state), '#send-test')
         },
-        update(msg, state) {
+        update(state, msg) {
           if (msg) return [msg]
         }
       }
