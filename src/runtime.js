@@ -43,6 +43,7 @@ export function run(program) {
   const done = program.done
   let state, effect
   let isRunning = true
+  let isFirstRun = false
 
   /**
    * Send a message.
@@ -74,7 +75,7 @@ export function run(program) {
       ;[state, effect] = update
     } else if (init && init.length) {
       ;[state, effect] = init
-      if (subscriptions) {
+      if (subscriptions && !isFirstRun) {
         sub = subscriptions()
         sub(send)
       }
@@ -85,6 +86,7 @@ export function run(program) {
       effect(send)
     }
     view(state, send)
+    isFirstRun = true
   }
 
   updateView(state)
