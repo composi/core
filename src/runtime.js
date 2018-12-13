@@ -31,6 +31,7 @@
  * @prop {Function} Program.update
  * @prop {Function} Program.view
  * @prop {Function} [Program.subscriptions]
+ * @prop {Function} [Program.subs] Shortcut for subscriptions.
  * @prop {Function} [Program.done]
  * @param {Program} program A program to run with three methods: `init`, `view` and `update`.
  * @return {() => void} Function to terminate runtime.
@@ -38,7 +39,7 @@
 export function run(program) {
   const update = program.update
   const view = program.view
-  const subscriptions = program.subscriptions
+  const subscriptions = program.subscriptions || program.subs
   const done = program.done
   let state, effect
   let isRunning = true

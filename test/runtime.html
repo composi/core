@@ -431,6 +431,35 @@
       done()
     })
   })
+
+    describe('Should be able to use subs as shortcut for subscriptoins.', function() {
+      it('subs should run at startup.', done => {
+        let effectResult = false
+        function effect() {
+          effectResult = true
+        }
+        const program = {
+          init() {
+            return [0]
+          },
+          update() {
+            return [state]
+          },
+          view() {
+            return
+          },
+          subs() {
+            return effect
+          }
+        }
+        run(program)
+        setTimeout(() => {
+          expect(effectResult).to.equal(true)
+        })
+        done()
+      })
+    })
+
     mocha.run()
   </script>
 </body>
