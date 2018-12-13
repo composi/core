@@ -33,7 +33,7 @@
  * @prop {Function} [Program.subscriptions]
  * @prop {Function} [Program.subs] Shortcut for subscriptions.
  * @prop {Function} [Program.done]
- * @param {Program} program A program to run with three methods: `init`, `view` and `update`.
+ * @param {Program} program A program to run with four methods: `init`, `view`, `update` and `subscriptions`.
  * @return {() => void} Function to terminate runtime.
  */
 export function run(program) {
