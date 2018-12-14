@@ -187,7 +187,7 @@ function removeElement(parent, vnode) {
 }
 
 /**
- * Update and element based on new prop values.
+ * Update an element based on new prop values.
  * @typedef {import('./vnode').Props} Props
  * @param {Element} element
  * @param {Props} oldProps
