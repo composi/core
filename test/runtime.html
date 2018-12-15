@@ -432,7 +432,7 @@
     })
   })
 
-    describe('Should be able to use subs as shortcut for subscriptoins.', function() {
+    describe('Should be able to use subs as shortcut for subscriptions.', function() {
       it('subs should run at startup.', done => {
         let effectResult = false
         function effect() {
@@ -440,7 +440,7 @@
         }
         const program = {
           init() {
-            return [0]
+            return [1]
           },
           update() {
             return [state]
@@ -448,7 +448,9 @@
           view() {
             return
           },
-          subs() {
+          subs(state, send) {
+            // Should be able to access state from subscription:
+            expect(state).to.equal(1)
             return effect
           }
         }

@@ -522,7 +522,7 @@ const program = {
     return action(state, msg)
   },
   // Setup subscription:
-  subscriptions() {
+  subscriptions(state, send) {
     return startLoop
   }
   // ADD DONE FUNCTION FOR EFFECT CLEANUP:

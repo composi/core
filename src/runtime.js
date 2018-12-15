@@ -76,14 +76,14 @@ export function run(program) {
     } else if (init && init.length) {
       ;[state, effect] = init
       if (subscriptions && !isFirstRun) {
-        sub = subscriptions()
-        sub(send)
+        sub = subscriptions(state, send)
+        sub()
       }
     } else {
       state = []
     }
     if (effect) {
-      effect(send)
+      effect()
     }
     view(state, send)
     isFirstRun = true
