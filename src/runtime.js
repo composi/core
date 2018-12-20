@@ -77,7 +77,7 @@ export function run(program) {
       ;[state, effect] = init
       if (subscriptions && !isFirstRun) {
         sub = subscriptions(state, send)
-        sub()
+        if (sub) sub()
       }
     } else {
       state = []
