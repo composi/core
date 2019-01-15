@@ -55,7 +55,7 @@ export function createTextVNode(text, element) {
 }
 
 /**
- * Create a virtual node represeting an element and its children.
+ * Create a virtual node represeting a DOM element and its children.
  * @param {Element} element
  * @return {VNode} VNode
  */
