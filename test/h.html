@@ -1,139 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
-  <link rel="stylesheet" href="/test/styles.css">
-  <link rel="icon" type="image/png" href="/test/favicon-16x16.png" sizes="16x16" />
-  <link rel="icon" type="image/png" href="/test/favicon-32x32.png" sizes="32x32" />
-</head>
-<body>
-  <nav onclick="location.pathname='/test/index.html'">
-    <h1>Mocha Tests - Composi h Function</h1>
-  </nav>
-  <section>
-    <div id="mocha"></div>
-    <div id="messages"></div>
-    <div id="fixtures"></div>
-  </section>
 
-  <script src='/dist/composi-core.js'></script>
-  <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
-  <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
-  <script>mocha.setup('bdd')</script>
-  <script>
-    const {h, render, patch} = composi
-    let expect = chai.expect
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/test/styles.css">
+    <link rel="icon" type="image/png" href="/test/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/test/favicon-32x32.png" sizes="32x32" />
+  </head>
 
-    const h1 = h('h1')
-    const title = h('h1', {id: 'title'}, 'The Title')
+  <body>
+    <nav onclick="location.pathname='/test/index.html'">
+      <h1>Mocha Tests - Composi h Function</h1>
+    </nav>
+    <section>
+      <div id="mocha"></div>
+      <div id="messages"></div>
+      <div id="fixtures"></div>
+    </section>
 
-    const list = h(
-      'ul',
-      {
-        class: 'list'
-      },
-      [
-        h('li', null, 'one'),
-        h('li', null, 'two'),
-        h('li', null, 'three')
-      ]
-    )
+    <script src='/dist/composi-core.js'></script>
+    <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+    <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <script>
+      const { h, render, patch } = composi
+      let expect = chai.expect
 
-    const alert = h(
-      'h2',
-      {
-        style: 'color: red;'
-      },
-      "Alert!"
-    )
+      const h1 = h('h1')
+      const title = h('h1', { id: 'title' }, 'The Title')
 
-    describe("Test for var h1 = h('h1')", function() {
-      it('h1 should have type "h1"', function() {
-        expect(h1.type).to.equal('h1')
+      const list = h(
+        'ul',
+        {
+          class: 'list'
+        },
+        [
+          h('li', null, 'one'),
+          h('li', null, 'two'),
+          h('li', null, 'three')
+        ]
+      )
+
+      const alert = h(
+        'h2',
+        {
+          style: 'color: red;'
+        },
+        "Alert!"
+      )
+
+      describe("Test for var h1 = h('h1')", function () {
+        it('h1 should have type "h1"', function () {
+          expect(h1.type).to.equal('h1')
+        });
+        it('h1 should have {} for props', function () {
+          expect(JSON.stringify(h1.props)).to.equal('{}')
+        });
+        it('h1 should have no children', function () {
+          expect(h1.children).to.have.lengthOf(0);
+        });
       });
-      it('h1 should have {} for props', function() {
-        expect(JSON.stringify(h1.props)).to.equal('{}')
-      });
-      it('h1 should have no children', function() {
-        expect(h1.children).to.have.lengthOf(0);
-      });
-    });
-    describe("Test for var title = h('h1', {id: 'title'}).to.equal('The Title')", function() {
-      it('title should have type "h1"', function() {
-        expect(title.type).to.equal('h1')
+      describe("Test for var title = h('h1', {id: 'title'}).to.equal('The Title')", function () {
+        it('title should have type "h1"', function () {
+          expect(title.type).to.equal('h1')
+        })
+        it('title should have prop of id equal to "title"', function () {
+          expect(title.props.id).to.equal('title')
+        })
+        it('title should have one child', function () {
+          expect(title.children).to.have.lengthOf(1)
+        })
+        it('title child should be "The Title"', function () {
+          expect(title.children[0].type).to.equal('The Title')
+        })
       })
-      it('title should have prop of id equal to "title"', function() {
-        expect(title.props.id).to.equal('title')
+      describe('h should accept a functional component that takes props and children and returns a virtual node.', function () {
+        const Component = (props, children) => h("div", props, children)
+        const result = h(Component, null, "foo")
+        it('Functional component should be {"type":"div","props":{},"children":[{"type":"foo","props":{},"children":[],"key":null,"flag":3}],"element":null,"flag":1}', function () {
+          expect(JSON.stringify(result)).to.equal(JSON.stringify({ "type": "div", "props": {}, "children": [{ "type": "foo", "props": {}, "children": [], "key": null, "flag": 3 }], "element": null, "flag": 1 }))
+        })
       })
-      it('title should have one child', function() {
-        expect(title.children).to.have.lengthOf(1)
+      describe("Test for creation of list", function () {
+        it('list should have type "ul"', function () {
+          expect(list.type).to.equal('ul')
+        })
+        it('list should have prop of class equal to "list"', function () {
+          expect(list.props.class).to.equal('list')
+        })
+        it('list should have three children', function () {
+          expect(list.children).to.have.lengthOf(3)
+        })
+        it('list child 1 should have type of "li"', function () {
+          expect(list.children[0].type).to.equal('li')
+        })
+        it('list child 2 should have type of "li"', function () {
+          expect(list.children[1].type).to.equal('li')
+        })
+        it('list child 3 should have type of "li"', function () {
+          expect(list.children[2].type).to.equal('li')
+        })
+        it('list child 1 props should be {}', function () {
+          expect(JSON.stringify(list.children[0].props)).to.equal('{}')
+        })
+        it('list child 2 props should be {}', function () {
+          expect(JSON.stringify(list.children[1].props)).to.equal('{}')
+        })
+        it('list child 3 props should be {}', function () {
+          expect(JSON.stringify(list.children[2].props)).to.equal('{}')
+        })
+        it('list child 1 should be "one"', function () {
+          expect(list.children[0].children[0].type).to.equal('one')
+        })
+        it('list child 2 should be "two"', function () {
+          expect(list.children[1].children[0].type).to.equal('two')
+        })
+        it('list child 3 should be "one"', function () {
+          expect(list.children[2].children[0].type).to.equal('three')
+        })
       })
-      it('title child should be "The Title"', function() {
-        expect(title.children[0].type).to.equal('The Title')
+      describe("Test for style property: var alert = h('h2',{style: 'color: red;'},\"Alert!\")", function () {
+        it('alert type should be "h2"', function () {
+          expect(alert.type).to.equal("h2")
+        })
+        it('alert style should be "color: red;"', function () {
+          expect(alert.props.style).to.equal('color: red;')
+        })
+        it('alert child should be "Alert!"', function () {
+          expect(alert.children[0].type).to.equal("Alert!")
+        })
       })
-    })
-    describe('h should accept a functional component that takes props and children and returns a virtual node.', function() {
-      const Component = (props, children) => h("div", props, children)
-      const result = h(Component, null, "foo")
-      it('Functional component should be {"type":"div","props":{},"children":[{"type":"foo","props":{},"children":[],"key":null,"flag":3}],"element":null,"flag":1}', function() {
-        expect(JSON.stringify(result)).to.equal(JSON.stringify({ "type": "div", "props": {}, "children": [{ "type": "foo", "props": {}, "children": [], "key": null, "flag": 3 }], "element": null, "flag": 1 }))
-      })
-    })
-    describe("Test for creation of list", function() {
-      it('list should have type "ul"', function() {
-        expect(list.type).to.equal('ul')
-      })
-      it('list should have prop of class equal to "list"', function() {
-        expect(list.props.class).to.equal('list')
-      })
-      it('list should have three children', function() {
-        expect(list.children).to.have.lengthOf(3)
-      })
-      it('list child 1 should have type of "li"', function() {
-        expect(list.children[0].type).to.equal('li')
-      })
-      it('list child 2 should have type of "li"', function() {
-        expect(list.children[1].type).to.equal('li')
-      })
-      it('list child 3 should have type of "li"', function() {
-        expect(list.children[2].type).to.equal('li')
-      })
-      it('list child 1 props should be {}', function() {
-        expect(JSON.stringify(list.children[0].props)).to.equal('{}')
-      })
-      it('list child 2 props should be {}', function() {
-        expect(JSON.stringify(list.children[1].props)).to.equal('{}')
-      })
-      it('list child 3 props should be {}', function() {
-        expect(JSON.stringify(list.children[2].props)).to.equal('{}')
-      })
-      it('list child 1 should be "one"', function() {
-        expect(list.children[0].children[0].type).to.equal('one')
-      })
-      it('list child 2 should be "two"', function() {
-        expect(list.children[1].children[0].type).to.equal('two')
-      })
-      it('list child 3 should be "one"', function() {
-        expect(list.children[2].children[0].type).to.equal('three')
-      })
-    })
-    describe("Test for style property: var alert = h('h2',{style: 'color: red;'},\"Alert!\")", function() {
-      it('alert type should be "h2"', function() {
-        expect(alert.type).to.equal("h2")
-      })
-      it('alert style should be "color: red;"', function() {
-        expect(alert.props.style).to.equal('color: red;')
-      })
-      it('alert child should be "Alert!"', function() {
-        expect(alert.children[0].type).to.equal("Alert!")
-      })
-    })
 
-    mocha.run()
-  </script>
-</body>
+      mocha.run()
+    </script>
+  </body>
+
 </html>
