@@ -6,10 +6,11 @@
   "module": "dist/composi-core.mjs",
   "scripts": {
     "bundle": "rollup -c",
-    "build": "run-s format lint checkjs bundle gzip",
+    "build": "run-s format lint checkjs bundle gzip gzip-mjs",
     "checkjs": "tsc --allowJs --checkJs --noEmit --moduleResolution node --target ES6 src/*.js",
     "start": "npm run build",
     "gzip": "gzip dist/composi-core.js --output=dist",
+    "gzip-mjs": "gzip dist/composi-core.mjs --output=dist",
     "test": "browser-sync . --index test/index.html",
     "format": "prettier --no-semi --single-quote --write ./src/*.js",
     "lint": "eslint --config ./.eslintrc.json src"
