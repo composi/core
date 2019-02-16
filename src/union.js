@@ -23,8 +23,7 @@ function createUnion(types) {
   let idx = 0
   while (idx < types.length) {
     const type = types[idx]
-    const prefixedType = type
-    variants[type] = data => ({ type: prefixedType, data })
+    variants[type] = data => ({ type, data })
     idx++
   }
 
