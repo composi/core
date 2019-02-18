@@ -54,7 +54,8 @@ function createKeyMap(children, startCount, end) {
  */
 function setProp(element, prop, oldValue, newValue, isSVG) {
   if (prop === 'key') {
-  } else if (prop === 'style') {
+    return
+  } else if (prop === 'style' && typeof newValue === 'object') {
     for (let i in mergeObjects(oldValue, newValue)) {
       const style = newValue == null || newValue[i] == null ? '' : newValue[i]
       if (i[0] === '-') {
