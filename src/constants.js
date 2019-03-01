@@ -39,3 +39,9 @@ export const EMPTY_OBJECT = {}
  * @type {any[]} EMPTY_ARRAY
  */
 export const EMPTY_ARRAY = []
+
+/**
+ * An array to store lifecycle hooks.
+ * @type {any[]} LIFECYCLE
+ */
+export const LIFECYCLE = []

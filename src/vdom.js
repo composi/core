@@ -1,4 +1,10 @@
-import { RECYCLED_NODE, TEXT_NODE, XLINK_NS, SVG_NS } from './constants'
+import {
+  RECYCLED_NODE,
+  TEXT_NODE,
+  XLINK_NS,
+  SVG_NS,
+  LIFECYCLE
+} from './constants'
 import { mergeObjects } from '@composi/merge-objects'
 
 /**
@@ -113,11 +119,10 @@ function setProp(element, prop, oldValue, newValue, isSVG) {
  * Create an element, either node or text, from a VNode.
  * @typedef {Function[]} Lifecycle
  * @param {VNode} vnode
- * @param {Lifecycle} lifecycle
  * @param {boolean} [isSVG]
  * @return {Element} Element
  */
-function createElement(vnode, lifecycle, isSVG) {
+function createElement(vnode, isSVG) {
   let element
   if (vnode.flag === TEXT_NODE) {
     element = document.createTextNode(/** @type {string} */ (vnode.type))
@@ -134,14 +139,14 @@ function createElement(vnode, lifecycle, isSVG) {
 
   const props = vnode.props
   if (props['onmount']) {
-    lifecycle.push(function() {
+    LIFECYCLE.push(function() {
       props['onmount'](element)
     })
   }
   let idx = 0
   const length = vnode.children.length
   while (idx < length) {
-    element.appendChild(createElement(vnode.children[idx], lifecycle, isSVG))
+    element.appendChild(createElement(vnode.children[idx], isSVG))
     idx++
   }
 
@@ -193,19 +198,11 @@ function removeElement(parent, vnode) {
  * @param {Element} element
  * @param {Props} oldProps
  * @param {Props} newProps
- * @param {Lifecycle} lifecycle
  * @param {boolean} isSVG
  * @param {boolean} isRecycled
  * @return {void} undefined
  */
-function updateElement(
-  element,
-  oldProps,
-  newProps,
-  lifecycle,
-  isSVG,
-  isRecycled
-) {
+function updateElement(element, oldProps, newProps, isSVG, isRecycled) {
   for (let prop in mergeObjects(oldProps, newProps)) {
     if (
       (prop === 'value' || prop === 'checked'
@@ -218,7 +215,7 @@ function updateElement(
 
   const cb = isRecycled ? newProps['onmount'] : newProps['onupdate']
   if (cb != null) {
-    lifecycle.push(function() {
+    LIFECYCLE.push(function() {
       cb(element, oldProps, newProps)
     })
   }
@@ -230,11 +227,10 @@ function updateElement(
  * @param {Element} element
  * @param {VNode} oldVNode
  * @param {VNode} newVNode
- * @param {Lifecycle} lifecycle
  * @param {boolean} [isSVG]
  * @return {VNode}
  */
-function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
+function patchElement(parent, element, oldVNode, newVNode, isSVG) {
   if (newVNode === oldVNode) {
   } else if (
     oldVNode != null &&
@@ -246,7 +242,7 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
     }
   } else if (oldVNode == null || oldVNode.type !== newVNode.type) {
     const newElement = parent.insertBefore(
-      createElement(newVNode, lifecycle, isSVG),
+      createElement(newVNode, isSVG),
       element
     )
 
@@ -258,7 +254,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
       element,
       oldVNode.props,
       newVNode.props,
-      lifecycle,
       (isSVG = isSVG || newVNode.type === 'svg'),
       oldVNode.flag === RECYCLED_NODE
     )
@@ -287,7 +282,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
         lastChildren[lastChildStart].element,
         lastChildren[lastChildStart],
         nextChildren[nextChildStart],
-        lifecycle,
         isSVG
       )
 
@@ -306,7 +300,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
         lastChildren[lastChildEnd].element,
         lastChildren[lastChildEnd],
         nextChildren[nextChildEnd],
-        lifecycle,
         isSVG
       )
 
@@ -317,7 +310,7 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
     if (lastChildStart > lastChildEnd) {
       while (nextChildStart <= nextChildEnd) {
         element.insertBefore(
-          createElement(nextChildren[nextChildStart++], lifecycle, isSVG),
+          createElement(nextChildren[nextChildStart++], isSVG),
           (childNode = lastChildren[lastChildStart]) && childNode.element
         )
       }
@@ -352,7 +345,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
               childNode && childNode.element,
               childNode,
               nextChildren[nextChildStart],
-              lifecycle,
               isSVG
             )
             nextChildStart++
@@ -365,7 +357,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
               childNode.element,
               childNode,
               nextChildren[nextChildStart],
-              lifecycle,
               isSVG
             )
             nextKeyed[nextKey] = true
@@ -380,7 +371,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
                 ),
                 savedNode,
                 nextChildren[nextChildStart],
-                lifecycle,
                 isSVG
               )
               nextKeyed[nextKey] = true
@@ -390,7 +380,6 @@ function patchElement(parent, element, oldVNode, newVNode, lifecycle, isSVG) {
                 childNode && childNode.element,
                 null,
                 nextChildren[nextChildStart],
-                lifecycle,
                 isSVG
               )
             }
@@ -440,22 +429,15 @@ export class FragmentError {
  * @return {VNode} VNode
  */
 export function patch(oldVNode, newVNode, container) {
-  const lifecycle = []
   if (typeof container === 'string') {
     container = document.querySelector(container)
   }
 
   if (Array.isArray(newVNode)) throw new FragmentError()
-  patchElement(
-    container,
-    oldVNode && oldVNode.element,
-    oldVNode,
-    newVNode,
-    lifecycle
-  )
+  patchElement(container, oldVNode && oldVNode.element, oldVNode, newVNode)
 
   if (newVNode !== oldVNode) {
-    while (lifecycle.length > 0) lifecycle.pop()()
+    while (LIFECYCLE.length > 0) LIFECYCLE.pop()()
   }
 
   return newVNode
