@@ -169,7 +169,7 @@ Because Composi uses the component's container to cache it last vnode state, the
 
 If you want to be able to output several different components into the same container, then compose your components into on parent component that is just a wraper for the others and render it in the container.
 
-Note that each component requires its own element as the base of the node tree that it will create. 
+Note that each component requires its own element as the base of the node tree that it will create.
 
 
 
@@ -177,7 +177,7 @@ Note that each component requires its own element as the base of the node tree t
 
 For repetitive siblings, such as lists, Composi core lets you use keys to uniquely identify each item in the collection. If the collection is state, you do not need to use keys. However, if you intend to delete or otherwise change the order of items in the collection, you'll want to provide keys for each item. This helps Composi core track the DOM elements with the virtual DOM against the changed data. Not providing keys can result in unpredictable re-renders of the collection in the DOM.
 
-Keys must be unique values for that colleciton. Many databases already provide ids or uuids for items in a collection. Check you datasource. Using array index values as keys should not be done. If you delete or change the order of the array items, the index values will not match the array items. This will lead to unpredictable rendering of the colleciton in the DOM. Avoid this. Instead, if you data does not have ids already, use some scheme to add ids before passing the data to the functional component. 
+Keys must be unique values for that colleciton. Many databases already provide ids or uuids for items in a collection. Check you datasource. Using array index values as keys should not be done. If you delete or change the order of the array items, the index values will not match the array items. This will lead to unpredictable rendering of the colleciton in the DOM. Avoid this. Instead, if you data does not have ids already, use some scheme to add ids before passing the data to the functional component.
 
 When you assign a key to a list item, it does not get added to the actual rendered element. It is only a property of the virtual node.
 
@@ -234,7 +234,7 @@ The `onmount` lifecycle hook lets you do something right after a component is mo
 *  [Accessing the Component's DOM](#Accessing-the-Component's-DOM)
 *  [Event Delegation](#Event-Delegation)
 
-`onmount` gets one argument--the element that the hook is on. This lets you do things such as setting up event listeners, starting timers, or accessing the element's child nodes. 
+`onmount` gets one argument--the element that the hook is on. This lets you do things such as setting up event listeners, starting timers, or accessing the element's child nodes.
 
 
 #### Example
@@ -299,9 +299,9 @@ When the above component renders, the input will have focus.
 
 ### Event Delegation
 
-You can similarly use the `onmount` lifecyle to set up event delegation. This is handy for situations where you need to handle events on a long list of items. Having an inline even on each item is inefficient. Event delegation reduces this to just one event for the list. 
+You can similarly use the `onmount` lifecyle to set up event delegation. This is handy for situations where you need to handle events on a long list of items. Having an inline even on each item is inefficient. Event delegation reduces this to just one event for the list.
 
-```javascript 
+```javascript
 import { h, render } from '@composi/core'
 
 function List({data}) {
@@ -351,7 +351,7 @@ setTimeout(() => {
 }, 5000)
 ```
 ### About Props
-When `onupdate` fires on an element, it only has access to the props that were assigned to that element. So, in order to access whatever data you want to be checking, make sure that data is available on that element as a prop. The prop doesn't need to be actually used with that element. 
+When `onupdate` fires on an element, it only has access to the props that were assigned to that element. So, in order to access whatever data you want to be checking, make sure that data is available on that element as a prop. The prop doesn't need to be actually used with that element.
 
 ## onunmount
 
@@ -465,11 +465,11 @@ const program = {
 }
 run(program)
 ```
-## Optional functions
+## Optional Methods
 
-Subscriptions is an optional function that contains effects to run when the program starts. Using @composi/core's `batchEffects` function it is possible to run more than one effect at the same time, say, start a timer and fetch data at the same time. Subscriptions is optional. In fact, it's just a more convenient and explicit way of running an effect the same way passing an effect as the second value in `init` is. Many people will feel more comfortable using a dedicated function for subscriptions that simply tagging on an extra value to `init`.
+Subscriptions is an optional method that contains effects to run when the program starts. Using @composi/core's `batchEffects` function it is possible to run more than one effect at the same time, say, start a timer and fetch data at the same time. Subscriptions is optional. In fact, it's just a more convenient and explicit way of running an effect the same way passing an effect as the second value in `init` is. Many people will feel more comfortable using a dedicated function for subscriptions that simply tagging on an extra value to `init`.
 
-Done is an optional function that allows you to do clean when you stop a program, such as stopping timers, animations, etc. When you pass a program to `run`, it returns a function that you can use to stop a program. The following is a simple program that does only one thing--it starts a setInterval. At any time we can stop the program and terminate the interval. Notice how we use `done` to do this.
+Done is an optional method that allows you to do clean when you stop a program, such as stopping timers, animations, etc. When you pass a program to `run`, it returns a function that you can use to stop a program. The following is a simple program that does only one thing--it starts a setInterval. At any time we can stop the program and terminate the interval. Notice how we use `done` to do this.
 
 
 ```javascript
@@ -525,14 +525,14 @@ const program = {
   subscriptions(state, send) {
     return startLoop
   }
-  // ADD DONE FUNCTION FOR EFFECT CLEANUP:
+  // ADD DONE METHOD FOR EFFECT CLEANUP:
   done() {
     stopLoop()
   }
 }
 
 // Run program.
-// While doing so, capture program in stopProgram variable, 
+// While doing so, capture program in stopProgram variable,
 // so we can stop it.
 const stopProgram = run(program)
 // Some time later we stop the program.
@@ -624,7 +624,7 @@ function actions(state, msg) {
         return [state]
       }
       break
-    case 'delete-item': 
+    case 'delete-item':
       state.fruits = state.fruits.filter(item => item.key != msg.key)
       return [state]
       break
@@ -694,7 +694,7 @@ Although this is manageable, we can make this actions and events more implicit b
 
 @composi/core's union function lets you create tagged unions. Basically, a tagged union allows you to associate one value, usually a string, with another value. For actions and events this will be the action function to run.
 
-The union function takes one argument, an array of strings to use. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function. 
+The union function takes one argument, an array of strings to use. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function.
 
 Here's the previous todo list redone using tagged unions. Notice that in the view, when we send, we send a tagged union function. This makes it clearer what the event is doing. When we invoke a tagged union function inside an event's send method, it actually sends a packet with a type and data to the update function. So tagged unions are doing the same as we did in the first example of the todo list, but the show what is being invoked inside the update function.
 
@@ -755,7 +755,7 @@ function actions(state, msg) {
 
 // The view: a list component.
 // I knows nothing about state or update.
-// It catches user interactions and 
+// It catches user interactions and
 // dispatches the results.
 // It also uses lifecycle events to handle
 // visual effects, such as input focus.
@@ -798,7 +798,7 @@ const program = {
   },
   done() {
     cancel()
-  } 
+  }
 }
 
 // Run program:
@@ -812,4 +812,4 @@ As you can see in the above example, tagged unions make the connection between v
 
 Composi is all about components. These provide a great way to organize your code into modular and reusable chunks. The virtual DOM means you never have to touch the DOM to change the structure.
 
-Because Composi uses JSX, there are many similarities to React patterns. Please note that Composi is not a React clone. It is not trying to be compatible with React and the React ecosystem the way Preact and Inferno do. Composi core does not have PropTypes. Events are not synthetic. Functional component have three lifecycle hooks, whereas React functional components have none. However, because of using a virtual DOM and JSX, the similarities are greater than the differences. The API is very small--comprising two functions: `h` and `render` and three lifecycle hooks that are similar to the ones React has for class components. If you are familiar with React, Inferno or Preact, you can note the differences and be productive with Composi core in less than an hour. 
+Because Composi uses JSX, there are many similarities to React patterns. Please note that Composi is not a React clone. It is not trying to be compatible with React and the React ecosystem the way Preact and Inferno do. Composi core does not have PropTypes. Events are not synthetic. Functional component have three lifecycle hooks, whereas React functional components have none. However, because of using a virtual DOM and JSX, the similarities are greater than the differences. The API is very small--comprising two functions: `h` and `render` and three lifecycle hooks that are similar to the ones React has for class components. If you are familiar with React, Inferno or Preact, you can note the differences and be productive with Composi core in less than an hour.
