@@ -463,6 +463,49 @@
           done()
         })
       })
+      describe('Should be able to run batched subscriptions.', function() {
+
+        let result1 = ''
+        let result2 = ''
+        let count = 5
+        const hello = () => {
+          result1 = 'Hello World!'
+        }
+        const secondEffect = () => {
+          result2 = 'Second effect ran!'
+        }
+        const countDown = () => {
+          const id = setInterval(() => {
+            if (count === 0) {
+              clearInterval(id)
+            } else {
+              count--
+            }
+          }, 100)
+        }
+        const subscriptions = batchEffects([hello, secondEffect, countDown])
+        const program = {
+          init() {
+            return ['World']
+          },
+          update() {},
+          view() {},
+          subscriptions(state, send) {
+            return subscriptions
+          }
+        }
+        const endProgram = run(program)
+
+        it('batched subsriptions should run at startup.', done => {
+          endProgram()
+          setTimeout(() => {
+            expect(result1).to.equal('Hello World!')
+            expect(result2).to.equal('Second effect ran!')
+            expect(count).to.equal(0)
+          }, 1000)
+          done()
+        })
+      })
 
       mocha.run()
     </script>
