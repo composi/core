@@ -86,29 +86,16 @@ function setProp(element, prop, oldValue, newValue, isSVG) {
     } else {
       let nullOrFalse = newValue == null || newValue === false
 
-      if (
-        prop in element &&
-        prop !== 'list' &&
-        prop !== 'type' &&
-        prop !== 'draggable' &&
-        prop !== 'spellcheck' &&
-        prop !== 'translate' &&
-        !isSVG
-      ) {
+      if (prop !== 'list' && prop in element && !isSVG) {
         element[prop] = newValue == null ? '' : newValue
-        if (nullOrFalse) {
-          element.removeAttribute(prop)
-        }
+      } else if (nullOrFalse) {
+        element.removeAttribute(prop)
       } else {
         if (prop === 'xlink-href' || prop === 'xlinkHref') {
           element.setAttributeNS(XLINK_NS, 'href', newValue)
           element.setAttribute('href', newValue)
         } else {
-          if (nullOrFalse) {
-            element.removeAttribute(prop)
-          } else {
-            element.setAttribute(prop, newValue)
-          }
+          element.setAttribute(prop, newValue)
         }
       }
     }
@@ -199,10 +186,9 @@ function removeElement(parent, vnode) {
  * @param {Props} oldProps
  * @param {Props} newProps
  * @param {boolean} isSVG
- * @param {boolean} isRecycled
  * @return {void} undefined
  */
-function updateElement(element, oldProps, newProps, isSVG, isRecycled) {
+function updateElement(element, oldProps, newProps, isSVG) {
   for (let prop in mergeObjects(oldProps, newProps)) {
     if (
       (prop === 'value' || prop === 'checked'
@@ -213,7 +199,10 @@ function updateElement(element, oldProps, newProps, isSVG, isRecycled) {
     }
   }
 
-  const cb = isRecycled ? newProps['onmount'] : newProps['onupdate']
+  const cb =
+    element['vnode'] && Reflect.get(element['vnode'], 'type') === RECYCLED_NODE
+      ? newProps['onmount']
+      : newProps['onupdate']
   if (cb != null) {
     LIFECYCLE.push(function() {
       cb(element, oldProps, newProps)
@@ -254,8 +243,7 @@ function patchElement(parent, element, oldVNode, newVNode, isSVG) {
       element,
       oldVNode.props,
       newVNode.props,
-      (isSVG = isSVG || newVNode.type === 'svg'),
-      oldVNode.flag === RECYCLED_NODE
+      (isSVG = isSVG || newVNode.type === 'svg')
     )
 
     let savedNode
