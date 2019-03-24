@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Fragments</title>
+  <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/test/styles.css">
+  <link rel="icon" type="image/png" href="/test/favicon-16x16.png" sizes="16x16" />
+  <link rel="icon" type="image/png" href="/test/favicon-32x32.png" sizes="32x32" />
+</head>
+<body>
+  <nav onclick="location.pathname='/test/index.html'">
+    <h1>Mocha Tests - Composi Fragment Tag</h1>
+  </nav>
+  <section>
+    <div id="mocha"></div>
+    <div id="messages"></div>
+    <div id="fixtures"></div>
+    <div id="hide-tests">
+      <div id="fragment-test"></div>
+      <div id="fragment-test2"></div>
+      <ul id="fragment-test3"></ul>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+  <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
+  <script src='/dist/composi-core.js'></script>
+  <script>mocha.setup('bdd')</script>
+  <script>
+    const {h, render, Fragment} = composi
+    let expect = chai.expect
+
+
+
+    describe('Examine Fragment tag virtual node', function() {
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F']
+      function NestFragments({letters}) {
+        return (
+          h(
+            'main',
+            {},
+            [
+              Fragment([
+                h('span', {}, ['A']),
+                h('span', {}, ['B']),
+                Fragment([
+                  h('span', {}, ['C']),
+                  h('span', {}, ['D']),
+                  Fragment([
+                    h('span', {}, ['E']),
+                    h('span', {}, ['F']),
+                  ])
+                ])
+              ])
+            ]
+          )
+        )
+      }
+      const fragmentVnode = NestFragments({letters})
+      window.fragmentVnode = fragmentVnode
+      it('VNode should have six children', function() {
+        expect(fragmentVnode.children.length).to.equal(6)
+      })
+      it('Children should have value of "A", "B", "C", "D", "E", "F"', function() {
+        expect(fragmentVnode.children[0].children[0].type).to.equal('A')
+        expect(fragmentVnode.children[1].children[0].type).to.equal('B')
+        expect(fragmentVnode.children[2].children[0].type).to.equal('C')
+        expect(fragmentVnode.children[3].children[0].type).to.equal('D')
+        expect(fragmentVnode.children[4].children[0].type).to.equal('E')
+        expect(fragmentVnode.children[5].children[0].type).to.equal('F')
+      })
+      it('The containing element should be "main"', function() {
+        expect(fragmentVnode.type).to.equal('main')
+      })
+      it('frament child type should be "span"', function() {
+        expect(fragmentVnode.children[0].type).to.equal('span')
+        expect(fragmentVnode.children[1].type).to.equal('span')
+        expect(fragmentVnode.children[2].type).to.equal('span')
+        expect(fragmentVnode.children[3].type).to.equal('span')
+        expect(fragmentVnode.children[4].type).to.equal('span')
+        expect(fragmentVnode.children[5].type).to.equal('span')
+      })
+    })
+
+    describe('Use Fragment tag', function() {
+      const stuff = ['Apples', 'Oranges', 'Bananas']
+      const fragTest = document.querySelector('#fragment-test')
+      function Items(stuff) {
+        const items = stuff.map(item => h('li', {}, [item]))
+        return Fragment(items)
+      }
+      render(h('ul', {}, [Items(stuff)]), '#fragment-test')
+      it('list should have three items', function() {
+        expect(fragTest.firstElementChild.children.length).to.equal(3)
+      })
+      it('list items should be of type "LI"', function() {
+        expect(fragTest.firstElementChild.children[0].nodeName).to.equal('LI')
+        expect(fragTest.firstElementChild.children[1].nodeName).to.equal('LI')
+        expect(fragTest.firstElementChild.children[2].nodeName).to.equal('LI')
+      })
+      it('list items parent should be of type "UL"', function() {
+        expect(fragTest.firstElementChild.nodeName).to.equal('UL')
+      })
+    })
+
+    describe('Nested Fragment tags should flatten out', function() {
+      const letters = ['a', 'b', 'c', 'd', 'e']
+      const fragTest2 = document.querySelector('#fragment-test2')
+      const items = Fragment([
+        h('span', {}, [letters[0]]),
+        h('span', {}, [letters[1]]),
+        Fragment([
+          h('span', {}, [letters[2]]),
+          h('span', {}, [letters[3]]),
+          Fragment([
+            h('span', {}, [letters[4]])
+          ])
+        ])
+      ])
+      const vNodeTest =  h('div', {}, items)
+      window.vNodeTest = vNodeTest
+      render(vNodeTest, '#fragment-test2')
+      it('vNode should have only five children', function() {
+        expect(vNodeTest.children.length).to.equal(5)
+      })
+      it('vNode type should be "div"', function() {
+        expect(vNodeTest.type).to.equal('div')
+      })
+      it('vNode children type should be "span"', function() {
+        expect(vNodeTest.children[0].type).to.equal('span')
+        expect(vNodeTest.children[1].type).to.equal('span')
+        expect(vNodeTest.children[2].type).to.equal('span')
+        expect(vNodeTest.children[3].type).to.equal('span')
+        expect(vNodeTest.children[4].type).to.equal('span')
+      })
+      it('vNode children should have value of "a, b, c, d, e"', function() {
+        expect(vNodeTest.children[0].children[0].type).to.equal('a')
+        expect(vNodeTest.children[1].children[0].type).to.equal('b')
+        expect(vNodeTest.children[2].children[0].type).to.equal('c')
+        expect(vNodeTest.children[3].children[0].type).to.equal('d')
+        expect(vNodeTest.children[4].children[0].type).to.equal('e')
+      })
+      it('should flatten nested fragments into five siblings in DOM', function() {
+        //Use nested fragments to test if they flatten during render:
+        const items = Fragment(
+          null, [
+            h('span', {}, [letters[0]]),
+            h('span', {}, [letters[1]]),
+            Fragment(
+              null, [
+                h('span', {}, [letters[2]]),
+                h('span', {}, [letters[3]]),
+                Fragment(
+                  null, [
+                    h('span', {}, [letters[4]])
+                  ]
+                )
+              ]
+            )
+          ]
+        )
+        expect(fragTest2.firstElementChild.children.length).to.equal(5)
+      })
+      it('Fragment children in DOM should be of type "SPAN"', function() {
+        expect(fragTest2.firstElementChild.children[0].nodeName).to.equal('SPAN')
+        expect(fragTest2.firstElementChild.children[1].nodeName).to.equal('SPAN')
+        expect(fragTest2.firstElementChild.children[2].nodeName).to.equal('SPAN')
+        expect(fragTest2.firstElementChild.children[3].nodeName).to.equal('SPAN')
+        expect(fragTest2.firstElementChild.children[4].nodeName).to.equal('SPAN')
+      })
+      it('Fragment parent in DOM should be of type "DIV"', function() {
+        expect(fragTest2.firstElementChild.nodeName).to.equal('DIV')
+      })
+    })
+    describe('Cannot insert Fragment tag directly into DOM', function() {
+      // #fragment-test3
+      function ListItems() {
+        return (
+          Fragment(null, [
+            h('li', {}, 'One'),
+            h('li', {}, 'Two'),
+            h('li', {}, 'Three')
+          ])
+        )
+      }
+      try {
+        render(ListItems(), document.querySelector('#fragment-test3'))
+      } catch(err) {
+        renderError = err
+      }
+      it('Render should generate an error message when attempting to insert Fragment tag directly into DOM', function() {
+        expect(typeof renderError).to.equal('object')
+        expect(renderError.message).to.equal('Cannot insert Fragment tag directly into DOM.')
+      })
+      it('UL tag in DOM should remain empty', function() {
+        const ul = document.querySelector('#fragment-test3')
+        expect(ul.children.length).to.equal(0)
+      })
+
+    })
+
+    mocha.run()
+  </script>
+</body>
+</html>
