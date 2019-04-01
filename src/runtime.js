@@ -52,7 +52,7 @@ export function run(program) {
    */
   function send(message) {
     if (isRunning) {
-      updateView(update(state, message))
+      updateView(update(state, message, send))
     }
   }
 
@@ -77,16 +77,16 @@ export function run(program) {
       ;[state, effect] = init
       if (subscriptions && !isFirstRun) {
         sub = subscriptions(state, send)
-        if (typeof sub === 'function') sub(send)
+        if (typeof sub === 'function') sub(state, send)
+        isFirstRun = true
       }
     } else {
       state = []
     }
     if (effect) {
-      effect()
+      effect(state, send)
     }
     view(state, send)
-    isFirstRun = true
   }
 
   updateView(state)

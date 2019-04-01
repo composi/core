@@ -28,6 +28,7 @@
         <div id='component-click3'></div>
         <div id='component-click4'></div>
         <div id='send-test'></div>
+        <div id="test-effect"></div>
       </div>
     </section>
 
@@ -406,6 +407,49 @@
         })
       })
 
+      describe('Should be able to access state and send function from effect.', done => {
+        const state = 'original state'
+        function effect(state, send) {
+          state = 'new state'
+          send({type: 'can-send-msg'})
+          return state
+        }
+        function View(state) {
+          return h('div', {}, state)
+        }
+        let canSendMsg = false
+        const program = {
+          init() {
+            return [state]
+          },
+          view(state) {
+            render(View(state), '#test-effect')
+          },
+          update(state, msg, send) {
+            if (msg.type === 'changing-state') {
+              return [effect(state, send)]
+            } else if (msg.type === 'can-send-msg') {
+              canSendMsg = true
+            }
+          }
+        }
+        run(program)
+        program.send({type: 'changing-state'})
+        it('Effect should have access to state.', done => {
+          setTimeout(() => {
+            const result = document.querySelector('#test-effect')
+            expect(result.textContent).to.equal('new state')
+          }, 1000)
+          done()
+        })
+        it('Effect should be able to send message to action.', done => {
+          setTimeout(() => {
+            expect(canSendMsg).to.equal(true)
+          }, 1000)
+          done()
+        })
+      })
+
       describe('Should be able to launch subscriptions at start.', function () {
         it('subscription should run at startup.', done => {
           let effectResult = false
@@ -430,6 +474,46 @@
           setTimeout(() => {
             expect(effectResult).to.equal(true)
           })
+          done()
+        })
+      })
+
+      describe('Subscription should be able to access state and send message to action.', function() {
+        let state = 'initial state'
+        let newState = ''
+
+        let msgWasSent = false
+        function effect(state, send) {
+          send({type: 'update-state', value: state})
+
+        }
+        const program = {
+          init() {
+            return [state]
+          },
+          update(state, msg) {
+            if (msg.type === 'update-state') {
+              newState = msg.value
+              msgWasSent = true
+              return [state]
+            }
+          },
+          view() {
+            return
+          },
+          subscriptions(state, send) {
+            return (state, send) => {
+              send({type: 'update-state', value: state})
+            }
+          }
+        }
+        run(program)
+        it('Subscription should have access to state.', done => {
+          expect(state).to.equal('initial state')
+          done()
+        })
+        it('Subscription should be able to send message to action.', done => {
+          expect(msgWasSent).to.equal(true)
           done()
         })
       })
