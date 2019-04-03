@@ -16,5 +16,5 @@ export function mapEffect(effect, callback) {
  * @param {Function[]} effects
  * @return {Function} Function
  */
-export const batchEffects = effects => send =>
-  effects.map(effect => effect && effect(send))
+export const batchEffects = effects => (state, send) =>
+  effects.map(effect => effect && effect(state, send))

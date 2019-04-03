@@ -29,6 +29,7 @@
         <div id='component-click4'></div>
         <div id='send-test'></div>
         <div id="test-effect"></div>
+        <div id="subscription-test"></div>
       </div>
     </section>
 
@@ -587,6 +588,55 @@
             expect(result2).to.equal('Second effect ran!')
             expect(count).to.equal(0)
           }, 1000)
+          done()
+        })
+      })
+
+      describe('Batched subscriptions should have access to state and send function.', function() {
+        const subscriptionTest = document.querySelector('#subscription-test')
+        let state = 1
+        let messageWasSent = false
+
+        function effect1(state, send) {
+          send({type: 'update-state-1', value: state + 1})
+        }
+        function effect2(state, send) {
+          setTimeout(() => send({type: 'update-state-2', value: state + 2}), 1000)
+        }
+        const batchedEffects = batchEffects([effect1, effect2])
+        function subTest({state, send}) {
+          return h('div', {}, state)
+        }
+        const program = {
+          init() {
+            return [state]
+          },
+          update(state, msg) {
+            if (msg.type === 'update-state-1') {
+              return [msg.value]
+            } else if (msg.type === 'update-state-2') {
+              messageWasSent = true
+              return [msg.value]
+            }
+          },
+          view(state, send) {
+            return render(subTest({state, send}), subscriptionTest)
+          },
+          subscriptions(state, send) {
+            return batchedEffects
+          }
+        }
+        run(program)
+        it('First effect should update state to 2.', function() {
+          expect(subscriptionTest.textContent).to.equal('2')
+        })
+        it('Second effect should update state to 3.',
+        function(done) {
+          setTimeout(() => expect(subscriptionTest.textContent).to.equal('3'), 1200)
+          done()
+        })
+        it('Second effect should send message to update action, setting messageWasSent to true.', function(done) {
+          setTimeout(() => expect(messageWasSent).to.equal(true), 1200)
           done()
         })
       })
