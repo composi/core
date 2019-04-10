@@ -1,6 +1,6 @@
 {
   "name": "@composi/core",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A JavaScript library for creating websites, PWAs and hybrid apps.",
   "main": "src/index.js",
   "module": "dist/composi-core.mjs",
@@ -42,7 +42,7 @@
   "homepage": "https://github.com/composor/composi#readme",
   "dependencies": {
     "@composi/get-type": "^1.0.3",
-    "@composi/merge-objects": "^1.2.2"
+    "@composi/merge-objects": "^1.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
