@@ -79,7 +79,7 @@ export function hydrate(element) {
  * @return {VNode} VNode
  */
 function vnodeFromChild(element) {
-  if (element.nodeType === 3) {
+  if (element.nodeType === TEXT_NODE) {
     return createTextVNode(element.nodeValue, element)
   } else {
     return hydrate(element)
