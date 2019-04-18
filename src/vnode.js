@@ -34,6 +34,7 @@ import {
  * @return {VNode} VNode
  */
 export function createVNode(type, props, children, element, key, flag) {
+  if (!key) key = null
   return {
     type,
     props,
@@ -51,6 +52,7 @@ export function createVNode(type, props, children, element, key, flag) {
  * @return {VNode} VNode
  */
 export function createTextVNode(text, element) {
+  if (!element) element = null
   return createVNode(text, EMPTY_OBJECT, EMPTY_ARRAY, element, null, TEXT_NODE)
 }
 
@@ -63,6 +65,8 @@ export function hydrate(element) {
   if (typeof element === 'string') {
     element = document.querySelector(element)
   }
+  // Clean node before using:
+  removeWhiteSpaceNodes(element)
   return createVNode(
     element.nodeName.toLowerCase(),
     EMPTY_OBJECT,
@@ -83,5 +87,27 @@ function vnodeFromChild(element) {
     return createTextVNode(element.nodeValue, element)
   } else {
     return hydrate(element)
+  }
+}
+
+/**
+ * Function to remove whitespace nodes from DOM element.
+ * This is to avoid unnecessary inclusion of
+ * whitespace nodes in virtual node when hydrating.
+ * @param {Element | Node} node
+ * @returns {void} undefined
+ */
+function removeWhiteSpaceNodes(node) {
+  for (let n = 0; n < node.childNodes.length; n++) {
+    const child = node.childNodes[n]
+    if (
+      child.nodeType === 8 ||
+      (child.nodeType === 3 && !/\S/.test(child.nodeValue))
+    ) {
+      node.removeChild(child)
+      n--
+    } else if (child.nodeType === 1) {
+      removeWhiteSpaceNodes(child)
+    }
   }
 }
