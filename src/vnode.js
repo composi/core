@@ -67,27 +67,17 @@ export function hydrate(element) {
   }
   // Clean node before using:
   removeWhiteSpaceNodes(element)
-  return createVNode(
-    element.nodeName.toLowerCase(),
-    EMPTY_OBJECT,
-    EMPTY_ARRAY.map.call(element.childNodes, vnodeFromChild),
-    element,
-    null,
-    RECYCLED_NODE
-  )
-}
 
-/**
- * Cycle through the child nodes of an element and create virtual nodes of them.
- * @param {Element} element
- * @return {VNode} VNode
- */
-function vnodeFromChild(element) {
-  if (element.nodeType === TEXT_NODE) {
-    return createTextVNode(element.nodeValue, element)
-  } else {
-    return hydrate(element)
-  }
+  return element.nodeType === TEXT_NODE
+    ? createTextVNode(element.nodeValue, element)
+    : createVNode(
+        element.nodeName.toLowerCase(),
+        EMPTY_OBJECT,
+        EMPTY_ARRAY.map.call(element.childNodes, hydrate),
+        element,
+        null,
+        RECYCLED_NODE
+      )
 }
 
 /**

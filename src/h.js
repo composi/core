@@ -14,11 +14,11 @@ export function h(type, props, ...children) {
   const tempBox = []
   const childNodes = []
   let length = children.length
-  const key = Reflect.get(props, 'key')
+  const key = props.key
 
   while (length-- > 0) tempBox.push(children[length])
 
-  if (Reflect.get(props, 'children')) {
+  if (props.children) {
     if (tempBox.length <= 0) {
       tempBox.push(props.children)
     }

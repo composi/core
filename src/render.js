@@ -39,9 +39,12 @@ export function render(VNode, container, hydrateThis) {
     if (typeof hydrateThis === 'string') {
       hydrateThis = document.querySelector(hydrateThis)
     }
-    oldVNode = hydrate(hydrateThis)
+    // If user tries to hydrate already rendered component,
+    // use its 'vnode' property,
+    // otherwise hydrate it.
+    oldVNode = (container && container['vnode']) || hydrate(hydrateThis)
   } else {
-    oldVNode = container && Reflect.get(container, 'vnode')
+    oldVNode = container && container['vnode']
   }
   const vnode = patch(oldVNode, VNode, container)
   container['vnode'] = vnode

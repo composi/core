@@ -191,7 +191,7 @@ function removeElement(parent, vnode) {
 function updateElement(element, oldProps, newProps, isSVG) {
   for (let prop in mergeObjects(oldProps, newProps)) {
     if (
-      (prop === 'value' || prop === 'checked'
+      (prop === 'value' || prop === 'checked' || prop === 'selected'
         ? element[prop]
         : oldProps[prop]) !== newProps[prop]
     ) {
@@ -200,7 +200,7 @@ function updateElement(element, oldProps, newProps, isSVG) {
   }
 
   const cb =
-    element['vnode'] && Reflect.get(element['vnode'], 'type') === RECYCLED_NODE
+    element['vnode'] && element['vnode'].type === RECYCLED_NODE
       ? newProps['onmount']
       : newProps['onupdate']
   if (cb != null) {
