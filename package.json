@@ -41,7 +41,6 @@
   },
   "homepage": "https://github.com/composor/composi#readme",
   "dependencies": {
-    "@composi/get-type": "^1.0.3",
     "@composi/merge-objects": "^1.2.3"
   },
   "devDependencies": {
