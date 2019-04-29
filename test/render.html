@@ -41,7 +41,7 @@
     <script src='/dist/composi-core.js'></script>
     <script>mocha.setup('bdd')</script>
     <script>
-      const { h, render, hydrate } = composi
+      const { h, render } = composi
       let expect = chai.expect
 
       function H1() {
@@ -284,7 +284,6 @@
 
       describe('Hydrate existing DOM node using render function', function () {
         const list = document.querySelector('#listToHydrate')
-        const listToHydrate = hydrate(list)
         function hydrateTheList() {
           return (
             h(
