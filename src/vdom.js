@@ -86,7 +86,15 @@ function setProp(element, prop, oldValue, newValue, isSVG) {
     } else {
       let nullOrFalse = newValue == null || newValue === false
 
-      if (prop !== 'list' && prop in element && !isSVG) {
+      if (
+        prop !== 'list' &&
+        prop !== 'form' &&
+        prop !== 'type' &&
+        prop !== 'draggable' &&
+        prop !== 'spellcheck' &&
+        prop in element &&
+        !isSVG
+      ) {
         element[prop] = newValue == null ? '' : newValue
       } else if (nullOrFalse) {
         element.removeAttribute(prop)
@@ -146,18 +154,18 @@ function createElement(vnode, isSVG) {
 
 /**
  * Remove children from a node.
- * @param {VNode} node
+ * @param {VNode} vnode
  * @return {Element}
  */
-function removeChildren(node) {
+function removeChildren(vnode) {
   let idx = 0
-  const length = node.children.length
+  const length = vnode.children.length
   while (idx < length) {
-    removeChildren(node.children[idx])
+    removeChildren(vnode.children[idx])
     idx++
   }
 
-  return node.element
+  return vnode.element
 }
 
 /**

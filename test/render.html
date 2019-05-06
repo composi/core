@@ -32,6 +32,7 @@
             <li>Two</li>
           </ul>
         </div>
+        <div id="readonly"></div>
         <div id="fragment-test"></div>
       </div>
     </section>
@@ -352,6 +353,43 @@
           done()
         }, 2500)
 
+      })
+
+      describe('Read only properties get set as attributes', function() {
+        function ReadOnly() {
+          return (
+              h('div', {}, [
+                h('input', {list: 'ice-cream-flavors', id:'ice-cream-choice'}),
+                h('form', {id:'basic-form'}),
+                h('input', {form: 'basic-form', id: 'form-input'}),
+                h('datalist', {id: 'ice-cream-flavors'},
+                [
+                  h('option', {value: 'Chocolate'}),
+                  h('option', {value: 'Coconut'}),
+                  h('option', {value: 'Mint'})
+                ]),
+                h('input', {id: 'readonly-input', type:'text', spellcheck:true, draggable: true})
+              ])
+          )
+        }
+        it('list, type, form, draggable and spellcheck are read only and should be set as attributes.', function(done) {
+
+          render(ReadOnly(), '#readonly')
+          setTimeout(() => {
+
+          const choice = document.getElementById('ice-cream-choice')
+          const input = document.getElementById('readonly-input')
+          const formInput = document.getElementById('form-input')
+          const basicForm = document.getElementById('basic-form')
+          expect(choice.type).to.equal('text')
+          expect(input.type).to.equal('text')
+          expect(formInput.form).to.equal(basicForm)
+          expect(input.spellcheck).to.be.true
+          expect(input.draggable).to.be.true
+          }, 1000)
+          done()
+
+        })
       })
 
       describe('Cannot insert array of elements directly into DOM', function () {
