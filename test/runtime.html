@@ -242,7 +242,7 @@
       })
 
       describe('Should be able to use tagged union to define actions.', () => {
-        const Msg3 = union(['click'])
+        const Msg3 = union('click')
         function Component(state, send) {
           return h(
             'div',
@@ -292,7 +292,7 @@
       })
 
       describe('Should be able to pass data with tagged union function.', () => {
-        const Msg4 = union(['click'])
+        const Msg4 = union('click')
         function Component(state, send) {
           return h(
             'div',
@@ -360,7 +360,7 @@
             }
           }, 100)
         }
-        const effects = batchEffects([hello, secondEffect, countDown])
+        const effects = batchEffects(hello, secondEffect, countDown)
         function effect() {
           effects(effect => effect)
         }
@@ -568,7 +568,7 @@
             }
           }, 100)
         }
-        const subscriptions = batchEffects([hello, secondEffect, countDown])
+        const subscriptions = batchEffects(hello, secondEffect, countDown)
         const program = {
           init() {
             return ['World']
@@ -603,7 +603,7 @@
         function effect2(state, send) {
           setTimeout(() => send({type: 'update-state-2', value: state + 2}), 1000)
         }
-        const batchedEffects = batchEffects([effect1, effect2])
+        const batchedEffects = batchEffects(effect1, effect2)
         function subTest({state, send}) {
           return h('div', {}, state)
         }

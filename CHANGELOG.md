@@ -1,5 +1,21 @@
 # composi/core Changelog
 
+## 1.4.0 (May 7, 2019)
+
+### src/effects.js
+* Changed batchEffects argument to not require enclosing effects in array. Use of spread operator means just passing in effects separated by commas: `const batchedEffects = batchEffects(effect1, effect2, effect3)`
+* Same thing when batching subscriptions: `const batchedSupcriptions = batchEffects(sub1, sub2, sub3)`
+
+### src/union.js
+* Changed union argument to not require enclosing message names in array. Use of spread operator means just passing in messages separated by commas: `const Msg = union('updateInputValue', 'addItem', 'deleteItem')`.
+
+### src/vdom.js
+* Added back in empty block conditional check for comparing oldVNode and newVNode in patchElement function. This helps prevent certain edge cases where a vnode might be undefined, particularly when dealing with creating new text nodes.
+* Moved function `removeWhiteSpaceNodes` before `hydrate` function to avoid need for hoisting.
+
+### test/runtime.html
+* Updated tests to use new arrayless arguments for union and batchEffects functions.
+
 ## 1.3.8 (May 6, 2019)
 
 ### src/vdom.js - setProp function

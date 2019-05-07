@@ -32,9 +32,9 @@ function createUnion(types) {
 
 /**
  * Create a union of types for matching up with functions.
- * @param {string[]} types
+ * @param {...string} types
  */
-export function union(types) {
+export function union(...types) {
   const { variants, match } = createUnion(types)
   variants.match = match
   return variants

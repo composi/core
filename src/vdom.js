@@ -228,7 +228,8 @@ function updateElement(element, oldProps, newProps, isSVG) {
  * @return {VNode}
  */
 function patchElement(parent, element, oldVNode, newVNode, isSVG) {
-  if (
+  if (newVNode === oldVNode) {
+  } else if (
     oldVNode != null &&
     oldVNode.flag === TEXT_NODE &&
     newVNode.flag === TEXT_NODE
@@ -245,7 +246,7 @@ function patchElement(parent, element, oldVNode, newVNode, isSVG) {
     if (oldVNode != null) removeElement(parent, oldVNode)
 
     element = newElement
-  } else if (newVNode !== oldVNode) {
+  } else {
     updateElement(
       element,
       oldVNode.props,

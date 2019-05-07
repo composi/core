@@ -57,6 +57,28 @@ export function createTextVNode(text, element) {
 }
 
 /**
+ * Function to remove whitespace nodes from DOM element.
+ * This is to avoid unnecessary inclusion of
+ * whitespace nodes in virtual node when hydrating.
+ * @param {Element | Node} node
+ * @returns {void} undefined
+ */
+function removeWhiteSpaceNodes(node) {
+  for (let n = 0; n < node.childNodes.length; n++) {
+    const child = node.childNodes[n]
+    if (
+      child.nodeType === 8 ||
+      (child.nodeType === 3 && !/\S/.test(child.nodeValue))
+    ) {
+      node.removeChild(child)
+      n--
+    } else if (child.nodeType === 1) {
+      removeWhiteSpaceNodes(child)
+    }
+  }
+}
+
+/**
  * Create a virtual node represeting a DOM element and its children.
  * @param {Element} element
  * @return {VNode} VNode
@@ -78,26 +100,4 @@ export function hydrate(element) {
         null,
         RECYCLED_NODE
       )
-}
-
-/**
- * Function to remove whitespace nodes from DOM element.
- * This is to avoid unnecessary inclusion of
- * whitespace nodes in virtual node when hydrating.
- * @param {Element | Node} node
- * @returns {void} undefined
- */
-function removeWhiteSpaceNodes(node) {
-  for (let n = 0; n < node.childNodes.length; n++) {
-    const child = node.childNodes[n]
-    if (
-      child.nodeType === 8 ||
-      (child.nodeType === 3 && !/\S/.test(child.nodeValue))
-    ) {
-      node.removeChild(child)
-      n--
-    } else if (child.nodeType === 1) {
-      removeWhiteSpaceNodes(child)
-    }
-  }
 }
