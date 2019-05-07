@@ -694,7 +694,7 @@ Although this is manageable, we can make this actions and events more implicit b
 
 @composi/core's union function lets you create tagged unions. Basically, a tagged union allows you to associate one value, usually a string, with another value. For actions and events this will be the action function to run.
 
-The union function takes one argument, an array of strings to use. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function.
+The union function takes a variable number of arguments, separated by commas. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function.
 
 Here's the previous todo list redone using tagged unions. Notice that in the view, when we send, we send a tagged union function. This makes it clearer what the event is doing. When we invoke a tagged union function inside an event's send method, it actually sends a packet with a type and data to the update function. So tagged unions are doing the same as we did in the first example of the todo list, but the show what is being invoked inside the update function.
 
@@ -727,7 +727,7 @@ const state = {
 // Tagged union for actions,
 // This will match string values to functions.
 // Capture the union in the Msg object.
-const Msg = union(['addItem', 'deleteItem'])
+const Msg = union('addItem', 'deleteItem')
 
 
 // Business Logic.

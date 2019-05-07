@@ -1,5 +1,10 @@
 # composi/core Changelog
 
+## 1.4.0 (May 7, 2019) - no version change
+
+### README.md
+* Documented new union function call signature.
+
 ## 1.4.0 (May 7, 2019)
 
 ### src/effects.js
