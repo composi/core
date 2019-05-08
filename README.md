@@ -707,7 +707,7 @@ const section = document.querySelector('section')
 // An object defining the state for the app.
 const state = {
   newKey: 104,
-  inputVal: '',
+  inputValue: '',
   fruits: [
     {
       key: 101,
@@ -727,7 +727,10 @@ const state = {
 // Tagged union for actions,
 // This will match string values to functions.
 // Capture the union in the Msg object.
-const Msg = union('addItem', 'deleteItem')
+const Msg = union('updateInputValue', 'addItem', 'deleteItem')
+
+// Desturcture tagged union variables:
+const {updateInputValue, addItem, deleteItem} = Msg
 
 
 // Business Logic.
@@ -735,18 +738,21 @@ const Msg = union('addItem', 'deleteItem')
 // Use those actions to transform state.
 // Then return the new state.
 // That will cause the view to update.
-function actions(state, msg) {
+function actions(state, msg, send) {
   return Msg.match(msg, {
-    'addItem': value => {
-      if (value) {
-        state.fruits.push({ key: state.newKey++, value })
+    updateInputValue: value => {
+      state.inputValue = value
+      return [state]
+    }
+    addItem: () => {
+      if (state.inputValue) {
+        state.fruits.push({ key: state.newKey++, value: state.inputValue })
         return [state]
       } else {
         alert('Please provide a value!')
-        return [state]
       }
     },
-    'deleteItem': key => {
+    deleteItem: key => {
       state.fruits = state.fruits.filter(item => item.key != key)
       return [state]
     }
@@ -764,19 +770,25 @@ function List({state, send}) {
   const focusInput = input => {
     input.focus()
   }
-  const getInputValue = e => (inputValue = e.target.value)
   return (
     <div class='list-container'>
       <p class='list-form'>
-        <input value={state.inputVal} onupdate={focusInput} onchange={getInputValue} type="text"/>
-        <button class='add-item' onclick={() => send(Msg.addItem(inputValue))}>Add</button>
+        <input
+          value={state.inputValue}
+          onupdate={focusInput}
+          oninput={e => send(updateInputValue(e.target.value))} type="text"
+        />
+        <button class='add-item' onclick={() => send(addItem())}>Add</button>
       </p>
       <ul>
         {
           state.fruits.map(item => (
             <li key={item.key}>
               <span>{item.value}</span>
-              <button class="deleteItem" onclick={() => send(Msg.deleteItem(item.key))}>X</button>
+              <button
+                class="deleteItem"
+                onclick={() => send(deleteItem(item.key))}
+              >X</button>
             </li>
           ))
         }
@@ -790,14 +802,11 @@ const program = {
   init() {
     return [state]
   },
-  update(state, msg) {
-    return actions(state, msg)
-  },
   view(state, send) {
-    return render(<List state={state} send={send} />, section)
+    return render(<List state={...{state, send}} />, section)
   },
-  done() {
-    cancel()
+  update(state, msg, send) {
+    return actions(state, msg, send)
   }
 }
 
