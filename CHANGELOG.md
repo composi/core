@@ -1,5 +1,16 @@
 # composi/core Changelog
 
+## 1.5.0 (May 8, 2019)
+
+### src/vdom.js
+* Switched parameters around for unmount lifecycle hook. The correct order is function(element, done). This makes unmount feel more inline with onmount and onupdate, which get the element as the first argument.
+
+### test/render.html
+* Updated onmount lifecycle test for changes to onunmount parameter order.
+
+### README.md
+* Updated README to document changes to onunmount parameter order.
+
 ## 1.4.0 (May 7, 2019) - no version change
 
 ### README.md

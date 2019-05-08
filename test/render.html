@@ -230,13 +230,13 @@
             componentDidUpdate = true
             unmountedComponents += 1
           }
-          function testUnmount(done, el) {
+          function testUnmount(el, done) {
             componentDidUnmount = true
             done()
           }
           function listItems(items) {
             console.log(items)
-            return items.map(item => h('li', { onunmount: (done, el) => testUnmount(done, el) }, item))
+            return items.map(item => h('li', { onunmount: (el, done) => testUnmount(el, done) }, item))
           }
           return (
             h(

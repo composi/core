@@ -181,7 +181,7 @@ function removeElement(parent, vnode) {
 
   const cb = vnode.props && vnode.props['onunmount']
   if (cb != null) {
-    cb(done, vnode.element)
+    cb(vnode.element, done)
   } else {
     done()
   }

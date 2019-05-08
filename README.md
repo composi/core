@@ -355,7 +355,7 @@ When `onupdate` fires on an element, it only has access to the props that were a
 
 ## onunmount
 
-This gets two arguments--`done` and the element it is on. `done` is a callback that you will need to call after you finish whatever you are doing. Calling `done()` allows the unmount to continue. Failing to call it will prevent the element from being removed from the DOM. This can lead to serious problems when Composi tries to reconcile the DOM with the virtual DOM.
+This gets two arguments--the element the hook is registered on and `done`, which is a callback that you will need to call after you finish whatever you are doing. Calling `done()` allows the unmount to continue. Failing to call it will prevent the element from being removed from the DOM. This can lead to serious problems when Composi tries to reconcile the DOM with the virtual DOM.
 
 #### Example
 
@@ -372,15 +372,16 @@ function List({data}) {
   }
 
   // Animate list item when deleted.
-  function animate(done, item) {
-    item.style.cssText = 'transition: all .5s ease-out; height: 0px; transform: translateX(-300px);'
+  function animate(item, done) {
+    item.style.cssText = 'transition: all 1s ease-out; height: 0px; transform: translateX(-300px);'
     // Don't forget to call `done()` or the element won't be removed!
-    done()
+    // Use setTimeout to delay the remove until after the animation ends.
+    setTimeout(() => done(), 1000)
   }
   return (
     <ul>
       {
-        data.map(item => <li key={item.id} onunmount={(item, done) => animate(item, done)}>
+        data.map(item => <li key={item.id} onunmount={animate}>
           <span>{item.value}</span>
           <button class='delete' onclick={() => deleteItem(item.id)}>X</button>
         </li>)
