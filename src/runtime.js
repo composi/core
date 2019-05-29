@@ -44,6 +44,7 @@ export function run(program) {
   let state, effect
   let isRunning = true
   let isFirstRun = false
+  const getState = () => state
 
   /**
    * Send a message.
@@ -76,8 +77,8 @@ export function run(program) {
     } else if (init && init.length) {
       ;[state, effect] = init
       if (subscriptions && !isFirstRun) {
-        sub = subscriptions(state, send)
-        if (typeof sub === 'function') sub(state, send)
+        sub = subscriptions(getState, send)
+        if (typeof sub === 'function') sub(getState, send)
         isFirstRun = true
       }
     } else {

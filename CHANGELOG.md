@@ -1,5 +1,39 @@
 # composi/core Changelog
 
+## 1.6.0 (May 25, 2019)
+
+### src/runtime.js
+* Created a function `getState` that gets exposed to subscriptions. This allows subscription to access the current state of a program. Previously subscriptions got passed a reference to state as their first argument. However, this was state as it was at the time the program started. Subscriptions had no way to know the current state of a program at any given time. Providing subscriptions with `getState` solves this problem. Now an action can change a value in state and a subscription can check for a change in that value in a loop, after which the subscription can do something, such as canceling a loop, etc.
+* `getState` is now the first argument of a subscription, followed by `send`:
+```javascript
+const program = {
+  init() {
+    return [state]
+  }
+  subscriptions(getState, send) {
+    return effect
+  }
+}
+function effect(getState, send) {
+  // Access state from the program:
+  const currentState = getState()
+  // Do something with currentState...
+}
+```
+* Using `getState` also lets you store any references to a setInterval, web sockets or services that you implement in subscriptions and want to affect from an action. You can expose them on the program's state so you can access them from other actions.
+
+* Never use this to directly change a program's state. Instead send the data as the value of a message for an action to handle.
+
+### src/vdom.js
+* Refactored `updateElement` function to handle `onmount` and `onupdate` separately. Previously both were getting passed the same parameters: `element`, `oldProps` and `newProps`. Passing props as arguments for `onmount` makes no sense. Added a conditional so `onmount` only gets passed a reference to the mounted element. `onupdate` still gets `element`, `oldProps` and `newProps`.
+
+### test/runtime.html
+* Updated runtime test to use the new `getState` function in subscriptions.
+
+### README.md
+* Fixed erroneous urls. These were pointing to older version of Composi in a different Github group. Now they point to the correct repository.
+
+
 ## 1.5.0 (May 8, 2019)
 
 ### src/vdom.js

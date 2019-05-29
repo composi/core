@@ -384,8 +384,8 @@
         })
       })
 
-      describe('Program should expose "send" function for dispatch to program update from outside.', function () {
-        it('Should be able to send message from program reference.', function () {
+      describe('Program should expose "send" function for dispatch to program update from outside.', function() {
+        it('Should be able to send message from program reference.', function() {
           function View(state) {
             return h('div', {}, state)
           }
@@ -535,9 +535,9 @@
             view() {
               return
             },
-            subs(state, send) {
+            subs(getState, send) {
               // Should be able to access state from subscription:
-              expect(state).to.equal(1)
+              expect(getState()).to.equal(1)
               return effect
             }
           }
@@ -592,16 +592,16 @@
         })
       })
 
-      describe('Batched subscriptions should have access to state and send function.', function() {
+      describe('Batched subscriptions should have access to getState and send functions.', function() {
         const subscriptionTest = document.querySelector('#subscription-test')
         let state = 1
         let messageWasSent = false
 
-        function effect1(state, send) {
-          send({type: 'update-state-1', value: state + 1})
+        function effect1(getState, send) {
+          send({type: 'update-state-1', value: getState() + 1})
         }
-        function effect2(state, send) {
-          setTimeout(() => send({type: 'update-state-2', value: state + 2}), 1000)
+        function effect2(getState, send) {
+          setTimeout(() => send({type: 'update-state-2', value: getState() + 2}), 1000)
         }
         const batchedEffects = batchEffects(effect1, effect2)
         function subTest({state, send}) {
@@ -622,7 +622,7 @@
           view(state, send) {
             return render(subTest({state, send}), subscriptionTest)
           },
-          subscriptions(state, send) {
+          subscriptions(getState, send) {
             return batchedEffects
           }
         }
@@ -632,7 +632,7 @@
         })
         it('Second effect should update state to 3.',
         function(done) {
-          setTimeout(() => expect(subscriptionTest.textContent).to.equal('3'), 1200)
+          setTimeout(() => expect(subscriptionTest.textContent).to.equal('4'), 1200)
           done()
         })
         it('Second effect should send message to update action, setting messageWasSent to true.', function(done) {

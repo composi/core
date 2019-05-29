@@ -490,7 +490,7 @@ function Clock(state) {
 // sending a message to the update function.
 // Put it after state in init:
 let setIntervalID
-function startLoop(send) {
+function startLoop(getState, send) {
   let count = 0
   setIntervalID = setInterval(() => {
     console.log(count++)
@@ -523,7 +523,7 @@ const program = {
     return action(state, msg)
   },
   // Setup subscription:
-  subscriptions(state, send) {
+  subscriptions(getState, send) {
     return startLoop
   }
   // ADD DONE METHOD FOR EFFECT CLEANUP:

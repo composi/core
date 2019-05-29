@@ -212,9 +212,15 @@ function updateElement(element, oldProps, newProps, isSVG) {
       ? newProps['onmount']
       : newProps['onupdate']
   if (cb != null) {
-    LIFECYCLE.push(function() {
-      cb(element, oldProps, newProps)
-    })
+    if (newProps['onmount']) {
+      LIFECYCLE.push(function() {
+        cb(element)
+      })
+    } else {
+      LIFECYCLE.push(function() {
+        cb(element, oldProps, newProps)
+      })
+    }
   }
 }
 
