@@ -1,5 +1,17 @@
 # composi/core Changelog
 
+## 1.6.0 (June 5, 2019)
+
+### src/vdom.js
+* Renamed variables for clarifying their identities better.
+* lastChildren = oldVNodeChildren
+* lastChildStart = oldVNodeChildStart
+* lastChildEnd = oldVNodeChildEnd
+* nextChildren = newVNodeChildren
+* nextChildStart = newVNodeChildStart
+* nextChildEnd = newVNodeChildEnd
+
+
 ## 1.6.0 (May 25, 2019)
 
 ### src/runtime.js

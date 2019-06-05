@@ -264,79 +264,90 @@ function patchElement(parent, element, oldVNode, newVNode, isSVG) {
     let childNode
 
     let lastKey
-    let lastChildren = oldVNode.children
-    let lastChildStart = 0
-    let lastChildEnd = lastChildren.length - 1
+    let oldVNodeChildren = oldVNode.children
+    let oldVNodeChildStart = 0
+    let oldVNodeChildEnd = oldVNodeChildren.length - 1
 
     let nextKey
-    const nextChildren = newVNode.children
-    let nextChildStart = 0
-    let nextChildEnd = nextChildren.length - 1
+    const newVNodeChildren = newVNode.children
+    let newVNodeChildStart = 0
+    let newVNodeChildEnd = newVNodeChildren.length - 1
 
-    while (nextChildStart <= nextChildEnd && lastChildStart <= lastChildEnd) {
-      lastKey = getKey(lastChildren[lastChildStart])
-      nextKey = getKey(nextChildren[nextChildStart])
-
-      if (lastKey == null || lastKey !== nextKey) break
-
-      patchElement(
-        element,
-        lastChildren[lastChildStart].element,
-        lastChildren[lastChildStart],
-        nextChildren[nextChildStart],
-        isSVG
-      )
-
-      lastChildStart++
-      nextChildStart++
-    }
-
-    while (nextChildStart <= nextChildEnd && lastChildStart <= lastChildEnd) {
-      lastKey = getKey(lastChildren[lastChildEnd])
-      nextKey = getKey(nextChildren[nextChildEnd])
+    while (
+      newVNodeChildStart <= newVNodeChildEnd &&
+      oldVNodeChildStart <= oldVNodeChildEnd
+    ) {
+      lastKey = getKey(oldVNodeChildren[oldVNodeChildStart])
+      nextKey = getKey(newVNodeChildren[newVNodeChildStart])
 
       if (lastKey == null || lastKey !== nextKey) break
 
       patchElement(
         element,
-        lastChildren[lastChildEnd].element,
-        lastChildren[lastChildEnd],
-        nextChildren[nextChildEnd],
+        oldVNodeChildren[oldVNodeChildStart].element,
+        oldVNodeChildren[oldVNodeChildStart],
+        newVNodeChildren[newVNodeChildStart],
         isSVG
       )
 
-      lastChildEnd--
-      nextChildEnd--
+      oldVNodeChildStart++
+      newVNodeChildStart++
     }
 
-    if (lastChildStart > lastChildEnd) {
-      while (nextChildStart <= nextChildEnd) {
+    while (
+      newVNodeChildStart <= newVNodeChildEnd &&
+      oldVNodeChildStart <= oldVNodeChildEnd
+    ) {
+      lastKey = getKey(oldVNodeChildren[oldVNodeChildEnd])
+      nextKey = getKey(newVNodeChildren[newVNodeChildEnd])
+
+      if (lastKey == null || lastKey !== nextKey) break
+
+      patchElement(
+        element,
+        oldVNodeChildren[oldVNodeChildEnd].element,
+        oldVNodeChildren[oldVNodeChildEnd],
+        newVNodeChildren[newVNodeChildEnd],
+        isSVG
+      )
+
+      oldVNodeChildEnd--
+      newVNodeChildEnd--
+    }
+
+    if (oldVNodeChildStart > oldVNodeChildEnd) {
+      while (newVNodeChildStart <= newVNodeChildEnd) {
         element.insertBefore(
-          createElement(nextChildren[nextChildStart++], isSVG),
-          (childNode = lastChildren[lastChildStart]) && childNode.element
+          createElement(newVNodeChildren[newVNodeChildStart++], isSVG),
+          (childNode = oldVNodeChildren[oldVNodeChildStart]) &&
+            childNode.element
         )
       }
-    } else if (nextChildStart > nextChildEnd) {
-      while (lastChildStart <= lastChildEnd) {
-        removeElement(element, lastChildren[lastChildStart++])
+    } else if (newVNodeChildStart > newVNodeChildEnd) {
+      while (oldVNodeChildStart <= oldVNodeChildEnd) {
+        removeElement(element, oldVNodeChildren[oldVNodeChildStart++])
       }
     } else {
-      const lastKeyed = createKeyMap(lastChildren, lastChildStart, lastChildEnd)
+      const lastKeyed = createKeyMap(
+        oldVNodeChildren,
+        oldVNodeChildStart,
+        oldVNodeChildEnd
+      )
       const nextKeyed = {}
 
-      while (nextChildStart <= nextChildEnd) {
-        lastKey = getKey((childNode = lastChildren[lastChildStart]))
-        nextKey = getKey(nextChildren[nextChildStart])
+      while (newVNodeChildStart <= newVNodeChildEnd) {
+        lastKey = getKey((childNode = oldVNodeChildren[oldVNodeChildStart]))
+        nextKey = getKey(newVNodeChildren[newVNodeChildStart])
 
         if (
           nextKeyed[lastKey] ||
           (nextKey != null &&
-            nextKey === getKey(lastChildren[lastChildStart + 1]))
+            nextKey === getKey(oldVNodeChildren[oldVNodeChildStart + 1]))
         ) {
           if (lastKey == null) {
             removeElement(element, childNode)
           }
-          lastChildStart++
+          oldVNodeChildStart++
           continue
         }
 
@@ -346,23 +357,23 @@ function patchElement(parent, element, oldVNode, newVNode, isSVG) {
               element,
               childNode && childNode.element,
               childNode,
-              nextChildren[nextChildStart],
+              newVNodeChildren[newVNodeChildStart],
               isSVG
             )
-            nextChildStart++
+            newVNodeChildStart++
           }
-          lastChildStart++
+          oldVNodeChildStart++
         } else {
           if (lastKey === nextKey) {
             patchElement(
               element,
               childNode.element,
               childNode,
-              nextChildren[nextChildStart],
+              newVNodeChildren[newVNodeChildStart],
               isSVG
             )
             nextKeyed[nextKey] = true
-            lastChildStart++
+            oldVNodeChildStart++
           } else {
             if ((savedNode = lastKeyed[nextKey]) != null) {
               patchElement(
@@ -372,7 +383,7 @@ function patchElement(parent, element, oldVNode, newVNode, isSVG) {
                   childNode && childNode.element
                 ),
                 savedNode,
-                nextChildren[nextChildStart],
+                newVNodeChildren[newVNodeChildStart],
                 isSVG
               )
               nextKeyed[nextKey] = true
@@ -381,17 +392,19 @@ function patchElement(parent, element, oldVNode, newVNode, isSVG) {
                 element,
                 childNode && childNode.element,
                 null,
-                nextChildren[nextChildStart],
+                newVNodeChildren[newVNodeChildStart],
                 isSVG
               )
             }
           }
-          nextChildStart++
+          newVNodeChildStart++
         }
       }
 
-      while (lastChildStart <= lastChildEnd) {
-        if (getKey((childNode = lastChildren[lastChildStart++])) == null) {
+      while (oldVNodeChildStart <= oldVNodeChildEnd) {
+        if (
+          getKey((childNode = oldVNodeChildren[oldVNodeChildStart++])) == null
+        ) {
           removeElement(element, childNode)
         }
       }
