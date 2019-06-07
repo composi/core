@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 1.6.1 (June 7, 2019)
+
+### src/render.js
+* Now taking the VNode passed as an argument to the render function and clone it to save on the component container element as the value of property `previousVNode`.
+
+### src/vdom.js
+* Now the `patchElement` function checks the new `previousVNode` property on the parent element to see if the new VNode is identical to the older vision. If they are it exits the patch immediately. Previously, the diff was checking a plain VNode against one which resulted from patching. Problem was, patching made the saved VNode always have DOM values for element, where as a fresh VNode has elements with a value of null. Using `previousVNode` allows the diff to check the resulting new VNode with the previous version before patching adds elements. This allows for quick exiting from the diff if there are no differences.
+
+The save VNode in the `vnode` property of the continer is still used for patching, since it holds the last DOM render information.
+
 ## 1.6.0 (June 5, 2019)
 
 ### src/vdom.js

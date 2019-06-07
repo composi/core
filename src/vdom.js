@@ -234,7 +234,7 @@ function updateElement(element, oldProps, newProps, isSVG) {
  * @return {VNode}
  */
 function patchElement(parent, element, oldVNode, newVNode, isSVG) {
-  if (newVNode === oldVNode) {
+  if (parent['previousVNode'] && newVNode === parent['previousVNode']) {
   } else if (
     oldVNode != null &&
     oldVNode.flag === TEXT_NODE &&

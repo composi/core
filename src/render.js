@@ -1,5 +1,6 @@
 import { patch } from './vdom'
 import { hydrate } from './vnode'
+import { clone } from '@composi/merge-objects'
 
 /**
  * Render a functional component. The first argument is the component to render. This can be either a JSX tag or an `h` function. The second argument is the container to render in. An optional third argument is an element in the document loaded from the server. This will be hydrated with the component provided to render. This third argument can be a DOM referece for that element, or a valid string selector for it.
@@ -35,6 +36,7 @@ export function render(VNode, container, hydrateThis) {
     return
   }
   let oldVNode
+  let previousVNode = clone(VNode)
   if (hydrateThis) {
     if (typeof hydrateThis === 'string') {
       hydrateThis = document.querySelector(hydrateThis)
@@ -48,4 +50,5 @@ export function render(VNode, container, hydrateThis) {
   }
   const vnode = patch(oldVNode, VNode, container)
   container['vnode'] = vnode
+  container['previousVNode'] = previousVNode
 }
