@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 1.6.1 (June 15, 2019)
+
+### test/render.html
+
+* Added delay for render test that needed a longer delay before accessing the updated DOM.
+
 ## 1.6.1 (June 7, 2019)
 
 ### src/render.js

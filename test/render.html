@@ -85,7 +85,7 @@
         things.push({ name: 'Popcorn', key: 104 })
         vNode = List2(things)
         render(List2(things), '#render-test')
-      }, 3000)
+      }, 4000)
 
       describe('Create virtual node for list', function () {
         it('virtual node should have three children', function () {
@@ -172,13 +172,13 @@
         it('list virtual node should have four children', function (done) {
           setTimeout(() => {
             expect(vNode.children.length).to.equal(4)
-          }, 3000)
+          }, 4000)
           done()
         })
         it('list virtual node now have four items"', function (done) {
           setTimeout(() => {
             expect(vNode.children.length).to.equal(4)
-          }, 3000)
+          }, 4000)
           done()
         })
         const list = document.querySelector('#render-test ul')
@@ -188,7 +188,7 @@
             expect(vNode.children[1].children[0].type).to.equal('Chair')
             expect(vNode.children[2].children[0].type).to.equal('Horse')
             expect(vNode.children[3].children[0].type).to.equal('Popcorn')
-          }, 3000)
+          }, 4000)
           done()
         })
         it('virtual node children keys should be "101", "102", "103", "104"', function (done) {
@@ -197,13 +197,13 @@
             expect(vNode.children[1].key).to.equal(102)
             expect(vNode.children[2].key).to.equal(103)
             expect(vNode.children[3].key).to.equal(104)
-          }, 3000)
+          }, 4000)
           done()
         })
         it('DOM list should have four list items', function (done) {
           setTimeout(() => {
             expect(list.children.length).to.equal(4)
-          }, 3000)
+          }, 4000)
           done()
         })
         it('DOM list items should contain "Apple", "Chair", "Horse" and "Popcorn"', function (done) {
@@ -212,7 +212,7 @@
             expect(list.children[1].textContent).to.equal('Chair')
             expect(list.children[2].textContent).to.equal('Horse')
             expect(list.children[3].textContent).to.equal('Popcorn')
-          }, 3000)
+          }, 5000)
           done()
         })
       })
