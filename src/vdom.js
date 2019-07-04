@@ -451,7 +451,7 @@ export function patch(oldVNode, newVNode, container) {
   if (Array.isArray(newVNode)) throw new FragmentError()
   patchElement(container, oldVNode && oldVNode.element, oldVNode, newVNode)
 
-  if (newVNode !== oldVNode) {
+  if (JSON.stringify(newVNode) !== JSON.stringify(oldVNode)) {
     while (LIFECYCLE.length > 0) LIFECYCLE.pop()()
   }
 

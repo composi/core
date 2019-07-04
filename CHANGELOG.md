@@ -1,10 +1,39 @@
 # composi/core Changelog
 
-## 1.6.1 (June 15, 2019)
+## 1.6.3 (July 4, 2019)
+
+### h.js
+
+* Simplified `childNodes` assignment.
+* Removed unnecessary parameter in `createVNode` call.
+* `createVNode` now has default values of `null` for `key` and `flag` parameters.
+
+### tests/h.html
+
+* Updated tests to reflect changes in `h.js`.
+
+
+### src/vdom.js
+
+* Improved old and new VNode comparison in `patch` so that `onupdate` lifecycle hook only fires when the props have changed.
+
+### src/vnode.js
+
+* Instead of assigning default value to `createVNode` function inside its body, moved assignment as default value in the call signature itself.
+* Marked flag parameter as optional.
+
+
+## 1.6.2 (June 15, 2019)
 
 ### test/render.html
 
 * Added delay for render test that needed a longer delay before accessing the updated DOM.
+
+## 1.6.2 (June 11, 2019)
+
+### package.json, package-lock.json
+
+* Updated merge-objects dependency version.
 
 ## 1.6.1 (June 7, 2019)
 

@@ -1,5 +1,4 @@
 import { createVNode, createTextVNode } from './vnode'
-import { ELEMENT_NODE } from './constants'
 
 /**
  * Creates a virtual node representing a node or text node to be created.
@@ -38,8 +37,8 @@ export function h(type, props, ...children) {
   }
 
   if (typeof type === 'function') {
-    return type(props, (props.children = childNodes))
+    return type(props, childNodes)
   } else {
-    return createVNode(type, props, childNodes, null, key, ELEMENT_NODE)
+    return createVNode(type, props, childNodes, null, key)
   }
 }

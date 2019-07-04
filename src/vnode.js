@@ -30,11 +30,17 @@ import {
  * @param {Children} children
  * @param {Element} element
  * @param {string | number | null} key
- * @param {number} flag
+ * @param {number} [flag]
  * @return {VNode} VNode
  */
-export function createVNode(type, props, children, element, key, flag) {
-  if (!key) key = null
+export function createVNode(
+  type,
+  props,
+  children,
+  element,
+  key = null,
+  flag = null
+) {
   return {
     type,
     props,
