@@ -28,8 +28,8 @@
  * @typedef {Function} Effect - A function to execute.
  * @typedef {Object<string, any>} Program A program to run.
  * @prop {Function} Program.init
- * @prop {Function} Program.update
  * @prop {Function} Program.view
+ * @prop {Function} Program.update
  * @prop {Function} [Program.subscriptions]
  * @prop {Function} [Program.subs] Shortcut for subscriptions.
  * @prop {Function} [Program.done]

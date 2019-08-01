@@ -1,8 +1,19 @@
 # composi/core Changelog
 
+## 1.6.4 (August 1, 2019)
+
+### rollup.config.js
+
+* Removed unnecessary UMD bundle from build.
+
+### src/runtime.js
+
+* Switched around properties of program JSDoc type comments to match actual usage. (They were out of order.)
+
+
 ## 1.6.3 (July 4, 2019)
 
-### h.js
+### src/h.js
 
 * Simplified `childNodes` assignment.
 * Removed unnecessary parameter in `createVNode` call.
