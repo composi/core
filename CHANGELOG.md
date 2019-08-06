@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 1.6.5 (August 6, 2019)
+
+### rollup.config.js
+
+* Added UMB build back in because Mocha tests need it!
+
+## src/runtime.js
+
+* Set initial value for `isFirstRun` to true for first run instead of false since technically it will always be the frist run initially.
+
 ## 1.6.4 (August 1, 2019)
 
 ### rollup.config.js

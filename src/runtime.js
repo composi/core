@@ -43,7 +43,7 @@ export function run(program) {
   const done = program.done
   let state, effect
   let isRunning = true
-  let isFirstRun = false
+  let isFirstRun = true
   const getState = () => state
 
   /**
@@ -76,10 +76,10 @@ export function run(program) {
       ;[state, effect] = update
     } else if (init && init.length) {
       ;[state, effect] = init
-      if (subscriptions && !isFirstRun) {
+      if (subscriptions && isFirstRun) {
         sub = subscriptions(getState, send)
         if (typeof sub === 'function') sub(getState, send)
-        isFirstRun = true
+        isFirstRun = false
       }
     } else {
       state = []
