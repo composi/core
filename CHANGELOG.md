@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 1.6.6 (August 6, 2019)
+
+### package.json
+
+* Updated version of merge-objects dependency due to security vulnerability.
+
 ## 1.6.5 (August 6, 2019)
 
 ### rollup.config.js
