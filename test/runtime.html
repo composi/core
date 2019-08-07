@@ -35,10 +35,9 @@
 
     <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
     <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
-    <script src='/dist/composi-core.js'></script>
     <script>mocha.setup('bdd')</script>
-    <script>
-      const { h, render, run, union, batchEffects } = composi
+    <script type='module'>
+      import {h, render, run, union, batchEffects} from 'https://unpkg.com/@composi/core/dist/composi-core.mjs?module'
       let expect = chai.expect
 
       function trigger(target, event) {
