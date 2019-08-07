@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 1.6.7 (August 6, 2019)
+
+## rollup.config.js
+
+* Removed UMD build
+
+## test/fragment.html, test/h.html, test/render.html, test/runtime.html
+
+* Switched from using UMD bundle to load Composi for tests to using ES 6 module syntax.
+
 ## 1.6.6 (August 6, 2019)
 
 ### package.json
