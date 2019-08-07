@@ -1,5 +1,9 @@
 # composi/core Changelog
 
+## 1.6.8 (August 6, 2019)
+
+* Bumped version for publishing purposes.
+
 ## 1.6.7 (August 6, 2019)
 
 ## rollup.config.js
