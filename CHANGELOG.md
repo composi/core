@@ -1,5 +1,10 @@
 # composi/core Changelog
 
+## 1.6.9 (August 27, 2019)
+
+* Updated to use the latest version of @composi/mergeObjects
+* This version now properly clones Sets and Maps, as well as merges them together. Of course, you can only merge Sets or Maps. You cannnot merge these with other object types.
+
 ## 1.6.8 (August 6, 2019)
 
 * Bumped version for publishing purposes.
