@@ -7,6 +7,13 @@ export default {
   input: 'src/index.js',
   output: [
     {
+      file: 'dist/composi-core.js',
+      format: 'umd',
+      name: 'composi',
+      sourcemap: true,
+      sourcemapFile: 'dist/composi-core.js.map'
+    },
+    {
       file: 'dist/composi-core.mjs',
       format: 'esm',
       name: 'composi',

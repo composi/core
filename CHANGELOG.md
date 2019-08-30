@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 1.6.10 (August 30, 2019)
+
+### rollup.config.js
+
+* Added back in build for UMD package. This is needed for use in only JavaScript editors like Codepen, JSBin, etc.
+
 ## 1.6.9 (August 27, 2019)
 
 * Updated to use the latest version of @composi/mergeObjects
@@ -11,11 +17,11 @@
 
 ## 1.6.7 (August 6, 2019)
 
-## rollup.config.js
+### rollup.config.js
 
 * Removed UMD build
 
-## test/fragment.html, test/h.html, test/render.html, test/runtime.html
+### test/fragment.html, test/h.html, test/render.html, test/runtime.html
 
 * Switched from using UMD bundle to load Composi for tests to using ES 6 module syntax.
 
