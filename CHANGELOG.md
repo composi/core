@@ -4,7 +4,7 @@
 
 ### rollup.config.js
 
-* Added back in build for UMD package. This is needed for use in only JavaScript editors like Codepen, JSBin, etc.
+* Added back in build for UMD package. This is needed for use in only JavaScript editors like Codepen, JSBin, etc.n
 
 ## 1.6.9 (August 27, 2019)
 
