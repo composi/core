@@ -1,7 +1,7 @@
 import { createVNode, createTextVNode } from './vnode'
 
 /**
- * Creates a virtual node representing a node or text node to be created.
+ * Creates a virtual node representing an element node or text node to be created.
  * @typedef {import('./vnode').VNode} VNode
  * @param {string | Function} type
  * @param {Object.<string, any>} [props]

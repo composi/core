@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 1.6.11 (September 9, 2019)
+
+### index.js
+
+* Added import of `createVNode` from `vnode.js` to `index.js`, even though it isn't being exported. This is to get around a bud in TypeScript parser that fails to get types imported with `@typedef {import('./vnode').VNode} VNode` format. The indirection of the `index.js` file causes TypeScript to cast JSDoc type imports as `any`. Importing `vnode.js` here makes its types avaiabale to TypeScript so that when it find the type imports in other files, it knows what they are. This then provides complete type safety for `h` and `render` functions.
+
+### h.js
+
+* Fixed typo in comment.
+
 ## 1.6.10 (August 30, 2019)
 
 ### rollup.config.js

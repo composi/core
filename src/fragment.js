@@ -1,5 +1,6 @@
 /**
  * Returns a group of sibling elements for inclusion in another JSX tag.
+ * @typedef {import('./vnode').VNode} VNode
  * @typedef {import('./vnode').Props} Props
  * @typedef {import('./vnode').Children} Children
  * @param {Props} props
