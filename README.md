@@ -299,7 +299,7 @@ When the above component renders, the input will have focus.
 
 ### Event Delegation
 
-You can similarly use the `onmount` lifecyle to set up event delegation. This is handy for situations where you need to handle events on a long list of items. Having an inline even on each item is inefficient. Event delegation reduces this to just one event for the list.
+You can similarly use the `onmount` lifecyle to set up event delegation. This is handy for situations where you need to handle events on a long list of items. Having an inline event on each item is inefficient. Event delegation reduces this to just one event for the list.
 
 ```javascript
 import { h, render } from '@composi/core'
