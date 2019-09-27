@@ -4,6 +4,12 @@
 
 ### src/index.js
 
+## 1.6.13 (September 27, 2019)
+
+* Make types State, Message and Send importable by projects. Cleaned up type export.
+
+### src/index.js
+
 * Made type `Program` defined in `src/runtime.js` available to importing in projects like this:
 
 ```javascript

@@ -6,15 +6,25 @@ export { batchEffects } from './effects'
 export { Fragment } from './fragment'
 
 /**
- * The following import is a hack to force TypeScript to properly
- * understand JSDoc types defined in the vnode.js file that are used by
- * fragment.js, h.js, render.js and vdom.js.
- * When TypeScript gets updated to handle this import properly, this will be removed.
- */
-import { createVNode } from './vnode' // eslint-disable-line no-unused-vars
-/**
- * Make Program type importable to projects.
+ * Make types available to programs that use them.
  */
 /**
+ * Type of virutal node used to define elements to create.
+ * @typedef { import('./vnode').VNode } VNode
+ */
+/**
+ * A program which is executed by the `run` function.
  * @typedef { import('./runtime').Program } Program
+ */
+/**
+ * Message dispatched by the `send` function to the program's `update` method.
+ * @typedef { import('./runtime').Message } Message
+ */
+/**
+ * Type of state, which can be of any type.
+ * @typedef { import('./runtime').State } State
+ */
+/**
+ * Function for sending messages to the program's `update` method.
+ * @typedef { import('./runtime').Send } Send
  */
