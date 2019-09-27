@@ -1,4 +1,26 @@
 /**
+ * @typedef {Object<string, any>} Message
+ * @property {string} Message.type
+ * @property {any} [Message.data]
+ * @typedef {(msg: Message) => Message} Send
+ */
+/**
+ * @typedef {any} State Simple or complex types for application state.
+ */
+/**
+ * @typedef {(State) => void} Effect A function to run at startup.
+ * @typedef {[State, Effect] | [State] | any[] | void} InitResult Return result of program init method.
+ */
+/**
+ * @typedef {Object<string, any>} Program A program to run.
+ * @prop {() => InitResult} Program.init Method to set up initial state for app and optionally run an effect.
+ * @prop {(state: State, send?: Send) => void} Program.view Method to present the current application state.
+ * @prop {(state: State, msg?: Message, send?: Send) => any} Program.update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
+ * @prop {(getState: () => State, send: Send) => void} [Program.subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
+ * @prop {(getState: () => State, send: Send) => void} [Program.subs] Shortcut for subscriptions.
+ * @prop {(state: State) => void} [Program.done] Method to do clean up when shutting down a program.
+ */
+/**
  * The @composi/runtime.
  * @example
  *
@@ -24,21 +46,13 @@
  * // Run the program:
  * run(program)
  * ```
- * @typedef {any} State - type any.
- * @typedef {Function} Effect - A function to execute.
- * @typedef {Object<string, any>} Program A program to run.
- * @prop {Function} Program.init
- * @prop {Function} Program.view
- * @prop {Function} Program.update
- * @prop {Function} [Program.subscriptions]
- * @prop {Function} [Program.subs] Shortcut for subscriptions.
- * @prop {Function} [Program.done]
- * @param {Program} program A program to run with four methods: `init`, `view`, `update` and `subscriptions`.
+ * @param {Program} program A program to run with five methods: `init`, `view`, `update`, `subscriptions` and `done`.
  * @return {() => void} Function to terminate runtime.
  */
 export function run(program) {
-  const update = program.update
+  let init = program.init()
   const view = program.view
+  const update = program.update
   const subscriptions = program.subscriptions || program.subs
   const done = program.done
   let state, effect
@@ -48,12 +62,12 @@ export function run(program) {
 
   /**
    * Send a message.
-   * @param {any} message A message of any type.
-   * @return {void} undefined
+   * @param {Message} message
+   *
    */
   function send(message) {
     if (isRunning) {
-      updateView(update(state, message, send))
+      return updateView(update(state, message, send))
     }
   }
 
@@ -70,15 +84,12 @@ export function run(program) {
    * @return {void} undefined
    */
   function updateView(update) {
-    let sub
-    let init = program.init()
     if (update) {
       ;[state, effect] = update
     } else if (init && init.length) {
       ;[state, effect] = init
       if (subscriptions && isFirstRun) {
-        sub = subscriptions(getState, send)
-        if (typeof sub === 'function') sub(getState, send)
+        if (typeof subscriptions === 'function') subscriptions(getState, send)
         isFirstRun = false
       }
     } else {
