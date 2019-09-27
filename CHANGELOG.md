@@ -1,5 +1,13 @@
 # composi/core Changelog
 
+## 1.6.12 (September 26, 2019)
+
+### src/runtime.js
+
+* Cleaned up how subscriptions are initialized.
+
+* Refactored types for runtime program for better Intellisense and type coverage.
+
 ## 1.6.11 (September 9, 2019)
 
 ### index.js
