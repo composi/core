@@ -12,3 +12,9 @@ export { Fragment } from './fragment'
  * When TypeScript gets updated to handle this import properly, this will be removed.
  */
 import { createVNode } from './vnode' // eslint-disable-line no-unused-vars
+/**
+ * Make Program type importable to projects.
+ */
+/**
+ * @typedef { import('./runtime').Program } Program
+ */

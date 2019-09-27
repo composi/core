@@ -1,5 +1,22 @@
 # composi/core Changelog
 
+## 1.6.13 (September 27, 2019)
+
+### src/index.js
+
+* Made type `Program` defined in `src/runtime.js` available to importing in projects like this:
+
+```javascript
+/**
+ * @type {import('@composi/core').Program}
+ */
+const program = {
+  init() {},
+  view(state, send) {},
+  update(state, msg, send) {}
+}
+```
+
 ## 1.6.12 (September 26, 2019)
 
 ### src/runtime.js
