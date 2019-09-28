@@ -9,7 +9,7 @@
  */
 /**
  * @typedef {(State) => void} Effect A function to run at startup.
- * @typedef {[State, Effect] | [State] | any[] | void} InitResult Return result of program init method.
+ * @typedef {[State, Effect] | any[] | void} InitResult Return result of program init method.
  */
 /**
  * @typedef {Object<string, any>} Program A program to run.

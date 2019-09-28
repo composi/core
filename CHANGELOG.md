@@ -1,8 +1,15 @@
 # composi/core Changelog
 
+## 1.6.14 (September 27, 2019)
+
+* Made improvements to JSDocs comments for better Intellisense for `h`, `union` and runtime types.
+
 ## 1.6.13 (September 27, 2019)
 
 ### src/index.js
+
+* Made types State, Message and Send importable by projects.
+* Cleaned up type export.
 
 ## 1.6.13 (September 27, 2019)
 

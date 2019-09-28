@@ -31,7 +31,7 @@ function createUnion(types) {
 }
 
 /**
- * Create a union of types for matching up with functions.
+ * Create a union of types for matching up with functions. This is used to define actions for the `update` method of a runtime program.
  * @param {...string} types
  */
 export function union(...types) {
