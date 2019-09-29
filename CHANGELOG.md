@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 1.6.15 (September 29, 2019)
+
+### test/runtime.html
+
+* Updated runtime tests to handle latest version of subscriptions properly.
+
 ## 1.6.14 (September 27, 2019)
 
 * Made improvements to JSDocs comments for better Intellisense for `h`, `union` and runtime types.

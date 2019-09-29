@@ -29,7 +29,9 @@
         <div id='component-click4'></div>
         <div id='send-test'></div>
         <div id="test-effect"></div>
-        <div id="subscription-test"></div>
+        <div id="subscription-test1"></div>
+        <div id="subscription-test2"></div>
+        <div id="subscription-test3"></div>
       </div>
     </section>
 
@@ -453,21 +455,21 @@
       describe('Should be able to launch subscriptions at start.', function () {
         it('subscription should run at startup.', done => {
           let effectResult = false
-          function effect() {
+          function effect(getState, send) {
             effectResult = true
           }
           const program = {
             init() {
               return [0]
             },
-            update() {
-              return [state]
+            update(state, msg, send) {
+              return [msg.data]
             },
             view() {
               return
             },
-            subscriptions() {
-              return effect
+            subscriptions(getState, send) {
+              return effect(getState, send)
             }
           }
           run(program)
@@ -480,12 +482,19 @@
 
       describe('Subscription should be able to access state and send message to action.', function() {
         let state = 'initial state'
-        let newState = ''
-
-        let msgWasSent = false
-        function effect(state, send) {
-          send({type: 'update-state', value: state})
-
+        const test = document.querySelector('#subscription-test3')
+        function Component({state, send}) {
+          return (
+            h('div',
+              {},
+              [state])
+          )
+        }
+        function effect(getState, send) {
+          const currentState = getState()
+          if (currentState === 'initial state') {
+            send({type: 'update-state', value: 'new state'})
+          }
         }
         const program = {
           init() {
@@ -493,27 +502,21 @@
           },
           update(state, msg) {
             if (msg.type === 'update-state') {
-              newState = msg.value
-              msgWasSent = true
-              return [state]
+              return [msg.value]
             }
           },
-          view() {
-            return
+          view(state, send) {
+            return render(Component({state, send}), test)
           },
-          subscriptions(state, send) {
-            return (state, send) => {
-              send({type: 'update-state', value: state})
-            }
+          subscriptions(getState, send) {
+            return effect(getState, send)
           }
         }
         run(program)
-        it('Subscription should have access to state.', done => {
-          expect(state).to.equal('initial state')
-          done()
-        })
-        it('Subscription should be able to send message to action.', done => {
-          expect(msgWasSent).to.equal(true)
+        it('Subscription should have access to state and send message to program\'s update method.', done => {
+          setTimeout(() => {
+            expect(test.textContent).to.equal('new state')
+          }, 1000)
           done()
         })
       })
@@ -535,9 +538,9 @@
               return
             },
             subs(getState, send) {
-              // Should be able to access state from subscription:
+              // Should be able to access program state from subscription:
               expect(getState()).to.equal(1)
-              return effect
+              return effect(getState, send)
             }
           }
           run(program)
@@ -548,63 +551,102 @@
         })
       })
       describe('Should be able to run batched subscriptions.', function() {
+        const test = document.querySelector('#subscription-test2')
 
-        let result1 = ''
-        let result2 = ''
-        let count = 5
-        const hello = () => {
-          result1 = 'Hello World!'
+        const state = {
+          count: 5,
+          result1: '1',
+          result2: '2'
         }
-        const secondEffect = () => {
-          result2 = 'Second effect ran!'
+
+        function hello(getState, send) {
+          send({type: 'result1', value: 'Hello World!'})
         }
-        const countDown = () => {
+        const secondEffect = (getState, send) => {
+          send({type: 'result2', value: 'Second effect ran!'})
+        }
+        const countDown = (getState, send) => {
           const id = setInterval(() => {
+            const {count} = getState()
             if (count === 0) {
               clearInterval(id)
             } else {
-              count--
+              send({type: 'reduce'})
             }
           }, 100)
         }
-        const subscriptions = batchEffects(hello, secondEffect, countDown)
+
+
+        const subs = batchEffects(hello, secondEffect, countDown)
+
+        function Component({state}) {
+          return h(
+            'ul',
+            {},
+            [
+              h('li', {}, state.result1),
+              h('li', {}, state.result2),
+              h('li', {}, state.count),
+            ]
+          )
+        }
         const program = {
           init() {
-            return ['World']
+            return [state]
           },
-          update() {},
-          view() {},
-          subscriptions(state, send) {
-            return subscriptions
+          view(state, send) {
+            return render(Component({state}), test)
+          },
+          update(state, msg, send) {
+            if (msg.type === 'result1') {
+              state.result1 = msg.value
+              return [state]
+            } else if (msg.type === 'result2') {
+              state.result2 = msg.value
+              return [state]
+            } else if (msg.type === 'reduce') {
+              state.count -= 1
+              return [state]
+            }
+          },
+          subscriptions(getState, send) {
+            return subs(getState, send)
           }
         }
-        const endProgram = run(program)
+        run(program)
 
         it('batched subsriptions should run at startup.', done => {
-          endProgram()
           setTimeout(() => {
-            expect(result1).to.equal('Hello World!')
-            expect(result2).to.equal('Second effect ran!')
-            expect(count).to.equal(0)
+            const children = test.firstElementChild.children
+            expect(children[0].textContent).to.equal('Hello World!')
+            expect(children[1].textContent).to.equal('Second effect ran!')
+            expect(children[2].textContent).to.equal('0')
           }, 1000)
           done()
         })
       })
 
       describe('Batched subscriptions should have access to getState and send functions.', function() {
-        const subscriptionTest = document.querySelector('#subscription-test')
-        let state = 1
-        let messageWasSent = false
+        const test = document.querySelector('#subscription-test1')
+        let state = {
+          count: 1,
+          messageWasSent: 'false'
+        }
 
         function effect1(getState, send) {
-          send({type: 'update-state-1', value: getState() + 1})
+          const count = getState().count
+          send({type: 'update-state-1', value: parseInt(count) + 1})
         }
         function effect2(getState, send) {
-          setTimeout(() => send({type: 'update-state-2', value: getState() + 2}), 1000)
+          const count = getState().count
+          setTimeout(() => send({type: 'update-state-2', value: parseInt(count) + 2}), 2000)
         }
         const batchedEffects = batchEffects(effect1, effect2)
         function subTest({state, send}) {
-          return h('div', {}, state)
+          return h('div', {}, [
+            h('p', {}, state.count),
+            h('p', {}, state.messageWasSent)
+          ])
         }
         const program = {
           init() {
@@ -612,30 +654,32 @@
           },
           update(state, msg) {
             if (msg.type === 'update-state-1') {
-              return [msg.value]
+              state.count = msg.value
+              return [state]
             } else if (msg.type === 'update-state-2') {
-              messageWasSent = true
-              return [msg.value]
+              state.messageWasSent = 'true'
+              state.count = msg.value
+              return [state]
             }
           },
           view(state, send) {
-            return render(subTest({state, send}), subscriptionTest)
+            return render(subTest({state, send}), test)
           },
           subscriptions(getState, send) {
-            return batchedEffects
+            return batchedEffects(getState, send)
           }
         }
         run(program)
         it('First effect should update state to 2.', function() {
-          expect(subscriptionTest.textContent).to.equal('2')
+          expect(test.firstElementChild.children[0].textContent).to.equal('2')
         })
-        it('Second effect should update state to 3.',
+        it('Second effect should update state to 4.',
         function(done) {
-          setTimeout(() => expect(subscriptionTest.textContent).to.equal('4'), 1200)
+          setTimeout(() => expect(test.firstElementChild.children[0].textContent).to.equal('4'), 2000)
           done()
         })
         it('Second effect should send message to update action, setting messageWasSent to true.', function(done) {
-          setTimeout(() => expect(messageWasSent).to.equal(true), 1200)
+          setTimeout(() => expect(test.firstElementChild.children[1].textContent).to.equal('true'), 2500)
           done()
         })
       })
