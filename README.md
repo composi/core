@@ -16,7 +16,6 @@
  *  [Event Delegation](#Event-Delegation)
  8. [onupdate](#onupdate)
  9. [onunmount](#onunmount)
-10. [hydrate](#hydrate)
 11. [run](#run)
 12. [Summary](#Summary)
 
@@ -69,7 +68,7 @@ import { h, render } from '@composi/core'
 
 const Title(greet) {
   return h(
-    'nav',
+    'header',
     {
       class: 'heading'
     },
@@ -90,7 +89,7 @@ const Title(greet) {
 }
 
 // Render component:
-let title = render(Title('World'), 'header')
+let title = render(Title('World'), '.header')
 ```
 
 If there are not props for an element, you can use `{}`. You could also just use null, but {} is two characters shorter.
@@ -100,9 +99,9 @@ The above hyperscript function is equivalent to the following JSX:
 ```javascript
 const Title({greet}) {
   return (
-    <nav class='heading'>
+    <header class='heading'>
       <h1 title={greet}>Hello, {greet}!</h1>
-    </nav>
+    </header>
   )
 }
 
@@ -121,20 +120,20 @@ import { h, render } from '@composi/core'
 
 function Title({greet}) {
   return (
-    <nav>
+    <header>
       <h1>Hello, {greet}!</h1>
-    </nav>
+    </header>
   )
 }
 
 // Mount the component:
-render(<Title greet='Everybody'/>, document.body)
+render(<Title greet='Everybody'/>, document.querySelector('#title'))
 ```
 
 When providing a container to render in, you can use either a DOM node reference, or a valid selector value:
 
 ```javascript
-// Mount the component in header tag:
+// Mount the component on header tag:
 render(<Title greet='Everybody'/>, document.querySelector('header'))
 
 // Or just pass in a selector:
@@ -148,29 +147,38 @@ import { h, render } from '@composi/core'
 
 function Title({greet}) {
   return (
-    <nav>
+    <header>
       <h1>Hello, {greet}!</h1>
-    </nav>
+    </header>
   )
 }
 
 // Render the component the first time.
-render(<Title greet='Joe'/>, document.body)
+render(<Title greet='Joe'/>, 'header')
 
 // Update the component 5 seconds later.
 setTimeout(() => {
-  render(<Title greet='Everybody Else'/>, document.body)
+  render(<Title greet='Everybody Else'/>, 'header')
 }, 5000)
 ```
 
-## One Component per Container
+## Component Replaces Target Element
 
-Because Composi uses the component's container to cache it last vnode state, there can only be one component per container. You could have other static content in the container with the component. When Composi renders a component, it appends it to the container, so the component will come after whatever is already there.
+When you use the `render` function, Composi takes the DOM element you provide and hydrates it with the functional component. As such, it is not practically to render a component directly into the document body. You'll need to provide a stub element to render your app. Something like this will work fine:
 
-If you want to be able to output several different components into the same container, then compose your components into on parent component that is just a wraper for the others and render it in the container.
+```html
+<body>
+  <div id='app'></div>
+</body>
+```
 
-Note that each component requires its own element as the base of the node tree that it will create.
+Then you could target it like this:
 
+```javascript
+render(<App {...{state}}/>, '#app')
+```
+
+If you want to be able to output several different components into the same container, such as the body tag above, just provide a separate stub for each component that you want to render.
 
 
 ## Keys
@@ -216,7 +224,7 @@ const fruits = [
 ]
 
 // Render the list:
-render(<List data={fruits} />, document.body)
+render(<List data={fruits} />, document.querySelector('#list'))
 ```
 
 ## Lifecycle Hooks
@@ -258,14 +266,14 @@ function initClock() {
   const timerId = setInterval(
     () => {
       // Re-render the clock at each tick.
-      render(<Clock />, document.body, clock)
+      render(<Clock />, '#clock')
     }),
     1000
   )
 }
 
 // Mount the clock.
-render(<Clock />, document.body)
+render(<Clock />, '#clock')
 ```
 In the above example, the component will be updated every second. But only the text node with the time value will change due to virtual DOM patching.
 
@@ -279,13 +287,13 @@ You can also use `onmount` to access the DOM of the component to set focus on an
 import { h, render } from '@composi/core'
 
 function Form() {
-  function init(form) {
-    form.querySelector('input').focus()
+  function setFocus(input) {
+    input.focus()
   }
   return (
-    <form onmount={init}>
+    <form >
       <p>
-        <input type='text' />
+        <input onmount={setFocus} type='text' />
       </p>
       <p>
         <button type='submit'>Add</button>
@@ -296,30 +304,6 @@ function Form() {
 ```
 
 When the above component renders, the input will have focus.
-
-### Event Delegation
-
-You can similarly use the `onmount` lifecyle to set up event delegation. This is handy for situations where you need to handle events on a long list of items. Having an inline event on each item is inefficient. Event delegation reduces this to just one event for the list.
-
-```javascript
-import { h, render } from '@composi/core'
-
-function List({data}) {
-  function init(list) {
-    list.addEventListener('click', e => {
-      // Check that the user click on a list item:
-      e.target.nodeName === 'LI' && alert(`You selected: ${e.target.textContent}.`)
-    })
-  }
-  return (
-    <ul onmount={init}>
-      {
-        data.map(item => <li>{item.value}</li>)
-      }
-    </ul>
-  )
-}
-```
 
 ## onupdate
 
@@ -343,7 +327,7 @@ function Title({greet}) {
 }
 
 // Mount the component:
-render(<Title greet='World'/>, document.body)
+render(<Title greet='World'/>, 'header')
 
 // Update component in 5 seconds:
 setTimeout(() => {
@@ -368,7 +352,7 @@ function List({data}) {
     // the variable fruits needs to be initialized with `let`, not `const`.
     // Otherwise you'd get an error about assigning to a read only property.
     fruits = data.filter(item => item.id != id)
-    render(<List data={fruits}/>, document.body)
+    render(<List data={fruits}/>, '#list')
   }
 
   // Animate list item when deleted.
@@ -390,20 +374,17 @@ function List({data}) {
   )
 }
 
-render(<List data={fruits}/>, document.body)
+render(<List data={fruits}/>, '#list')
 ```
 
-## hydrate
+## hydration
 
-You can hydrate server-rendered content. Composi core lets you pass a third argument to the `render` function for the element in the DOM you want to hydrate. This can be an actual node reference, such as with `document.querySelector`, or a valid string selector for that element. When you hydrate an element, Composi converts it into a virtual node that it then uses to patch with the component. This allows you to quickly load rendered content from the server and then bring it to life with dynamic content and events as efficiently as possible.
-
-To hydrate content you'll need to import it from Composi core. Then use it to convert the DOM node into a virtual node and pass it as the third argument of the `render` function.
+Since the `render` function uses an existing DOM element, hydration is built in--no need for something special. This means you can have Content created on the server. Then when the browser loads, have Composi target it as the node for the component in the `render` function.
 
 ```javascript
 import { h, render } from '@composi/core'
 
 // Convert server-rendered list into a virtual node:
-serverList = hydrate(#list)
 
 function List({data}) {
   return (
@@ -428,7 +409,7 @@ const fruits = [
 
 // Pass in serverList virtual node as third argument.
 // This will let Composi patch the DOM by calculating the difference between the functional component and serverList.
-let list = render(<List data={fruits} />, 'section', serverList)
+let list = render(<List data={fruits} />, '#server-genereated-content')
 ```
 
 ## Run
@@ -476,7 +457,7 @@ Done is an optional method that allows you to do clean when you stop a program, 
 ```javascript
 import { h, render, run } from '@composi/core'
 
-const section = document.querySelector('section')
+const section = document.querySelector('#clock')
 
 // Define clock component for view:
 function Clock(state) {
@@ -517,9 +498,9 @@ const program = {
     return [new Date().toLocaleTimeString()]
   },
   view(state) {
-    return render(Clock(state), section)
+    return render(Clock(state), '#clock')
   },
-  update(state, msg) {
+  update(state, msg, send) {
     return action(state, msg)
   },
   // Setup subscription:
@@ -575,7 +556,7 @@ const program = {
     return [state + 1]
   },
   view(state, send) {
-    return render(<Counter {...{state, send}} />, section)
+    return render(<Counter {...{state, send}} />, '#counter')
   }
 }
 
@@ -671,7 +652,7 @@ const program = {
     return actions(state, msg)
   },
   view(state, send) {
-    return render(<List {...{state, send}} />, section)
+    return render(<List {...{state, send}} />, '#todo-list')
   }
 }
 
@@ -804,7 +785,7 @@ const program = {
     return [state]
   },
   view(state, send) {
-    return render(<List state={...{state, send}} />, section)
+    return render(<List state={...{state, send}} />, '#todo-list')
   },
   update(state, msg, send) {
     return actions(state, msg, send)
@@ -822,4 +803,4 @@ As you can see in the above example, tagged unions make the connection between v
 
 Composi is all about components. These provide a great way to organize your code into modular and reusable chunks. The virtual DOM means you never have to touch the DOM to change the structure.
 
-Because Composi uses JSX, there are many similarities to React patterns. Please note that Composi is not a React clone. It is not trying to be compatible with React and the React ecosystem the way Preact and Inferno do. Composi core does not have PropTypes. Events are not synthetic. Functional component have three lifecycle hooks, whereas React functional components have none. However, because of using a virtual DOM and JSX, the similarities are greater than the differences. The API is very small--comprising two functions: `h` and `render` and three lifecycle hooks that are similar to the ones React has for class components. If you are familiar with React, Inferno or Preact, you can note the differences and be productive with Composi core in less than an hour.
+Because Composi uses JSX, there are many similarities to React patterns. Please note that Composi is not a React clone. It is not trying to be compatible with React and the React ecosystem the way Preact and Inferno do. Composi core does not have PropTypes. Events are not synthetic. Functional component have three lifecycle hooks, whereas React functional components have none. However, because of using a virtual DOM and JSX, the similarities are greater than the differences. The API is very small--comprising two functions: `h` and `render` and three lifecycle hooks that are similar to the ones React has for class components. If you are familiar with React, Inferno or Preact, you can note the differences and be productive with Composi core in less than a half hour.

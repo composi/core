@@ -1,5 +1,25 @@
 # composi/core Changelog
 
+## 2.0.0 (October, 7, 2019)
+
+### src/vdom.js
+
+* Refactored virtual DOM for speed improvement. The new approach now directly hydrates and element in the DOM. Previously it required a container into which it appended the rendered functional component. This meant only one component could exist in a container. Now rendering is executed directly on the provided element. This means multiple components can be rendered in the same container as long as each has its own stub to use.
+
+* Improved diffing for faster renders.
+
+### src/render.js
+
+* Due to changes in the virtual DOM, the render function now only takes two arguemnts, the component to render and an element to hydrate or update.
+
+### src/vnode.js
+
+* The `hydrate` function was removed since hydration is now automatic when the `render` function is called the first time.
+
+### src/vnode.js
+
+* Dropped the hydrate and removeWhiteSpaceNodes function and updated both createVNode and  v for changes in vdom parsing.
+
 ## 1.6.15 (September 29, 2019)
 
 ### test/runtime.html

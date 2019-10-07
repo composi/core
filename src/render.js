@@ -1,9 +1,7 @@
 import { patch } from './vdom'
-import { hydrate } from './vnode'
-import { clone } from '@composi/merge-objects'
 
 /**
- * Render a functional component. The first argument is the component to render. This can be either a JSX tag or an `h` function. The second argument is the container to render in. An optional third argument is an element in the document loaded from the server. This will be hydrated with the component provided to render. This third argument can be a DOM referece for that element, or a valid string selector for it.
+ * Render a functional component. The first argument is the component to render. This can be either a JSX tag or an `h` function. The second argument is the element to hydrate or update. During the first render, the target element is hydrated with the component provided. Further updates patch the existing element based on the virtual DOM.
  * @example
  *
  * ```
@@ -15,40 +13,22 @@ import { clone } from '@composi/merge-objects'
  * }, 5000)
  * ```
  * @typedef {import('./vnode').VNode} VNode
- * @param {VNode} VNode
- * @param {Element | string} container
- * @param {Element | string} [hydrateThis]
+ * @param {VNode} vnode
+ * @param {Element | string} target
  * @return {void} undefined
  */
-export function render(VNode, container, hydrateThis) {
-  if (typeof container === 'string') {
-    container = document.querySelector(container)
-  } else {
-    container = container
+export function render(vnode, target) {
+  let oldTarget = ''
+  if (typeof target === 'string') {
+    oldTarget = target
+    target = document.querySelector(target)
   }
-  if (!container) {
+  if (!target) {
+    let msg = ''
+    if (oldTarget) msg = ` The selector you provided was: "${oldTarget}"`
     console.error(
-      '@composi/core Error: You need to provide a valid container to render the component in. Check the element or selector you provided and make sure that it exists in the DOM before trying to render.'
+      `@composi/core Error: The second parameter for render function was invalid. Check the selector you provided and make sure that it exists in the DOM before trying to render. ${msg}`
     )
-    console.error(
-      `@composi/core Message: The container you provided was "${container}"`
-    )
-    return
   }
-  let oldVNode
-  let previousVNode = clone(VNode)
-  if (hydrateThis) {
-    if (typeof hydrateThis === 'string') {
-      hydrateThis = document.querySelector(hydrateThis)
-    }
-    // If user tries to hydrate already rendered component,
-    // use its 'vnode' property,
-    // otherwise hydrate it.
-    oldVNode = (container && container['vnode']) || hydrate(hydrateThis)
-  } else {
-    oldVNode = container && container['vnode']
-  }
-  const vnode = patch(oldVNode, VNode, container)
-  container['vnode'] = vnode
-  container['previousVNode'] = previousVNode
+  patch(target, vnode)
 }
