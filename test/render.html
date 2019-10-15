@@ -22,16 +22,14 @@
       <div id="fixtures"></div>
       <div id="hide-tests">
         <div id='h1-test'></div>
-        <div id="list-test"></div>
-        <div id="alert-test"></div>
-        <div id="render-test"></div>
-        <div id="lifecycle"></div>
-        <div id="hydrate">
-          <ul id="listToHydrate">
-            <li>One</li>
-            <li>Two</li>
-          </ul>
-        </div>
+        <ul id="list-test"></ul>
+        <ul id="alert-test"></ul>
+        <ul id="render-test"></ul>
+        <ul id="lifecycle"></ul>
+        <ul id="listToHydrate">
+          <li>One</li>
+          <li>Two</li>
+        </ul>
         <div id="readonly"></div>
         <div id="fragment-test"></div>
       </div>
@@ -41,27 +39,29 @@
     <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
     <script>mocha.setup('bdd')</script>
     <script type='module'>
-      import {h, render} from 'https://unpkg.com/@composi/core/dist/composi-core.mjs?module'
+      import {h, render} from '/dist/composi-core.mjs?module'
+      import htm from 'https://unpkg.com/htm/dist/htm.mjs?module'
+      const html = htm.bind(h)
       let expect = chai.expect
 
       function H1() {
-        return h('h1', { id: 'title' }, 'The Title')
+        return html`<h1 id='title'>The Title</h1>`
       }
 
       render(H1(), '#h1-test', null)
 
       function List() {
-        return h('ul', { class: 'list' }, [
-          h('li', {}, 'one'),
-          h('li', {}, 'two'),
-          h('li', {}, 'three')
-        ])
+        return html`<ul class='list'>
+          <li>one</li>
+          <li>two</li>
+          <li>three</li>
+        </ul>`
       }
 
       render(List(), '#list-test')
 
       function Alert(message) {
-        return h('h2', { style: { color: 'red' } }, `Alert: ${message}!`)
+        return html`<h2 style='color: red;'>Alert: ${message}!</h2>`
       }
       render(Alert('this is a message'), '#alert-test')
 
@@ -71,11 +71,14 @@
         { name: 'Horse', key: 103 }
       ]
       function List2(data) {
-        return h(
-          'ul',
-          {},
-          data.map(item => h('li', { key: item.key }, item.name))
-        )
+        return html`<ul>
+          ${
+          data.map(item => html`<li
+          key=${item.key}
+          >${item.name}
+          </li>`)
+          }
+        </ul>`
       }
       let vNode = List2(things)
       render(List2(things), '#render-test')
@@ -154,7 +157,7 @@
       })
 
       describe('Mount list to update later', function () {
-        const list = document.querySelector('#render-test ul')
+        const list = document.querySelector('#render-test')
 
         it('should have just three children', function () {
           expect(list.children.length).to.equal(3)
@@ -180,7 +183,7 @@
           }, 4000)
           done()
         })
-        const list = document.querySelector('#render-test ul')
+        const list = document.querySelector('#render-test')
         it('virtual node children should be "Apple", "Chair", "Horse" and "Popcorn', function (done) {
           setTimeout(() => {
             expect(vNode.children[0].children[0].type).to.equal('Apple')
@@ -220,14 +223,12 @@
         let componentDidMount = false
         let componentDidUpdate = false
         let componentDidUnmount = false
-        let unmountedComponents = 0
         function LifecycleTest(data) {
           function testMount() {
             componentDidMount = true
           }
           function testUpdate() {
             componentDidUpdate = true
-            unmountedComponents += 1
           }
           function testUnmount(el, done) {
             componentDidUnmount = true
@@ -235,31 +236,21 @@
           }
           function listItems(items) {
             console.log(items)
-            return items.map(item => h('li', { onunmount: (el, done) => testUnmount(el, done) }, item))
+            return items.map(item => html`<li onunmount=${(el, done) => testUnmount(el, done)}>${item}</li>`)
           }
-          return (
-            h(
-              'ul',
-              {
-                onmount: () => {
-                  testMount()
-                },
-                onupdate: () => {
-                  testUpdate()
-                }
-              },
-              listItems(data)
-            )
-          )
+          return html`
+            <ul onmount=${() => testMount()} onupdate=${() => testUpdate()}>
+              ${listItems(data)}
+            </ul>
+          `
         }
         let lifecyleTest = document.querySelector('#lifecycle')
         render(LifecycleTest([1, 2]), lifecyleTest)
-        const testComponent = lifecyleTest.querySelector('ul')
 
         it('Functional component should execute "onmount" when it is mounted', function (done) {
           setTimeout(() => {
             expect(componentDidMount).to.be.true
-            expect(testComponent.children.length).to.equal(2)
+            expect(lifecyleTest.children.length).to.equal(2)
           }, 1000)
           done()
         })
@@ -267,7 +258,7 @@
           setTimeout(() => {
             render(LifecycleTest([1, 2, 3]), lifecyleTest)
             expect(componentDidUpdate).to.be.true
-            expect(testComponent.children.length).to.equal(3)
+            expect(lifecyleTest.children.length).to.equal(3)
           }, 1500)
           done()
         })
@@ -275,8 +266,7 @@
           setTimeout(() => {
             render(LifecycleTest([1]), lifecyleTest)
             expect(componentDidUnmount).to.be.true
-            expect(testComponent.children.length).to.equal(1)
-            expect(unmountedComponents).to.equal(2)
+            expect(lifecyleTest.children.length).to.equal(1)
           }, 2000)
           done()
         })
@@ -285,31 +275,11 @@
       describe('Hydrate existing DOM node using render function', function () {
         const list = document.querySelector('#listToHydrate')
         function hydrateTheList() {
-          return (
-            h(
-              'ul',
-              {
-                id: 'listToHydrate'
-              },
-              [
-                h(
-                  'li',
-                  { key: 101 },
-                  ['Apple']
-                ),
-                h(
-                  'li',
-                  { key: 102 },
-                  ['Orange']
-                ),
-                h(
-                  'li',
-                  { key: 103 },
-                  ['Banana']
-                )
-              ]
-            )
-          )
+          return html`<ul id='listToHydrate'>
+            <li key=${101}>Apple</li>
+            <li key=${102}>Orange</li>
+            <li key=${103}>Banana</li>
+          </ul>`
         }
 
         it('The list to hydrate should have an id of "listToHydrate"', function () {
@@ -327,7 +297,7 @@
 
         it('The hydrated list should have three children', function (done) {
           setTimeout(() => {
-            render(hydrateTheList(), '#hydrate', '#listToHydrate')
+            render(hydrateTheList(), '#listToHydrate' )
             const hydratedList = document.querySelector('#listToHydrate')
             expect(hydratedList.children.length).to.equal(3)
           }, 1500)
@@ -356,35 +326,32 @@
 
       describe('Read only properties get set as attributes', function() {
         function ReadOnly() {
-          return (
-              h('div', {}, [
-                h('input', {list: 'ice-cream-flavors', id:'ice-cream-choice'}),
-                h('form', {id:'basic-form'}),
-                h('input', {form: 'basic-form', id: 'form-input'}),
-                h('datalist', {id: 'ice-cream-flavors'},
-                [
-                  h('option', {value: 'Chocolate'}),
-                  h('option', {value: 'Coconut'}),
-                  h('option', {value: 'Mint'})
-                ]),
-                h('input', {id: 'readonly-input', type:'text', spellcheck:true, draggable: true})
-              ])
-          )
+          return html`
+            <div>
+              <input list='ice-cream-flavors' id="ice-cream-choice"></input>
+              <form  id='basic-form'></form>
+              <input form='basic-form' id='form-input'></input>
+              <datalist id='ice-cream-flavors'>
+                <option value='Chocolate'></option>
+                <option value='Coconut'></option>
+                <option value='Mint'></option>
+              </datalist>
+              <input id='readonly-input' type='text' spellcheck draggable></input>
+            </div>
+          `
         }
         it('list, type, form, draggable and spellcheck are read only and should be set as attributes.', function(done) {
-
           render(ReadOnly(), '#readonly')
           setTimeout(() => {
-
-          const choice = document.getElementById('ice-cream-choice')
-          const input = document.getElementById('readonly-input')
-          const formInput = document.getElementById('form-input')
-          const basicForm = document.getElementById('basic-form')
-          expect(choice.type).to.equal('text')
-          expect(input.type).to.equal('text')
-          expect(formInput.form).to.equal(basicForm)
-          expect(input.spellcheck).to.be.true
-          expect(input.draggable).to.be.true
+            const choice = document.getElementById('ice-cream-choice')
+            const input = document.getElementById('readonly-input')
+            const formInput = document.getElementById('form-input')
+            const basicForm = document.getElementById('basic-form')
+            expect(choice.type).to.equal('text')
+            expect(input.type).to.equal('text')
+            expect(formInput.form).to.equal(basicForm)
+            expect(input.spellcheck).to.be.true
+            expect(input.draggable).to.be.true
           }, 1000)
           done()
 
@@ -392,22 +359,23 @@
       })
 
       describe('Cannot insert array of elements directly into DOM', function () {
-        let renderError
+        let renderError = ''
         function ListItems() {
-          return [
-            h('li', {}, 'One'),
-            h('li', {}, 'Two'),
-            h('li', {}, 'Three')
-          ]
+          return html`
+            <li>One</li>
+            <li>Two</li>
+            <li>Three</li>
+          `
         }
+        window.ListItems = ListItems()
         try {
           render(ListItems(), document.querySelector('#fragment-test'))
         } catch (err) {
           renderError = err
         }
         it('Render should generate an error message when attempting to insert Fragment tag directly into DOM', function () {
-          expect(typeof renderError).to.equal('object')
-          expect(renderError.message).to.equal('Cannot insert Fragment tag directly into DOM.')
+          expect(typeof renderError).to.equal('string')
+          expect(renderError).to.equal('Cannot insert Fragment tag directly into DOM.')
         })
         it('Container in DOM should remain empty', function () {
           const el = document.querySelector('#fragment-test')

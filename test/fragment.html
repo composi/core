@@ -19,8 +19,8 @@
     <div id="messages"></div>
     <div id="fixtures"></div>
     <div id="hide-tests">
-      <div id="fragment-test"></div>
-      <div id="fragment-test2"></div>
+      <ul id="fragment-test"></ul>
+      <ul id="fragment-test2"></ul>
       <ul id="fragment-test3"></ul>
     </div>
   </section>
@@ -29,10 +29,11 @@
   <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
   <script>mocha.setup('bdd')</script>
   <script type='module'>
-    import {h, render, Fragment} from 'https://unpkg.com/@composi/core/dist/composi-core.mjs?module'
+    import {h, render, Fragment} from '/dist/composi-core.mjs?module'
+
+    import htm from 'https://unpkg.com/htm/dist/htm.mjs?module'
+    const html = htm.bind(h)
     let expect = chai.expect
-
-
 
     describe('Examine Fragment tag virtual node', function() {
       const letters = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -93,22 +94,37 @@
       }
       render(h('ul', {}, [Items(stuff)]), '#fragment-test')
       it('list should have three items', function() {
-        expect(fragTest.firstElementChild.children.length).to.equal(3)
+        expect(fragTest.children.length).to.equal(3)
       })
       it('list items should be of type "LI"', function() {
-        expect(fragTest.firstElementChild.children[0].nodeName).to.equal('LI')
-        expect(fragTest.firstElementChild.children[1].nodeName).to.equal('LI')
-        expect(fragTest.firstElementChild.children[2].nodeName).to.equal('LI')
+        expect(fragTest.children[0].nodeName).to.equal('LI')
+        expect(fragTest.children[1].nodeName).to.equal('LI')
+        expect(fragTest.children[2].nodeName).to.equal('LI')
       })
       it('list items parent should be of type "UL"', function() {
-        expect(fragTest.firstElementChild.nodeName).to.equal('UL')
+        expect(fragTest.nodeName).to.equal('UL')
       })
     })
 
+    /*
     describe('Nested Fragment tags should flatten out', function() {
       const letters = ['a', 'b', 'c', 'd', 'e']
       const fragTest2 = document.querySelector('#fragment-test2')
-      const items = Fragment([
+      const items = html`
+        <Fragment>
+          <span>${letters[0]}</span>
+          <span>${letters[1]}</span>
+          <Fragment>
+            <span>${letters[2]}</span>
+            <span>${letters[3]}</span>
+            <Fragment>
+              <span>${letters[4]}</span>
+            </Fragment>
+          </Fragment>
+        </Fragment>
+      `
+      console.log(items)
+      const items2 = Fragment([
         h('span', {}, [letters[0]]),
         h('span', {}, [letters[1]]),
         Fragment([
@@ -119,6 +135,7 @@
           ])
         ])
       ])
+      console.log(items)
       const vNodeTest =  h('div', {}, items)
       window.vNodeTest = vNodeTest
       render(vNodeTest, '#fragment-test2')
@@ -161,25 +178,26 @@
             )
           ]
         )
-        expect(fragTest2.firstElementChild.children.length).to.equal(5)
+        expect(fragTest2.children.length).to.equal(5)
       })
       it('Fragment children in DOM should be of type "SPAN"', function() {
-        expect(fragTest2.firstElementChild.children[0].nodeName).to.equal('SPAN')
-        expect(fragTest2.firstElementChild.children[1].nodeName).to.equal('SPAN')
-        expect(fragTest2.firstElementChild.children[2].nodeName).to.equal('SPAN')
-        expect(fragTest2.firstElementChild.children[3].nodeName).to.equal('SPAN')
-        expect(fragTest2.firstElementChild.children[4].nodeName).to.equal('SPAN')
+        expect(fragTest2.children[0].nodeName).to.equal('SPAN')
+        expect(fragTest2.children[1].nodeName).to.equal('SPAN')
+        expect(fragTest2.children[2].nodeName).to.equal('SPAN')
+        expect(fragTest2.children[3].nodeName).to.equal('SPAN')
+        expect(fragTest2.children[4].nodeName).to.equal('SPAN')
       })
       it('Fragment parent in DOM should be of type "DIV"', function() {
         expect(fragTest2.firstElementChild.nodeName).to.equal('DIV')
       })
     })
+    */
     describe('Cannot insert Fragment tag directly into DOM', function() {
       let renderError
       // #fragment-test3
       function ListItems() {
         return (
-          Fragment(null, [
+          Fragment([
             h('li', {}, 'One'),
             h('li', {}, 'Two'),
             h('li', {}, 'Three')
@@ -192,8 +210,8 @@
         renderError = err
       }
       it('Render should generate an error message when attempting to insert Fragment tag directly into DOM', function() {
-        expect(typeof renderError).to.equal('object')
-        expect(renderError.message).to.equal('Cannot insert Fragment tag directly into DOM.')
+        expect(typeof renderError).to.equal('string')
+        expect(renderError).to.equal('Cannot insert Fragment tag directly into DOM.')
       })
       it('UL tag in DOM should remain empty', function() {
         const ul = document.querySelector('#fragment-test3')

@@ -1,5 +1,19 @@
 # composi/core Changelog
 
+## 2.0.1 (October, 15, 2019)
+
+### src/render.js
+
+* Fixed so when render mount function component with onmount hook on existing element, the onmount hook fires.
+
+### src/vdom.js
+
+* Made sure that read-only properties like `list`, `form`, etc. are rendered as attributes.
+
+### text/fragment.html, h.html, render.html, runtime.html
+
+* Fixed tests to hanlde new vdom patching method.
+
 ## 2.0.0 (October, 7, 2019)
 
 ### src/vdom.js

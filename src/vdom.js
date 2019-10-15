@@ -38,7 +38,15 @@ function patchProperty(node, prop, oldValue, newValue, isSVG) {
     } else if (!oldValue) {
       node.addEventListener(prop, listener)
     }
-  } else if (!isSVG && prop !== 'list' && prop in node) {
+  } else if (
+    prop !== 'list' &&
+    prop !== 'form' &&
+    prop !== 'type' &&
+    prop !== 'draggable' &&
+    prop !== 'spellcheck' &&
+    prop in node &&
+    !isSVG
+  ) {
     node[prop] = newValue == null ? '' : newValue
   } else if (newValue == null || newValue === false) {
     node.removeAttribute(prop)
@@ -115,7 +123,6 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
   } else if (oldVNode == null || oldVNode.type !== newVNode.type) {
     node = parent.insertBefore(createNode(newVNode, LIFECYCLE, isSVG), node)
     if (oldVNode != null) {
-      // parent.removeChild(oldVNode.node)
       removeElement(parent, oldVNode)
     }
   } else {
@@ -294,6 +301,13 @@ function recycleNode(node) {
 }
 
 export function patch(node, vdom) {
+  if (!node.vdom) {
+    if (vdom.props.onmount) {
+      LIFECYCLE.push(function() {
+        vdom.props.onmount(node)
+      })
+    }
+  }
   const vnode = (patchNode(
     node.parentNode,
     node,

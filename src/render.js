@@ -18,6 +18,9 @@ import { patch } from './vdom'
  * @return {void} undefined
  */
 export function render(vnode, target) {
+  if (Array.isArray(vnode)) {
+    throw 'Cannot insert Fragment tag directly into DOM.'
+  }
   let oldTarget = ''
   if (typeof target === 'string') {
     oldTarget = target

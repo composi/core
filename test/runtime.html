@@ -30,8 +30,8 @@
         <div id='send-test'></div>
         <div id="test-effect"></div>
         <div id="subscription-test1"></div>
-        <div id="subscription-test2"></div>
-        <div id="subscription-test3"></div>
+        <ul id="subscription-test2"></ul>
+        <h1 id="subscription-test3"></h1>
       </div>
     </section>
 
@@ -40,6 +40,8 @@
     <script>mocha.setup('bdd')</script>
     <script type='module'>
       import {h, render, run, union, batchEffects} from 'https://unpkg.com/@composi/core/dist/composi-core.mjs?module'
+      import htm from 'https://unpkg.com/htm/dist/htm.mjs?module'
+      const html = htm.bind(h)
       let expect = chai.expect
 
       function trigger(target, event) {
@@ -53,16 +55,18 @@
         { name: 'Horse', key: 103 }
       ]
       function List2(data) {
-        return h(
-          'ul',
-          {},
-          data.map(item => h('li', { key: item.key }, item.name))
-        )
+        return html`
+          <ul>
+            ${
+              data.map(item => html`<li key=${item.key}>${item.name}</li>`)
+            }
+          </ul>
+        `
       }
 
       describe('Runtime should render component with state.', () => {
         function H1(greeting) {
-          return h('h1', { id: 'title' }, `Hello, ${greeting}!`)
+          return html`<h1 id='title'>Hello, ${greeting}!</h1>`
         }
         const program = {
           init() {
@@ -82,25 +86,15 @@
           endProgram()
         })
       })
+
       describe('Should be able to send message from view to the update function.', () => {
         function Component(state, send) {
-          return h(
-            'div',
-            {},
-            h(
-              'button',
-              {
-                id: 'send-msg1',
-                onclick: () => send({ type: 'click' })
-              }
-            )
-            ,
-            h(
-              'p',
-              { id: 'click-result1' },
-              `${state}`
-            )
-          )
+          return html`
+            <div>
+              <button id='send-msg1' onclick=${() => send({type: 'click'})}></button>
+              <p id='click-result1'>${state}</p>
+            </div>
+          `
         }
 
         const program = {
@@ -135,23 +129,12 @@
 
       describe('Should be able to send data with message', () => {
         function Component(state, send) {
-          return h(
-            'div',
-            {},
-            h(
-              'button',
-              {
-                id: 'send-msg2',
-                onclick: () => send({ type: 'click', data: 'Button was clicked' })
-              }
-            )
-            ,
-            h(
-              'p',
-              { id: 'click-result2' },
-              `${state}`
-            )
-          )
+          return html`
+            <div>
+              <button id='send-msg2' onclick=${() => send({type: 'click', data: 'Button was clicked'})}></button>
+              <p id='click-result2'>${state}</p>
+            </div>
+          `
         }
 
         const program = {
@@ -245,23 +228,12 @@
       describe('Should be able to use tagged union to define actions.', () => {
         const Msg3 = union('click')
         function Component(state, send) {
-          return h(
-            'div',
-            {},
-            h(
-              'button',
-              {
-                id: 'send-msg3',
-                onclick: () => send(Msg3.click())
-              }
-            )
-            ,
-            h(
-              'p',
-              { id: 'click-result3' },
-              `${state}`
-            )
-          )
+          return html`
+            <div>
+              <button id='send-msg3' onclick=${() => send(Msg3.click())}></button>
+              <p id='click-result3'>${state}</p>
+            </div>
+          `
         }
         let taggedEffectFired = false
         const program = {
@@ -295,23 +267,12 @@
       describe('Should be able to pass data with tagged union function.', () => {
         const Msg4 = union('click')
         function Component(state, send) {
-          return h(
-            'div',
-            {},
-            h(
-              'button',
-              {
-                id: 'send-msg4',
-                onclick: () => send(Msg4.click('button was clicked'))
-              }
-            )
-            ,
-            h(
-              'p',
-              { id: 'click-result4' },
-              `${state}`
-            )
-          )
+          return html`
+            <div>
+              <button id='send-msg4' onclick=${() => send(Msg4.click('button was clicked'))}></button>
+              <p id='click-result4'>${state}</p>
+            </div>
+          `
         }
         let taggedEffectFired = ''
         const program = {
@@ -484,11 +445,9 @@
         let state = 'initial state'
         const test = document.querySelector('#subscription-test3')
         function Component({state, send}) {
-          return (
-            h('div',
-              {},
-              [state])
-          )
+          return html`
+            <h1 id='subscription-test3'>${state}</h1>
+          `
         }
         function effect(getState, send) {
           const currentState = getState()
@@ -500,13 +459,13 @@
           init() {
             return [state]
           },
-          update(state, msg) {
+          view(state, send) {
+            return render(Component({ state, send }), test)
+          },
+          update(state, msg, send) {
             if (msg.type === 'update-state') {
               return [msg.value]
             }
-          },
-          view(state, send) {
-            return render(Component({state, send}), test)
           },
           subscriptions(getState, send) {
             return effect(getState, send)
@@ -550,6 +509,7 @@
           done()
         })
       })
+
       describe('Should be able to run batched subscriptions.', function() {
         const test = document.querySelector('#subscription-test2')
 
@@ -580,15 +540,13 @@
         const subs = batchEffects(hello, secondEffect, countDown)
 
         function Component({state}) {
-          return h(
-            'ul',
-            {},
-            [
-              h('li', {}, state.result1),
-              h('li', {}, state.result2),
-              h('li', {}, state.count),
-            ]
-          )
+          return html`
+            <ul>
+              <li>${state.result1}</li>
+              <li>${state.result2}</li>
+              <li>${state.count}</li>
+            </ul>
+          `
         }
         const program = {
           init() {
@@ -617,7 +575,7 @@
 
         it('batched subsriptions should run at startup.', done => {
           setTimeout(() => {
-            const children = test.firstElementChild.children
+            const children = test.children
             expect(children[0].textContent).to.equal('Hello World!')
             expect(children[1].textContent).to.equal('Second effect ran!')
             expect(children[2].textContent).to.equal('0')
@@ -643,14 +601,19 @@
         }
         const batchedEffects = batchEffects(effect1, effect2)
         function subTest({state, send}) {
-          return h('div', {}, [
-            h('p', {}, state.count),
-            h('p', {}, state.messageWasSent)
-          ])
+          return html`
+            <div>
+              <p>${state.count}</p>
+              <p>${state.messageWasSent}</p>
+            </div>
+          `
         }
         const program = {
           init() {
             return [state]
+          },
+          view(state, send) {
+            return render(subTest({state, send}), test)
           },
           update(state, msg) {
             if (msg.type === 'update-state-1') {
@@ -662,24 +625,21 @@
               return [state]
             }
           },
-          view(state, send) {
-            return render(subTest({state, send}), test)
-          },
           subscriptions(getState, send) {
             return batchedEffects(getState, send)
           }
         }
         run(program)
         it('First effect should update state to 2.', function() {
-          expect(test.firstElementChild.children[0].textContent).to.equal('2')
+          expect(test.children[0].textContent).to.equal('2')
         })
         it('Second effect should update state to 4.',
         function(done) {
-          setTimeout(() => expect(test.firstElementChild.children[0].textContent).to.equal('4'), 2000)
+          setTimeout(() => expect(test.children[0].textContent).to.equal('4'), 2000)
           done()
         })
         it('Second effect should send message to update action, setting messageWasSent to true.', function(done) {
-          setTimeout(() => expect(test.firstElementChild.children[1].textContent).to.equal('true'), 2500)
+          setTimeout(() => expect(test.children[1].textContent).to.equal('true'), 2500)
           done()
         })
       })
