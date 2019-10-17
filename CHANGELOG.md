@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.5.0 (October, 21, 2019)
+
+### src/runtime.js
+
+* Updated how the runtime works. Now `init` does not require brackets for state. Just return the state you want to use. Same for `actions`--just return the new state. This means that you can no longer execute an optional effect in the `init` method to run at startup. If you want to execute an effect at startup, use the `subscriptions` method. That's what it's for. Similarly, you can no longer return an effect with state in an action. Instead send a message for another action before returning state.
+
+### test/runtime.html
+
+* Updated runtime test to handle changes to how state get returned now.
+
 ## 2.0.1 (October, 15, 2019)
 
 ### src/render.js

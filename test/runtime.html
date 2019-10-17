@@ -39,7 +39,7 @@
     <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
     <script>mocha.setup('bdd')</script>
     <script type='module'>
-      import {h, render, run, union, batchEffects} from 'https://unpkg.com/@composi/core/dist/composi-core.mjs?module'
+      import {h, render, run, union, batchEffects} from '/dist/composi-core.mjs?module'
       import htm from 'https://unpkg.com/htm/dist/htm.mjs?module'
       const html = htm.bind(h)
       let expect = chai.expect
@@ -70,9 +70,9 @@
         }
         const program = {
           init() {
-            return ['World']
+            return 'World'
           },
-          update(state, msg) {
+          update(state, msg, send) {
 
           },
           view(state, send) {
@@ -99,13 +99,13 @@
 
         const program = {
           init() {
-            return ['no message']
+            return 'no message'
           },
           update(state, msg) {
             switch (msg.type) {
               case 'click':
                 state = 'Button was clicked'
-                return [state]
+                return state
                 break
             }
           },
@@ -139,13 +139,13 @@
 
         const program = {
           init() {
-            return ['no message']
+            return 'no message'
           },
           update(state, msg) {
             switch (msg.type) {
               case 'click':
                 state = msg.data
-                return [state]
+                return state
                 break
             }
           },
@@ -167,38 +167,12 @@
         })
       })
 
-      describe('Should be able to run effect at startup.', () => {
-        it('effect should run at startup.', done => {
-          let effectResult = false
-          function effect() {
-            effectResult = true
-          }
-          const program = {
-            init() {
-              return [0, effect]
-            },
-            update() {
-              return [state]
-            },
-            view() {
-              return
-            }
-          }
-          run(program)
-          setTimeout(() => {
-            expect(effectResult).to.equal(true)
-          })
-          done()
-        })
-      })
-
-
       describe('Should be able to stop program.', () => {
         it('Capture program refrence and end program.', done => {
           let setIntervalID
           let isRunning = false
           let count = 0
-          function effect() {
+          function effect(getState, send) {
             setIntervalID = setInterval(() => {
               count += 1
               isRunning = true
@@ -206,10 +180,17 @@
           }
           const program = {
             init() {
-              return [null, effect]
+              return null
             },
-            update() { },
-            view() { },
+            update() {
+
+            },
+            view() {
+
+            },
+            subscriptions(getState, send) {
+              return effect(getState, send)
+            },
             done() {
               expect(isRunning).to.equal(true)
               clearInterval(setIntervalID)
@@ -238,13 +219,13 @@
         let taggedEffectFired = false
         const program = {
           init() {
-            return ['no message']
+            return 'no message'
           },
           update(state, msg) {
             return Msg3.match(msg, {
               'click': () => {
                 taggedEffectFired = true
-                return [state]
+                return state
               }
             })
           },
@@ -277,13 +258,13 @@
         let taggedEffectFired = ''
         const program = {
           init() {
-            return ['no message']
+            return 'no message'
           },
           update(state, msg) {
             return Msg4.match(msg, {
               'click': message => {
                 taggedEffectFired = message
-                return [state]
+                return state
               }
             })
           },
@@ -323,16 +304,21 @@
           }, 100)
         }
         const effects = batchEffects(hello, secondEffect, countDown)
-        function effect() {
-          effects(effect => effect)
-        }
+
 
         const program = {
           init() {
-            return ['World', effect]
+            return 'World'
           },
-          update() { },
-          view() { }
+          view() {
+
+          },
+          update() {
+
+          },
+          subscriptions(getState, send) {
+            return effects(getState, send)
+          }
         }
         const endProgram = run(program)
         it('At startup all three batched effects should run', function (done) {
@@ -353,13 +339,13 @@
           }
           const program = {
             init() {
-              return ['first']
+              return 'first'
             },
             view(state) {
               render(View(state), '#send-test')
             },
             update(state, msg) {
-              if (msg) return [msg]
+              if (msg) return msg
             }
           }
           run(program)
@@ -383,14 +369,14 @@
         let canSendMsg = false
         const program = {
           init() {
-            return [state]
+            return state
           },
           view(state) {
             render(View(state), '#test-effect')
           },
           update(state, msg, send) {
             if (msg.type === 'changing-state') {
-              return [effect(state, send)]
+              return effect(state, send)
             } else if (msg.type === 'can-send-msg') {
               canSendMsg = true
             }
@@ -421,10 +407,10 @@
           }
           const program = {
             init() {
-              return [0]
+              return 0
             },
             update(state, msg, send) {
-              return [msg.data]
+              return msg.data
             },
             view() {
               return
@@ -457,14 +443,14 @@
         }
         const program = {
           init() {
-            return [state]
+            return state
           },
           view(state, send) {
             return render(Component({ state, send }), test)
           },
           update(state, msg, send) {
             if (msg.type === 'update-state') {
-              return [msg.value]
+              return msg.value
             }
           },
           subscriptions(getState, send) {
@@ -488,10 +474,10 @@
           }
           const program = {
             init() {
-              return [1]
+              return 1
             },
             update() {
-              return [state]
+              return state
             },
             view() {
               return
@@ -520,14 +506,14 @@
         }
 
         function hello(getState, send) {
-          send({type: 'result1', value: 'Hello World!'})
+          setTimeout(() => send({type: 'result1', value: 'Hello World!'}))
         }
         const secondEffect = (getState, send) => {
-          send({type: 'result2', value: 'Second effect ran!'})
+          setTimeout(() => send({type: 'result2', value: 'Second effect ran!'}))
         }
         const countDown = (getState, send) => {
           const id = setInterval(() => {
-            const {count} = getState()
+            const count = getState().count
             if (count === 0) {
               clearInterval(id)
             } else {
@@ -550,7 +536,7 @@
         }
         const program = {
           init() {
-            return [state]
+            return state
           },
           view(state, send) {
             return render(Component({state}), test)
@@ -558,13 +544,13 @@
           update(state, msg, send) {
             if (msg.type === 'result1') {
               state.result1 = msg.value
-              return [state]
+              return state
             } else if (msg.type === 'result2') {
               state.result2 = msg.value
-              return [state]
+              return state
             } else if (msg.type === 'reduce') {
               state.count -= 1
-              return [state]
+              return state
             }
           },
           subscriptions(getState, send) {
@@ -579,7 +565,7 @@
             expect(children[0].textContent).to.equal('Hello World!')
             expect(children[1].textContent).to.equal('Second effect ran!')
             expect(children[2].textContent).to.equal('0')
-          }, 1000)
+          }, 3000)
           done()
         })
       })
@@ -593,14 +579,14 @@
 
         function effect1(getState, send) {
           const count = getState().count
-          send({type: 'update-state-1', value: parseInt(count) + 1})
+          setTimeout(() => send({ type: 'update-state-1', value: parseInt(count) + 1 }), 500)
         }
         function effect2(getState, send) {
           const count = getState().count
-          setTimeout(() => send({type: 'update-state-2', value: parseInt(count) + 2}), 2000)
+          setTimeout(() => send({ type: 'update-state-2', value: parseInt(count) + 2 }), 3000)
         }
         const batchedEffects = batchEffects(effect1, effect2)
-        function subTest({state, send}) {
+        function subTest({ state, send }) {
           return html`
             <div>
               <p>${state.count}</p>
@@ -608,41 +594,50 @@
             </div>
           `
         }
+
+        function actions(state, msg, send) {
+          if (msg.type === 'update-state-1') {
+            state.messageWasSent = 'true'
+            state.count = msg.value
+            return state
+          } else if (msg.type === 'update-state-2') {
+            state.messageWasSent = 'true'
+            state.count = msg.value
+            return state
+          }
+        }
+
         const program = {
           init() {
-            return [state]
+            return state
           },
           view(state, send) {
-            return render(subTest({state, send}), test)
+            return render(subTest({ state, send }), test)
           },
-          update(state, msg) {
-            if (msg.type === 'update-state-1') {
-              state.count = msg.value
-              return [state]
-            } else if (msg.type === 'update-state-2') {
-              state.messageWasSent = 'true'
-              state.count = msg.value
-              return [state]
-            }
+          update(state, msg, send) {
+            return actions(state, msg, send)
           },
           subscriptions(getState, send) {
             return batchedEffects(getState, send)
           }
         }
         run(program)
-        it('First effect should update state to 2.', function() {
-          expect(test.children[0].textContent).to.equal('2')
+
+        it('First effect should update state to 2.', function(done) {
+          setTimeout(() => expect(test.children[0].textContent).to.equal('2'), 600)
+          done()
         })
-        it('Second effect should update state to 4.',
+        it('Second effect should update state to 3.',
         function(done) {
-          setTimeout(() => expect(test.children[0].textContent).to.equal('4'), 2000)
+          setTimeout(() => expect(test.children[0].textContent).to.equal('3'), 3000)
           done()
         })
         it('Second effect should send message to update action, setting messageWasSent to true.', function(done) {
-          setTimeout(() => expect(test.children[1].textContent).to.equal('true'), 2500)
+          setTimeout(() => expect(test.children[1].textContent).to.equal('true'), 3000)
           done()
         })
       })
+
 
       mocha.run()
     </script>

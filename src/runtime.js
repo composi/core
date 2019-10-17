@@ -8,12 +8,11 @@
  * @typedef {any} State Simple or complex types for application state.
  */
 /**
- * @typedef {(State) => void} Effect A function to run at startup.
- * @typedef {[State, Effect] | any[] | void} InitResult Return result of program init method.
+ * @typedef {State | void} InitResult Return result of program init method.
  */
 /**
  * @typedef {Object<string, any>} Program A program to run.
- * @prop {() => InitResult} Program.init Method to set up initial state for app and optionally run an effect.
+ * @prop {() => InitResult} Program.init Method to set up initial state.
  * @prop {(state: State, send?: Send) => void} Program.view Method to present the current application state.
  * @prop {(state: State, msg?: Message, send?: Send) => any} Program.update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
  * @prop {(getState: () => State, send: Send) => void} [Program.subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
@@ -50,12 +49,12 @@
  * @return {() => void} Function to terminate runtime.
  */
 export function run(program) {
-  let init = program.init()
+  let init = program.init
   const view = program.view
   const update = program.update
   const subscriptions = program.subscriptions || program.subs
   const done = program.done
-  let state, effect
+  let state
   let isRunning = true
   let isFirstRun = true
   const getState = () => state
@@ -80,27 +79,21 @@ export function run(program) {
 
   /**
    * Handle changes to state and executing effects.
-   * @param {any[]} update
+   * @param {any} update
    * @return {void} undefined
    */
   function updateView(update) {
     if (update) {
-      ;[state, effect] = update
-    } else if (init && init.length) {
-      ;[state, effect] = init
-      if (subscriptions && isFirstRun) {
-        if (typeof subscriptions === 'function') subscriptions(getState, send)
-        isFirstRun = false
-      }
-    } else {
-      state = []
+      state = update
+    } else if (init) {
+      state = init()
     }
-    if (effect) {
-      effect(state, send)
+    if (subscriptions && isFirstRun) {
+      if (typeof subscriptions === 'function') subscriptions(getState, send)
+      isFirstRun = false
     }
     view(state, send)
   }
-
   updateView(state)
 
   /**
