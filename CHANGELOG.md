@@ -5,7 +5,7 @@
 ### src/union.js
 
 * Simplified union code and removed unused feature for default behavior. This was never used or useful for anything.
-* Added error handling for when message type does not exist.
+* Added error handling for when message does not have expected structure.
 
 ## 2.5.1 (October 19, 2019)
 
