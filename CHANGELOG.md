@@ -1,12 +1,19 @@
 # composi/core Changelog
 
-## 2.5.1 (October, 19, 2019)
+## 2.5.2 (October 23, 2019)
+
+### src/union.js
+
+* Simplified union code and removed unused feature for default behavior. This was never used or useful for anything.
+* Added error handling for when message type does not exist.
+
+## 2.5.1 (October 19, 2019)
 
 ### package.json
 
 * Removed unnecessary dependency on @composi/merge-objects.
 
-## 2.5.0 (October, 18, 2019)
+## 2.5.0 (October 18, 2019)
 
 ### src/runtime.js
 
@@ -30,7 +37,7 @@
 
 * Fixed tests to hanlde new vdom patching method.
 
-## 2.0.0 (October, 7, 2019)
+## 2.0.0 (October 7, 2019)
 
 ### src/vdom.js
 

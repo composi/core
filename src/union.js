@@ -3,21 +3,25 @@ const hasOwnProperty = Object.prototype.hasOwnProperty
 /**
  * Create a union of string tags.
  * @param {string[]} types
+ * @returns {Object<string, any>} Object
  */
 function createUnion(types) {
   const variants = Object.create(null)
-  let checkTag = x => x && x.type
 
-  const matcher = (handlers, catchAll) => {
-    return (tag, context) => {
-      const tagType = checkTag(tag)
-      const match = hasOwnProperty.call(handlers, tagType) && handlers[tagType]
-      return match ? match(tag.data, context) : catchAll(context)
+  function match(tag, handlers) {
+    if (!tag.type) {
+      console.error(
+        "The message you provided was not valid. Messages have the format: {type: 'whatever', data: 'something'}"
+      )
+      console.error('The tag you provided was:')
+      console.dir(tag)
+      return
     }
-  }
-
-  function match(tag, handlers, catchAll) {
-    return matcher(handlers, catchAll)(tag)
+    return ((tag, context) => {
+      const type = tag.type
+      const match = hasOwnProperty.call(handlers, type) && handlers[type]
+      return match(tag.data, context)
+    })(tag)
   }
 
   let idx = 0
