@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.5.3 (October 24, 2019)
+
+### .vscode/settings.json
+
+* Added settings.json file for VSCode to set up live type linting for source code.
+
+### runtime.js, vdom.js, vnode.js
+
+* Improved internal types for runtime.js, vdom.js and vnode.js
+
 ## 2.5.2 (October 23, 2019)
 
 ### src/union.js

@@ -1,7 +1,7 @@
 /**
  * @typedef {Object<string, any>} Message
- * @property {string} Message.type
- * @property {any} [Message.data]
+ * @prop {string} type
+ * @prop {any} [data]
  * @typedef {(msg: Message) => Message} Send
  */
 /**
@@ -12,12 +12,12 @@
  */
 /**
  * @typedef {Object<string, any>} Program A program to run.
- * @prop {() => InitResult} Program.init Method to set up initial state.
- * @prop {(state: State, send?: Send) => void} Program.view Method to present the current application state.
- * @prop {(state: State, msg?: Message, send?: Send) => any} Program.update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
- * @prop {(getState: () => State, send: Send) => void} [Program.subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
- * @prop {(getState: () => State, send: Send) => void} [Program.subs] Shortcut for subscriptions.
- * @prop {(state: State) => void} [Program.done] Method to do clean up when shutting down a program.
+ * @prop {() => InitResult} init Method to set up initial state.
+ * @prop {(state: State, send?: Send) => void} view Method to present the current application state.
+ * @prop {(state: State, msg?: Message, send?: Send) => any} update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
+ * @prop {(getState: () => State, send: Send) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
+ * @prop {(getState: () => State, send: Send) => void} [subs] Shortcut for subscriptions.
+ * @prop {(state: State) => void} [done] Method to do clean up when shutting down a program.
  */
 /**
  * The @composi/runtime.

@@ -1,10 +1,22 @@
 import { RECYCLED_NODE, TEXT_NODE, EMPTY_OBJECT, LIFECYCLE } from './constants'
 import { createTextVNode, createVNode } from './vnode'
 
+/**
+ * @typedef {import('./vnode').VNode} VNode
+ */
+/**
+ * Return the combination of two objects of props.
+ * @param {Object<string, any>} a
+ * @param {Object<string, any>} b
+ */
 export function mergeObjects(a, b) {
   return Object.assign({}, a, b)
 }
 
+/**
+ * Handle inline events.
+ * @param {Event} event
+ */
 function listener(event) {
   this.handlers[event.type](event)
 }
@@ -55,41 +67,58 @@ function patchProperty(node, prop, oldValue, newValue, isSVG) {
   }
 }
 
+/**
+ * Create node from vnode.
+ * @param {VNode} vnode
+ * @param {Function[]} LIFECYCLE
+ * @param {boolean} isSVG
+ */
 function createNode(vnode, LIFECYCLE, isSVG) {
+  const type = /** @type{string} */ (vnode.type)
   const node =
     vnode.flag === TEXT_NODE
-      ? document.createTextNode(vnode.type)
-      : (isSVG = isSVG || vnode.type === 'svg') // eslint-disable-line no-cond-assign
-      ? document.createElementNS('http://www.w3.org/2000/svg', vnode.type)
-      : document.createElement(vnode.type)
+      ? document.createTextNode(type)
+      : (isSVG = isSVG || type === 'svg') // eslint-disable-line no-cond-assign
+      ? document.createElementNS('http://www.w3.org/2000/svg', type)
+      : document.createElement(type)
   const props = vnode.props
-  if (props.onmount) {
+  if (props['onmount']) {
     LIFECYCLE.push(function() {
-      props.onmount(node)
+      props['onmount'](node)
     })
   }
 
   for (let k in props) {
-    patchProperty(node, k, null, props[k], isSVG)
+    patchProperty(/** @type{Element} */ (node), k, null, props[k], isSVG)
   }
 
   for (let i = 0, len = vnode.children.length; i < len; i++) {
     node.appendChild(createNode(vnode.children[i], LIFECYCLE, isSVG))
   }
 
-  return (vnode.node = node)
+  return (vnode.node = /** @type{Element} */ (node))
 }
 
+/**
+ * Get key of vnode element.
+ * @param {VNode} vnode
+ * @returns {null | string | number} null | string | number
+ */
 function getKey(vnode) {
   return vnode == null ? null : vnode.key
 }
 
+/**
+ * Remove child node.
+ * @param {VNode} vnode
+ * @returns {Node} node
+ */
 function removeChildren(vnode) {
   for (let i = 0, length = vnode.children.length; i < length; i++) {
     removeChildren(vnode.children[i])
   }
 
-  const cb = vnode.props.ondestroy
+  const cb = vnode.props['ondestroy']
   if (cb != null) {
     cb(vnode.node)
   }
@@ -97,12 +126,18 @@ function removeChildren(vnode) {
   return vnode.node
 }
 
+/**
+ * Remove element from DOM.
+ * @param {Node} parent
+ * @param {VNode} vnode
+ * @returns {void} undefined
+ */
 function removeElement(parent, vnode) {
   const remove = function() {
     parent.removeChild(removeChildren(vnode))
   }
 
-  const cb = vnode.props && vnode.props.onunmount
+  const cb = vnode.props && vnode.props['onunmount']
   if (cb != null) {
     cb(vnode.node, remove)
   } else {
@@ -110,6 +145,14 @@ function removeElement(parent, vnode) {
   }
 }
 
+/**
+ * Patch element in DOM according to new props.
+ * @param {Node} parent
+ * @param {Node} node
+ * @param {any} oldVNode
+ * @param {any} newVNode
+ * @param {boolean} [isSVG]
+ */
 function patchNode(parent, node, oldVNode, newVNode, isSVG) {
   if (oldVNode === newVNode) {
   } else if (
@@ -151,7 +194,13 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
           ? node[i]
           : oldVProps[i]) !== newVProps[i]
       ) {
-        patchProperty(node, i, oldVProps[i], newVProps[i], isSVG)
+        patchProperty(
+          /** @type{Element} */ (node),
+          i,
+          oldVProps[i],
+          newVProps[i],
+          isSVG
+        )
         const cb = newVProps.onupdate
         if (cb != null) {
           LIFECYCLE.push(function() {
@@ -300,20 +349,25 @@ function recycleNode(node) {
       )
 }
 
+/**
+ * Patch DOM with virtual node from functional component.
+ * @param {Node} node
+ * @param {VNode} vdom
+ */
 export function patch(node, vdom) {
-  if (!node.vdom) {
-    if (vdom.props.onmount) {
+  if (!node['vdom']) {
+    if (vdom.props['onmount']) {
       LIFECYCLE.push(function() {
-        vdom.props.onmount(node)
+        vdom.props['onmount'](node)
       })
     }
   }
   const vnode = (patchNode(
     node.parentNode,
     node,
-    node.vdom || recycleNode(node),
+    node['vdom'] || recycleNode(node),
     vdom
-  ).vdom = vdom)
+  )['vdom'] = vdom)
   while (LIFECYCLE.length > 0) LIFECYCLE.pop()()
   return vnode
 }

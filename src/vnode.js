@@ -1,8 +1,11 @@
 import { EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE } from './constants'
 
 /**
- * @typedef {Object.<string, any> | {}} Props
- * @property {Children} Props.children
+ * @typedef {Object<string, any> | {}} Props
+ * @prop {Children} Props.children
+ * @prop {(Element) => void} [Props.onmount]
+ * @prop {(Element, Object, Object) => void} [Props.onupdate]
+ * @prop {(Element, (State) => void) => void} [Props.onunmount]
  */
 /**
  * @typedef {VNode[]} Children
@@ -11,12 +14,12 @@ import { EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE } from './constants'
  * @typedef {string | number | Function} Type
  * @typedef {number | string | null} Key
  * @typedef {Object.<string, any>} VNode
- * @property {Type} VNode.type
- * @property {Props} VNode.props
- * @property {Children} VNode.children
- * @property {Element} VNode.node
- * @property {Key} [VNode.key]
- * @property {number} VNode.flag
+ * @prop {Type} type
+ * @prop {Props} props
+ * @prop {Children} children
+ * @prop {Element} node
+ * @prop {Key} [key]
+ * @prop {number} flag
  */
 /**
  * Create a virtual node with the provided properties.
