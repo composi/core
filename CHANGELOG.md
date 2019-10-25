@@ -1,5 +1,16 @@
 # composi/core Changelog
 
+## 2.5.4 (October 25, 2019)
+
+### src/runtime.js
+
+* Fixed issue where type for send required a parameter when in fact it is optional. Yes, you can just send an empty message, but then your update can only handle that one case. Works for very simple programs.
+
+### tscofig.json
+
+* Added tsconfig.json file. This simplified the NPM checkjs script to just 'tsc'.
+
+
 ## 2.5.3 (October 24, 2019)
 
 ### .vscode/settings.json

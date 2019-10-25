@@ -2,7 +2,7 @@
  * @typedef {Object<string, any>} Message
  * @prop {string} type
  * @prop {any} [data]
- * @typedef {(msg: Message) => Message} Send
+ * @typedef {(msg?: Message) => Message} Send
  */
 /**
  * @typedef {any} State Simple or complex types for application state.
