@@ -18,6 +18,7 @@
  * @prop {(getState: () => State, send: Send) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
  * @prop {(getState: () => State, send: Send) => void} [subs] Shortcut for subscriptions.
  * @prop {(state: State) => void} [done] Method to do clean up when shutting down a program.
+ * @prop {Send} [send] A static send function for dispatching message to a program. Used with routers and in composition.
  */
 /**
  * The @composi/runtime.
