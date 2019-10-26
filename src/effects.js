@@ -1,7 +1,15 @@
 /**
- * Function to batch effects together.
- * @param {...Function} effects
- * @return {Function} Function
+ * @typedef {import('./runtime').Send} Send
+ * @typedef {import('./runtime').Message} Message
+ * @typedef {Object} State
+ * @typedef {() => State} GetState
+ * @typedef {(getState: GetState, send: Send) => any} Effect
  */
-export const batchEffects = (...effects) => (state, send) =>
-  effects.map(effect => effect && effect(state, send))
+/**
+ * Function to batch effects together.
+ * @param {...Effect} effects
+ * @return {(getState: GetState, send: Send) => any} Function
+ */
+export const batchEffects = (...effects) => (getState, send) =>
+  effects.map(effect => effect && effect(getState, send))
+

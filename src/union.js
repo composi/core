@@ -35,8 +35,13 @@ function createUnion(types) {
 }
 
 /**
+ * @typedef {Object} MessageUnion
+ */
+
+/**
  * Create a union of types for matching up with functions. This is used to define actions for the `update` method of a runtime program.
  * @param {...string} types
+ * @returns {MessageUnion} MessagesUnion
  */
 export function union(...types) {
   const { variants, match } = createUnion(types)

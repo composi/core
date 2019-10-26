@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.5.6 (October 26, 2019)
+
+### src/effects.js, src/union.js
+
+* Improved types for both effects.js and union.js.
+
+## 2.5.5 (October 25, 2019)
+
+* Removed `jsconfig.json` and replaced with `tsconfig.json`. The tsconfig has type check options. This removes need for NPM script test `checkjs` to use options, simplifying it to just `"checkjs": "tsc"`.
+
 ## 2.5.4 (October 25, 2019)
 
 ### src/runtime.js
