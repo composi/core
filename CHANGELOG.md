@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.5.7 (October 27, 2019)
+
+### tsconfig.json, package.json
+
+* Added tsconfig to simplify NPM script `checkjs`. No it is just `"checkjs": "tsc"`
+
+### src/vnode.js
+
+* Modified definition of VNode to optionally be an empty object literal. This was necessary for properly typing or `h`. This change enables `h` working properly with the `JSX d.ts` file provided by the `@composi/create-composi-app` for `JSX` Intellisense in Composi projects.
+
 ## 2.5.6 (October 26, 2019)
 
 ### src/effects.js, src/union.js

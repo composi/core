@@ -12,4 +12,3 @@
  */
 export const batchEffects = (...effects) => (getState, send) =>
   effects.map(effect => effect && effect(getState, send))
-

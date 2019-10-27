@@ -1,6 +1,6 @@
 {
   "name": "@composi/core",
-  "version": "2.5.6",
+  "version": "2.5.7",
   "description": "A JavaScript library for creating websites, PWAs and hybrid apps.",
   "main": "src/index.js",
   "module": "dist/composi-core.mjs",
@@ -8,7 +8,7 @@
   "scripts": {
     "bundle": "rollup -c",
     "build": "run-s format lint checkjs bundle gzip gzip-mjs",
-    "checkjs": "tsc --allowJs --checkJs --noEmit --moduleResolution node --target ES6 src/*.js",
+    "checkjs": "tsc",
     "start": "npm run build",
     "gzip": "gzip dist/composi-core.js --output=dist",
     "gzip-mjs": "gzip dist/composi-core.mjs --output=dist",

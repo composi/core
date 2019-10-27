@@ -13,7 +13,7 @@ import { EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE } from './constants'
 /**
  * @typedef {string | number | Function} Type
  * @typedef {number | string | null} Key
- * @typedef {Object.<string, any>} VNode
+ * @typedef {Object | {}} VNode
  * @prop {Type} type
  * @prop {Props} props
  * @prop {Children} children
