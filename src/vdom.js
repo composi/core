@@ -2,6 +2,16 @@ import { RECYCLED_NODE, TEXT_NODE, EMPTY_OBJECT, LIFECYCLE } from './constants'
 import { createTextVNode, createVNode } from './vnode'
 
 /**
+ * Determin whether the old and new props are identical.
+ * @typedef {import('./vnode').Props} Props
+ * @param {Props} oldVProps
+ * @param {Props} newVProps
+ */
+function areNotEqual(oldVProps, newVProps) {
+  return JSON.stringify(oldVProps) !== JSON.stringify(newVProps)
+}
+
+/**
  * @typedef {import('./vnode').VNode} VNode
  */
 /**
@@ -203,9 +213,11 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
         )
         const cb = newVProps.onupdate
         if (cb != null) {
-          LIFECYCLE.push(function() {
-            cb(node, oldVProps, newVProps)
-          })
+          if (areNotEqual(oldVProps, newVProps)) {
+            LIFECYCLE.push(function() {
+              cb(node, oldVProps, newVProps)
+            })
+          }
         }
       }
     }

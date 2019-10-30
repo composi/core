@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 2.5.8 (October, 29, 2019)
+
+### src/vdom.js
+
+* Added function `areNotEqual` which is used to check if the old props and new props of a VNode are identical. If they are not identical then `onupdate` executes, otherwise not.
+
 ## 2.5.7 (October 27, 2019)
 
 ### tsconfig.json, package.json

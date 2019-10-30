@@ -222,12 +222,20 @@
       describe('Component should execute thee lifecycle hooks', function () {
         let componentDidMount = false
         let componentDidUpdate = false
+        let secondUpdate = false
         let componentDidUnmount = false
-        function LifecycleTest(data) {
+        const state = {
+          checkUpdate: false,
+          items: [1, 2]
+        }
+        function LifecycleTest(state) {
           function testMount() {
             componentDidMount = true
           }
-          function testUpdate() {
+          function testUpdate(el, oldProps, newProps) {
+            if (JSON.stringify(oldProps) === JSON.stringify(newProps)) {
+              secondUpdate = true
+            }
             componentDidUpdate = true
           }
           function testUnmount(el, done) {
@@ -236,16 +244,16 @@
           }
           function listItems(items) {
             console.log(items)
-            return items.map(item => html`<li onunmount=${(el, done) => testUnmount(el, done)}>${item}</li>`)
+            return items.map(item => html`<li onunmount=${testUnmount}>${item}</li>`)
           }
           return html`
-            <ul onmount=${() => testMount()} onupdate=${() => testUpdate()}>
-              ${listItems(data)}
+            <ul checkUpdate={state.checkUpdate} onmount=${testMount} onupdate=${testUpdate}>
+              ${listItems(state.items)}
             </ul>
           `
         }
         let lifecyleTest = document.querySelector('#lifecycle')
-        render(LifecycleTest([1, 2]), lifecyleTest)
+        render(LifecycleTest(state), lifecyleTest)
 
         it('Functional component should execute "onmount" when it is mounted', function (done) {
           setTimeout(() => {
@@ -256,18 +264,26 @@
         })
         it('Functional component should execute "onupdate" when it is updated', function (done) {
           setTimeout(() => {
-            render(LifecycleTest([1, 2, 3]), lifecyleTest)
-            expect(componentDidUpdate).to.be.true
-            expect(lifecyleTest.children.length).to.equal(3)
+            state.checkUpdate = true
+            render(LifecycleTest(state), lifecyleTest)
+            expect(secondUpdate).to.be.false
           }, 1500)
+          done()
+        })
+        it('Functional component should not execute "onupdate" when its props are the same', function (done) {
+          setTimeout(() => {
+            render(LifecycleTest(state), lifecyleTest)
+            expect(componentDidUpdate).to.be.true
+          }, 1800)
           done()
         })
         it('List component\'s list items should execute "onunmount" when they are deleted', function (done) {
           setTimeout(() => {
-            render(LifecycleTest([1]), lifecyleTest)
+            state.items = [1]
+            render(LifecycleTest(state), lifecyleTest)
             expect(componentDidUnmount).to.be.true
             expect(lifecyleTest.children.length).to.equal(1)
-          }, 2000)
+          }, 2300)
           done()
         })
       })
