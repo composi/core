@@ -3,9 +3,9 @@ import { EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE } from './constants'
 /**
  * @typedef {Object<string, any> | {}} Props
  * @prop {Children} Props.children
- * @prop {(Element) => void} [Props.onmount]
- * @prop {(Element, Object, Object) => void} [Props.onupdate]
- * @prop {(Element, (State) => void) => void} [Props.onunmount]
+ * @prop {(element: Element) => void} [Props.onmount]
+ * @prop {(element: Element, oldProps: Object, newProps: Object) => void} [Props.onupdate]
+ * @prop {(element: Element, done: (State) => void) => void} [Props.onunmount]
  */
 /**
  * @typedef {VNode[]} Children

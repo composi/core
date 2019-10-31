@@ -28,3 +28,7 @@ export { Fragment } from './fragment'
  * Function for sending messages to the program's `update` method.
  * @typedef { import('./runtime').Send } Send
  */
+/**
+ * Type for props.
+ * @typedef { import('./vnode').Props} Props
+ */

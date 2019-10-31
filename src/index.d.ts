@@ -5,7 +5,7 @@ export { union } from './union'
 export { batchEffects } from './effects'
 export { Fragment } from './fragment'
 // Export types for @composi/core:
-export { VNode } from './vnode'
+export { VNode, Props } from './vnode'
 export { Send, Message, State, GetState, Program } from './runtime'
 
 declare global {

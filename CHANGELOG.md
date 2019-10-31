@@ -1,5 +1,16 @@
 # composi/core Changelog
 
+## 2.5.10 (October, 31, 2019)
+
+### src/index.d.ts, src/index.js
+
+* Exported Props type.
+
+### src/vnode.js
+
+* Improved types for onmount, onupdate and onunmount.
+
+
 ## 2.5.9 (October, 31, 2019)
 
 ### src/index.js
