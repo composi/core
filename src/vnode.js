@@ -13,13 +13,13 @@ import { EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE } from './constants'
 /**
  * @typedef {string | number | Function} Type
  * @typedef {number | string | null} Key
- * @typedef {Object | {}} VNode
- * @prop {Type} type
- * @prop {Props} props
- * @prop {Children} children
- * @prop {Element} node
+ * @typedef {Object} VNode
+ * @prop {Type} [type]
+ * @prop {Props} [props]
+ * @prop {Children} [children]
+ * @prop {Element} [node]
  * @prop {Key} [key]
- * @prop {number} flag
+ * @prop {number} [flag]
  */
 /**
  * Create a virtual node with the provided properties.

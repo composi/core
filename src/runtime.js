@@ -3,6 +3,7 @@
  * @prop {string} type
  * @prop {any} [data]
  * @typedef {(msg?: Message) => Message} Send
+ * @typedef {() => State} GetState
  */
 /**
  * @typedef {any} State Simple or complex types for application state.
@@ -15,7 +16,7 @@
  * @prop {() => InitResult} init Method to set up initial state.
  * @prop {(state: State, send?: Send) => void} view Method to present the current application state.
  * @prop {(state: State, msg?: Message, send?: Send) => any} update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
- * @prop {(getState: () => State, send: Send) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
+ * @prop {(getState: GetState, send: Send) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
  * @prop {(getState: () => State, send: Send) => void} [subs] Shortcut for subscriptions.
  * @prop {(state: State) => void} [done] Method to do clean up when shutting down a program.
  * @prop {Send} [send] A static send function for dispatching message to a program. Used with routers and in composition.

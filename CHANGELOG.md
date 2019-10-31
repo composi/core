@@ -1,5 +1,19 @@
 # composi/core Changelog
 
+## 2.5.9 (October, 31, 2019)
+
+### src/index.js
+
+* Updated type exports to include GetState.
+
+### src/index.d.ts
+
+* Added index.d.ts to src so that it gets imported automatically by Editors for type information. This is paricularlly to expose JSX types for functional components, as well as the types of @composi/core.
+
+### src/runtime.js, src/vnode.js
+
+* Updated for better type handling.
+
 ## 2.5.8 (October, 29, 2019)
 
 ### src/vdom.js
