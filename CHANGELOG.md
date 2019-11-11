@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.5.11 (November, 11, 2019)
+
+### src/effects.js, src/index.js, src/index.d.ts
+
+* Provided short form for `batchEffects` as `batch`. Less typing same thing. The longer form of `batchEffects` is still available and works for backwards compatibility.
+
+### src/vdom.js
+
+* Removed automatic lower casing of inline events. This is so users can use DOM level 3 custom events with camel case names. We lower cased the inline events to make it easier for people use to React events to use. But since the default inline events are lower case, we are dropping this for DOM level 3 support.
+
 ## 2.5.10 (October, 31, 2019)
 
 ### src/index.d.ts, src/index.js

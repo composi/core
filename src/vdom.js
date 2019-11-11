@@ -53,7 +53,7 @@ function patchProperty(node, prop, oldValue, newValue, isSVG) {
   } else if (prop[0] === 'o' && prop[1] === 'n') {
     if (
       !((node['handlers'] || (node['handlers'] = {}))[
-        (prop = prop.slice(2).toLowerCase())
+        (prop = prop.slice(2))
       ] = newValue)
     ) {
       node.removeEventListener(prop, listener)

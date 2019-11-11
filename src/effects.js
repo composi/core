@@ -12,3 +12,5 @@
  */
 export const batchEffects = (...effects) => (getState, send) =>
   effects.map(effect => effect && effect(getState, send))
+
+export const batch = batchEffects

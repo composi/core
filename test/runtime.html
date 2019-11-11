@@ -39,7 +39,7 @@
     <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
     <script>mocha.setup('bdd')</script>
     <script type='module'>
-      import {h, render, run, union, batchEffects} from '/dist/composi-core.mjs?module'
+      import {h, render, run, union, batch} from '/dist/composi-core.mjs?module'
       import htm from 'https://unpkg.com/htm/dist/htm.mjs?module'
       const html = htm.bind(h)
       let expect = chai.expect
@@ -303,7 +303,7 @@
             }
           }, 100)
         }
-        const effects = batchEffects(hello, secondEffect, countDown)
+        const effects = batch(hello, secondEffect, countDown)
 
 
         const program = {
@@ -523,7 +523,7 @@
         }
 
 
-        const subs = batchEffects(hello, secondEffect, countDown)
+        const subs = batch(hello, secondEffect, countDown)
 
         function Component({state}) {
           return html`
@@ -585,7 +585,7 @@
           const count = getState().count
           setTimeout(() => send({ type: 'update-state-2', value: parseInt(count) + 2 }), 3000)
         }
-        const batchedEffects = batchEffects(effect1, effect2)
+        const batchedEffects = batch(effect1, effect2)
         function subTest({ state, send }) {
           return html`
             <div>
