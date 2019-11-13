@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.5.12 (November, 13, 2019)
+
+### package.json, package-lock.json
+
+* Added `@babel/preset-modules` as build dependency. This tells Babel to only target browsers that support importing es modules. This results in a smaller bundle size, knocking of up to 250 bytes by eliminating unnecessary polyfills.
+
+### .babelrc
+
+* Modified `.babelrc` to use `@babel/preset-modules` as plugin instead of `@babel/preset-env`. This results in smaller bundle sizes for modern browser that support es modules.
+
 ## 2.5.11 (November, 11, 2019)
 
 ### src/effects.js, src/index.js, src/index.d.ts
