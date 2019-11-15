@@ -38,7 +38,6 @@ export function h(type, props, ...children) {
 
   if (typeof type === 'function') {
     return type(props, childNodes)
-  } else {
-    return createVNode(type, props, childNodes, null, key)
   }
+  return createVNode(type, props, childNodes, null, key)
 }

@@ -84,7 +84,7 @@ function patchProperty(node, prop, oldValue, newValue, isSVG) {
  * @param {boolean} isSVG
  */
 function createNode(vnode, LIFECYCLE, isSVG) {
-  const type = /** @type{string} */ (vnode.type)
+  const type = String(vnode.type)
   const node =
     vnode.flag === TEXT_NODE
       ? document.createTextNode(type)
@@ -99,7 +99,7 @@ function createNode(vnode, LIFECYCLE, isSVG) {
   }
 
   for (let k in props) {
-    patchProperty(/** @type{Element} */ (node), k, null, props[k], isSVG)
+    patchProperty(/** @type {Element} */ (node), k, null, props[k], isSVG)
   }
 
   for (let i = 0, len = vnode.children.length; i < len; i++) {

@@ -1,8 +1,24 @@
 # composi/core Changelog
 
-## 2.5.12 (November, 13, 2019)
+## 2.5.13 (November 15, 2019)
 
-### package.json, package-lock.json
+### src/h.js
+
+* Refactored h function to return VNode by default. Previously the defaul was wrapped in a conditional check.
+
+### src/union.js
+
+* Broke out match function from createUnion function and gave it proper types.
+
+* Provide overall type coverage for tags and tagged union result.
+
+### src/vdom.js
+
+* In `createNode` function got rid of need for type coercion by converting `node.type` to string first.
+
+## 2.5.12 (November 13, 2019)
+
+### package.json package-lock.json
 
 * Added `@babel/preset-modules` as build dependency. This tells Babel to only target browsers that support importing es modules. This results in a smaller bundle size, knocking of up to 250 bytes by eliminating unnecessary polyfills.
 
@@ -10,7 +26,7 @@
 
 * Modified `.babelrc` to use `@babel/preset-modules` as plugin instead of `@babel/preset-env`. This results in smaller bundle sizes for modern browser that support es modules.
 
-## 2.5.11 (November, 11, 2019)
+## 2.5.11 (November 11, 2019)
 
 ### src/effects.js, src/index.js, src/index.d.ts
 
@@ -20,7 +36,7 @@
 
 * Removed automatic lower casing of inline events. This is so users can use DOM level 3 custom events with camel case names. We lower cased the inline events to make it easier for people use to React events to use. But since the default inline events are lower case, we are dropping this for DOM level 3 support.
 
-## 2.5.10 (October, 31, 2019)
+## 2.5.10 (October 31, 2019)
 
 ### src/index.d.ts, src/index.js
 
@@ -31,7 +47,7 @@
 * Improved types for onmount, onupdate and onunmount.
 
 
-## 2.5.9 (October, 31, 2019)
+## 2.5.9 (October 31, 2019)
 
 ### src/index.js
 
@@ -45,13 +61,13 @@
 
 * Updated for better type handling.
 
-## 2.5.8 (October, 29, 2019)
+## 2.5.8 (October 29, 2019)
 
 ### src/vdom.js
 
 * Added function `areNotEqual` which is used to check if the old props and new props of a VNode are identical. If they are not identical then `onupdate` executes, otherwise not.
 
-## 2.5.7 (October 27, 2019)
+## 2.5.7 (October 27 2019)
 
 ### tsconfig.json, package.json
 
@@ -61,7 +77,7 @@
 
 * Modified definition of VNode to optionally be an empty object literal. This was necessary for properly typing or `h`. This change enables `h` working properly with the `JSX d.ts` file provided by the `@composi/create-composi-app` for `JSX` Intellisense in Composi projects.
 
-## 2.5.6 (October 26, 2019)
+## 2.5.6 (October 26 2019)
 
 ### src/effects.js, src/union.js
 
@@ -115,7 +131,7 @@
 
 * Updated runtime test to handle changes to how state get returned now.
 
-## 2.0.1 (October, 15, 2019)
+## 2.0.1 (October 15, 2019)
 
 ### src/render.js
 
