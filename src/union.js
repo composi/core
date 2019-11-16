@@ -50,7 +50,7 @@ function createUnion(types) {
 /**
  * Create a union of types for matching up with functions. This is used to define actions for the `update` method of a runtime program.
  * @param {...string} types
- * @returns {MessageUnion} MessagesUnion
+ * @returns {MessageUnion} MessageUnion
  */
 export function union(...types) {
   const { variants, match } = createUnion(types)
