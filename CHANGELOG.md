@@ -1,5 +1,34 @@
 # composi/core Changelog
 
+## 2.6.0 (November 17, 2019)
+
+### src/effects.js
+
+* Changed return type of `batch` from `any` to `void`.
+
+### src/runtime.js
+
+* Switch around parameters for subscriptions. The new order is `subscriptions: (send, getState)`. `getState` is now optional. `getState` is used so rarely with subscriptions it was annoying always having to provide it as the first argument. Now you can have a subscript with just the argument `send`:
+
+```javascript
+function effect(send) {
+  // code here...
+}
+```
+
+
+* Made both `send` and `getState` as optional arguments for subscriptions since it is possible to have a subscription that does not access state or send a message.
+
+### tests/runtime.html
+
+* Updaed tests for runtime to accomodate change in how subscriptions handle parameters.
+
+```javascript
+function effect(send) {
+  /...
+}
+```
+
 ## 2.5.13 (November 15, 2019)
 
 ### src/h.js

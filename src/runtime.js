@@ -16,8 +16,8 @@
  * @prop {() => InitResult} init Method to set up initial state.
  * @prop {(state: State, send?: Send) => void} view Method to present the current application state.
  * @prop {(state: State, msg?: Message, send?: Send) => any} update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
- * @prop {(getState: GetState, send: Send) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
- * @prop {(getState: () => State, send: Send) => void} [subs] Shortcut for subscriptions.
+ * @prop {(send?: Send, getState?: GetState) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
+ * @prop {(send?: Send, getState?: GetState) => void} [subs] Shortcut for subscriptions.
  * @prop {(state: State) => void} [done] Method to do clean up when shutting down a program.
  * @prop {Send} [send] A static send function for dispatching message to a program. Used with routers and in composition.
  */
@@ -91,7 +91,7 @@ export function run(program) {
       state = init()
     }
     if (subscriptions && isFirstRun) {
-      if (typeof subscriptions === 'function') subscriptions(getState, send)
+      if (typeof subscriptions === 'function') subscriptions(send, getState)
       isFirstRun = false
     }
     view(state, send)

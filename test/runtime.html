@@ -188,8 +188,8 @@
             view() {
 
             },
-            subscriptions(getState, send) {
-              return effect(getState, send)
+            subscriptions(send, getState) {
+              return effect(send, getState)
             },
             done() {
               expect(isRunning).to.equal(true)
@@ -288,13 +288,13 @@
         let result1 = ''
         let result2 = ''
         let count = 5
-        const hello = () => {
+        const hello = (send) => {
           result1 = 'Hello World!'
         }
-        const secondEffect = () => {
+        const secondEffect = (send) => {
           result2 = 'Second effect ran!'
         }
-        const countDown = () => {
+        const countDown = (send) => {
           const id = setInterval(() => {
             if (count === 0) {
               clearInterval(id)
@@ -316,8 +316,8 @@
           update() {
 
           },
-          subscriptions(getState, send) {
-            return effects(getState, send)
+          subscriptions(send) {
+            return effects(send)
           }
         }
         const endProgram = run(program)
@@ -415,8 +415,8 @@
             view() {
               return
             },
-            subscriptions(getState, send) {
-              return effect(getState, send)
+            subscriptions(send, getState) {
+              return effect(send, getState)
             }
           }
           run(program)
@@ -435,7 +435,7 @@
             <h1 id='subscription-test3'>${state}</h1>
           `
         }
-        function effect(getState, send) {
+        function effect(send, getState) {
           const currentState = getState()
           if (currentState === 'initial state') {
             send({type: 'update-state', value: 'new state'})
@@ -453,8 +453,8 @@
               return msg.value
             }
           },
-          subscriptions(getState, send) {
-            return effect(getState, send)
+          subscriptions(send, getState) {
+            return effect(send, getState)
           }
         }
         run(program)
@@ -469,7 +469,7 @@
       describe('Should be able to use subs as shortcut for subscriptions.', function () {
         it('subs should run at startup.', done => {
           let effectResult = false
-          function effect() {
+          function effect(send, getState) {
             effectResult = true
           }
           const program = {
@@ -482,10 +482,10 @@
             view() {
               return
             },
-            subs(getState, send) {
+            subs(send, getState) {
               // Should be able to access program state from subscription:
               expect(getState()).to.equal(1)
-              return effect(getState, send)
+              return effect(send, getState)
             }
           }
           run(program)
@@ -505,13 +505,13 @@
           result2: '2'
         }
 
-        function hello(getState, send) {
+        function hello(send, getState) {
           setTimeout(() => send({type: 'result1', value: 'Hello World!'}))
         }
-        const secondEffect = (getState, send) => {
+        const secondEffect = (send, getState) => {
           setTimeout(() => send({type: 'result2', value: 'Second effect ran!'}))
         }
-        const countDown = (getState, send) => {
+        const countDown = (send, getState) => {
           const id = setInterval(() => {
             const count = getState().count
             if (count === 0) {
@@ -553,8 +553,8 @@
               return state
             }
           },
-          subscriptions(getState, send) {
-            return subs(getState, send)
+          subscriptions(send, getState) {
+            return subs(send, getState)
           }
         }
         run(program)
@@ -577,11 +577,11 @@
           messageWasSent: 'false'
         }
 
-        function effect1(getState, send) {
+        function effect1(send, getState) {
           const count = getState().count
           setTimeout(() => send({ type: 'update-state-1', value: parseInt(count) + 1 }), 500)
         }
-        function effect2(getState, send) {
+        function effect2(send, getState) {
           const count = getState().count
           setTimeout(() => send({ type: 'update-state-2', value: parseInt(count) + 2 }), 3000)
         }
@@ -617,8 +617,8 @@
           update(state, msg, send) {
             return actions(state, msg, send)
           },
-          subscriptions(getState, send) {
-            return batchedEffects(getState, send)
+          subscriptions(send, getState) {
+            return batchedEffects(send, getState)
           }
         }
         run(program)

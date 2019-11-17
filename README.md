@@ -8,16 +8,18 @@
  2. [Installation](#Installation)
  3. [h](#h)
  4. [render](#render)
- 5. [One Component per Container](#One-Component-per-Container)
- 5. [Keys](#Keys)
- 6. [Lifecycle Hooks](#Lifecycle-Hooks)
- 7. [onmount](#onmount)
- *  [Accessing the Component's DOM](#Accessing-the-Component's-DOM)
- *  [Event Delegation](#Event-Delegation)
- 8. [onupdate](#onupdate)
- 9. [onunmount](#onunmount)
+ 5. [Component Replaces Target Element](#Component-Replaces-Target-Element)
+ 6. [Keys](#Keys)
+ 7. [Lifecycle Hooks](#Lifecycle-Hooks)
+ 8. [onmount](#onmount)
+    *  [Accessing the Component's DOM](#Accessing-the-Component's-DOM)
+ 9. [onupdate](#onupdate)
+10. [onunmount](#onunmount)
 11. [run](#run)
-12. [Summary](#Summary)
+12. [Default Program](#Default-Program)
+13. [Optional Program Methods](#Optional-Methods)
+14. [Actions for Update](#Actions-for-Update)
+15. [Summary](#Summary)
 
 ## Introduction
 
@@ -240,7 +242,6 @@ Composi core provides three lifecycle hooks. These are registred on the element 
 The `onmount` lifecycle hook lets you do something right after a component is mounted. It also gives you access to the element on which the hook is registered.
 
 *  [Accessing the Component's DOM](#Accessing-the-Component's-DOM)
-*  [Event Delegation](#Event-Delegation)
 
 `onmount` gets one argument--the element that the hook is on. This lets you do things such as setting up event listeners, starting timers, or accessing the element's child nodes.
 
@@ -434,6 +435,8 @@ Update is like a Redux reducer. It executes various actions conditionally. The c
 
 View is a function that can return some kind of presentation of the state. This is where you would use render to output a functional component.
 
+## Default Program
+
 With `init`, `view` and `update` you have everything you need to make a valid program that you can run:
 
 
@@ -447,7 +450,7 @@ const program = {
 }
 run(program)
 ```
-## Optional Methods
+## Optional Program Methods
 
 Subscriptions is an optional method that contains effects to run when the program starts. Using @composi/core's `batchEffects` function it is possible to run more than one effect at the same time, say, start a timer and fetch data at the same time. Subscriptions is optional. In fact, it's just a more convenient and explicit way of running an effect the same way passing an effect as the second value in `init` is. Many people will feel more comfortable using a dedicated function for subscriptions that simply tagging on an extra value to `init`.
 
@@ -565,6 +568,8 @@ run(program)
 ```
 
 [Live example on Codepen](https://codepen.io/rbiggs/pen/EOYOEJ)
+
+## Actions for Update
 
 The above example was very simplistic, but it shows how to send a message from the view to the update method. Although we sent a message, it was not of any value, so it was undefined. If your program is very simple and only has one action like this, then you can just send an empty message. However, if your program needs more than one action/message, you'll need to use a standard interface for the messages you send. In the following Todo list example we implement several actions for the update method by sending message objects that we can test to see which one was received:
 
