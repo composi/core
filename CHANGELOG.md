@@ -1,5 +1,26 @@
 # composi/core Changelog
 
+## 2.6.1 (November 18, 2019)
+
+### index.d.ts
+
+* Updated IntrinsicAttributes interface to have property `children` of type `Children` (child vnodes) as the final argument for a JSX functional component. This enables function components to allow accepting a final arguemnt of `children`, which provides a slot for insertion of random child content into the component using open and close tags around the child:
+
+```javascript
+function Title({ title }, children) {
+  return (
+    <header>
+      <h1>Hello, {title}!</h1>
+      {
+        children
+      }
+    </header>
+  )
+}
+
+<Title title="World"><h2>Extra Text</h2></Title>
+```
+
 ## 2.6.0 (November 17, 2019)
 
 ### src/effects.js

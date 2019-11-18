@@ -52,6 +52,7 @@ declare global {
     */
     interface IntrinsicAttributes {
       props?: Props;
+      children?: Children
     }
 
     interface CustomAttributes<T> {
