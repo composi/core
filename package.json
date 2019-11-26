@@ -59,6 +59,11 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "typescript": "^3.0.3"
   },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
+  },
   "publishConfig": {
     "access": "public"
   }
