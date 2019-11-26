@@ -8,20 +8,27 @@ const hasOwnProperty = Object.prototype.hasOwnProperty
 /**
  * @param {Tag} tag
  * @param {Object<string, Function>} handlers
+ * @param {() => void} [catchAll]
  */
-function match(tag, handlers) {
+function match(tag, handlers, catchAll) {
   if (!tag.type) {
     console.error(
-      "The message you provided was not valid. Messages have the format: {type: 'whatever', data: 'something'}"
+      "The message you provided was not valid. Messages have the format: {type: 'whatever', data?: 'something'}"
     )
     console.error('The tag you provided was:')
     console.dir(tag)
     return
   }
-  return ((tag, context) => {
+  return (tag => {
     const type = tag.type
     const match = hasOwnProperty.call(handlers, type) && handlers[type]
-    return match(tag.data, context)
+    return match
+      ? match(tag.data)
+      : catchAll
+      ? catchAll()
+      : console.error(
+          `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${tag.type}".`
+        )
   })(tag)
 }
 

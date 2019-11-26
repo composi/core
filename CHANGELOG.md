@@ -1,5 +1,33 @@
 # composi/core Changelog
 
+## 2.6.2 (November 26, 2019)
+
+### src/union.js
+
+* Added error checking to union match method. Now if the message type sent does not match the provided action methods, it will log an error.
+
+* Added catchAll for message union match method as an optional third argument. This overrides the default error handling mentioned above. You can use this to handle a default case when the message sent does not match any of the methods provided. You could use this to provide a default action to perform or to log an error:
+
+```javascript
+Msg.match(
+  msg,
+  {
+    DoIt: () => {
+      return prevState
+    }
+  },
+  // Handle case where message doesn't match:
+  () => {
+    console.error(`You sent the message "${msg.type}", but it does not have a match in the actions provided.`)
+    prevState.errorMessage = `You sent the message "${msg.type}", but it does not have a match in the actions provided.`
+    return prevState
+  }
+)
+// Send wrong message:
+send({type: 'EatPizza'})
+// Will result in above message being logged to console:
+// You sent the message "EatPizza", but it does not have a match in the actions provided.
+
 ## 2.6.1 (November 18, 2019)
 
 ### index.d.ts

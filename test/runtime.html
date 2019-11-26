@@ -284,6 +284,53 @@
         })
       })
 
+      describe('Should be able to provide default for tagged union when message sent does not have a match', () => {
+        const Msg = union('message')
+        const {message} = Msg
+        let noMatchingMessage = false
+        let wrongMessage = ''
+        const actions = (state, msg, send) => {
+          return Msg.match(msg, {
+            message: () => {
+              noMatchingMessage = false
+              return
+            }
+          },
+          () => {
+            noMatchingMessage = true
+            wrongMessage = msg.type
+          })
+        }
+        const program = {
+          init() {
+
+          },
+          view(state, send) {
+
+          },
+          update(state, msg, send) {
+            return actions(state, msg, send)
+          }
+        }
+        run(program)
+        it('noMatchingMessage should be false if a message match', function(done) {
+          setTimeout(() => {
+            program.send(message())
+            expect(noMatchingMessage).to.equal(false)
+            expect(wrongMessage).to.equal('')
+          }, 1000)
+          done()
+        })
+        it('noMatchingMessage should be true when there is no message match', function(done) {
+          setTimeout(() => {
+            program.send({type: 'whatever'})
+            expect(noMatchingMessage).to.equal(true)
+            expect(wrongMessage).to.equal('whatever')
+          }, 1000)
+          done()
+        })
+      })
+
       describe('Should be able to batch effects to run at startup', () => {
         let result1 = ''
         let result2 = ''

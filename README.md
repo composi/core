@@ -19,7 +19,8 @@
 12. [Default Program](#Default-Program)
 13. [Optional Program Methods](#Optional-Methods)
 14. [Actions for Update](#Actions-for-Update)
-15. [Summary](#Summary)
+15. [Tagged Unions](#Tagged-Unions)
+16. [Summary](#Summary)
 
 ## Introduction
 
@@ -677,9 +678,9 @@ The program's view method gets two arguments, the state and the send function. T
 
 Although this is manageable, we can make this actions and events more implicit by using tagged unions. This is explained next.
 
-## Union
+## Tagged Unions
 
-@composi/core's union function lets you create tagged unions. Basically, a tagged union allows you to associate one value, usually a string, with another value. For actions and events this will be the action function to run.
+@composi/core's `union` function lets you create tagged unions. A tagged union allows you to associate one value with another value. For actions and events this will match the sent message type to the action function to run.
 
 The union function takes a variable number of arguments, separated by commas. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function.
 
@@ -803,6 +804,32 @@ run(program)
 [Live example on Codepen](https://codepen.io/rbiggs/pen/zMOmON)
 
 As you can see in the above example, tagged unions make the connection between view events and update actions more implicit.
+
+
+### No Matching Message
+
+By default if you pass a message whose type does have a match in the action methods provided, the union will log an error alerting you to this fact. This can happen is you send a message object and mispell the message type.
+
+You can override this behavior and provide your own default behavior for what to do when there is no match. To do so, just provide an optional third argument to the Message Union match method:
+
+```javascript
+function actions(state, msg, send) {
+  const prevState = {...state}
+  return Msg.match(
+    msg,
+    {
+      DoIt: () => {
+        prevState.successMessage = 'We are doing it!'
+        return prevState
+      }
+    },
+    () => {
+      prevState.errorMessage = `Ooops! I got the following message: ${msg.type}. Is this a typo?`)
+      return prevState
+    }
+  )
+}
+```
 
 ## Summary
 
