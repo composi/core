@@ -25,8 +25,8 @@ function match(tag, handlers, catchAll) {
     return match
       ? match(tag.data)
       : catchAll
-      ? catchAll()
-      : console.error(
+        ? catchAll()
+        : console.error(
           `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${tag.type}".`
         )
   })(tag)
@@ -43,11 +43,16 @@ function createUnion(types) {
   let idx = 0
   while (idx < types.length) {
     const type = types[idx]
-    variants[type] = data => ({ type, data })
+    if (type === 'match') {
+      console.error(
+        `The message type you provided was "match". This cannot be used since it would override the message union's own match method. Please change it to something else, such as "matchName", etc.`
+      )
+    }
+    variants[type] = data => ({type, data})
     idx++
   }
 
-  return { variants, match }
+  return {variants, match}
 }
 
 /**
@@ -60,7 +65,7 @@ function createUnion(types) {
  * @returns {MessageUnion} MessageUnion
  */
 export function union(...types) {
-  const { variants, match } = createUnion(types)
+  const {variants, match} = createUnion(types)
   variants.match = match
   return variants
 }

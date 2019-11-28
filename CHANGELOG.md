@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 2.6.3 (November 28, 2019)
+
+### src/union.js
+
+* Added error checking for when user tries to use "match" as a method. The union function produces and object that always has a match method, so trying to create a tagged union that can handle a "match" message can be problematic. The developer will now get a console error message warning not to create a union with type "match".
+
 ## 2.6.2 (November 26, 2019)
 
 ### .prettierignore
