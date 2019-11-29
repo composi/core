@@ -25,10 +25,10 @@ function match(tag, handlers, catchAll) {
     return match
       ? match(tag.data)
       : catchAll
-        ? catchAll()
-        : console.error(
-          `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${tag.type}".`
-        )
+      ? catchAll()
+      : console.error(
+        `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${tag.type}".`
+      )
   })(tag)
 }
 

@@ -1,5 +1,27 @@
 # composi/core Changelog
 
+## 2.7.0 (November 29, 2019)
+
+### src/runtime.js
+
+* Updated behavior of send function. Now you can pass a destructured tag union function without inoviking it. You can also provide an optional second parameter as a data payload.
+
+* In the example below, notice how we just send `AddItem`, whereas with `UpdateInputValue` we provide a second argument for the data:
+
+```javascript
+const Msg = union('UpdateInputValue', 'AddItem')
+const {UpdateInputValue, AddItem} = Msg
+
+function List({state, send}) {
+  return (
+    <div>
+      <input oninput={e => send(UpdateInputValue, e.target.value)} type='text'/>
+      <button onclick={() => send(AddItem)}>Add Item</button>
+    </div>
+  )
+}
+```
+
 ## 2.6.3 (November 28, 2019)
 
 ### src/union.js
