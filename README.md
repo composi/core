@@ -684,7 +684,7 @@ Although this is manageable, we can make this actions and events more implicit b
 
 The union function takes a variable number of arguments, separated by commas. This returns a tagged union object. It has a method called `match` that allows you to check what union you are dealing with a run a function.
 
-Here's the previous todo list redone using tagged unions. Notice that in the view, when we send, we send a tagged union function. This makes it clearer what the event is doing. When we invoke a tagged union function inside an event's send method, it actually sends a packet with a type and data to the update function. So tagged unions are doing the same as we did in the first example of the todo list, but the show what is being invoked inside the update function.
+Here's the previous todo list redone using tagged unions. Notice that in the view, when we send, we send a tagged union function. This makes it clearer what the event is doing. When we pass a tagged union function to an event's send method, it invokes that function to get a message object with a type and data to the update function. So tagged unions are doing the same as we did in the first example of the todo list, but the show what is being invoked inside the update function.
 
 ```javascript
 import { h, render, run } from '@composi/core'
