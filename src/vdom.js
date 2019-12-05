@@ -147,7 +147,7 @@ function removeElement(parent, vnode) {
     parent.removeChild(removeChildren(vnode))
   }
 
-  const cb = vnode.props && vnode.props['onunmount']
+  const cb = vnode?.props?.['onunmount']
   if (cb != null) {
     cb(vnode.node, remove)
   } else {
@@ -292,13 +292,7 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
 
         if (newKey == null || oldVNode.flag === RECYCLED_NODE) {
           if (oldKey == null) {
-            patchNode(
-              node,
-              oldVKid && oldVKid.node,
-              oldVKid,
-              newVKids[newHead],
-              isSVG
-            )
+            patchNode(node, oldVKid?.node, oldVKid, newVKids[newHead], isSVG)
             newHead++
           }
           oldHead++
@@ -311,20 +305,14 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
             if ((tmpVKid = keyed[newKey]) != null) {
               patchNode(
                 node,
-                node.insertBefore(tmpVKid.node, oldVKid && oldVKid.node),
+                node.insertBefore(tmpVKid.node, oldVKid?.node),
                 tmpVKid,
                 newVKids[newHead],
                 isSVG
               )
               newKeyed[newKey] = true
             } else {
-              patchNode(
-                node,
-                oldVKid && oldVKid.node,
-                null,
-                newVKids[newHead],
-                isSVG
-              )
+              patchNode(node, oldVKid?.node, null, newVKids[newHead], isSVG)
             }
           }
           newHead++

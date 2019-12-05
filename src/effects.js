@@ -11,6 +11,6 @@
  * @return {(send?: Send, getState?: GetState) => void} Function
  */
 export const batchEffects = (...effects) => (getState, send) =>
-  effects.map(effect => effect && effect(getState, send))
+  effects.map(effect => effect?.(getState, send))
 
 export const batch = batchEffects

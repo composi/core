@@ -1,12 +1,13 @@
 {
   "name": "@composi/core",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "A JavaScript library for creating websites, PWAs and hybrid apps.",
   "main": "src/index.js",
   "module": "dist/composi-core.mjs",
   "type": "module",
   "scripts": {
     "bundle": "rollup -c",
+    "minify": "terser -c -m --source-map -o dist",
     "build": "run-s format lint checkjs bundle gzip gzip-mjs",
     "checkjs": "tsc",
     "start": "npm run build",
@@ -54,9 +55,9 @@
     "prettier": "^1.19.1",
     "rollup": "^0.65.2",
     "rollup-plugin-babel": "^4.0.3",
-    "rollup-plugin-babel-minify": "^6.0.0",
     "rollup-plugin-commonjs": "^8.2.0",
     "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-terser": "^5.1.2",
     "typescript": "^3.0.3"
   },
   "prettier": {
