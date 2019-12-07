@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 2.7.0 (December 7, 2019)
+
+### src/union.js
+
+* Use destructuring to simplify union message management.
+
 ## 2.7.0 (November 29, 2019)
 
 ### src/runtime.js

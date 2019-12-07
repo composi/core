@@ -20,14 +20,14 @@ function match(tag, handlers, catchAll) {
     return
   }
   return (tag => {
-    const type = tag.type
+    const { type, data } = tag
     const match = hasOwnProperty.call(handlers, type) && handlers[type]
     return match
-      ? match(tag.data)
+      ? match(data)
       : catchAll
       ? catchAll()
       : console.error(
-          `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${tag.type}".`
+          `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${type}".`
         )
   })(tag)
 }
