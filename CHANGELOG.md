@@ -1,6 +1,12 @@
 # composi/core Changelog
 
-## 2.7.0 (December 7, 2019)
+## 2.7.2 (December 8, 2019)
+
+## src/h.js, src/runtime.js, src/union.js, src/vdom.js
+
+* Used logical expressions to remove `if/else` blocks for cleaner and easier to read code.
+
+## 2.7.1 (December 7, 2019)
 
 ### src/union.js
 

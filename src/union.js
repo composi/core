@@ -1,3 +1,6 @@
+/**
+ * Helper function for testing whether message type exists on actions object.
+ */
 const hasOwnProperty = Object.prototype.hasOwnProperty
 
 /**
@@ -11,7 +14,19 @@ const hasOwnProperty = Object.prototype.hasOwnProperty
  * @param {() => void} [catchAll]
  */
 function match(tag, handlers, catchAll) {
-  if (!tag.type) {
+  const {type, data} = tag
+  if (type) {
+    return (type => {
+      const match = hasOwnProperty.call(handlers, type) && handlers[type]
+      return match
+        ? match(data)
+        : catchAll
+        ? catchAll()
+        : console.error(
+          `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${type}".`
+        )
+    })(type)
+  } else {
     console.error(
       "The message you provided was not valid. Messages have the format: {type: 'whatever', data?: 'something'}"
     )
@@ -19,17 +34,6 @@ function match(tag, handlers, catchAll) {
     console.dir(tag)
     return
   }
-  return (tag => {
-    const { type, data } = tag
-    const match = hasOwnProperty.call(handlers, type) && handlers[type]
-    return match
-      ? match(data)
-      : catchAll
-      ? catchAll()
-      : console.error(
-          `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${type}".`
-        )
-  })(tag)
 }
 
 /**
@@ -43,11 +47,11 @@ function createUnion(types) {
   let idx = 0
   while (idx < types.length) {
     const type = types[idx]
-    if (type === 'match') {
-      console.error(
+    type === 'match'
+      && console.error(
         `The message type you provided was "match". This cannot be used since it would override the message union's own match method. Please change it to something else, such as "matchName", etc.`
       )
-    }
+
     variants[type] = data => ({ type, data })
     idx++
   }

@@ -1,13 +1,13 @@
 {
   "name": "@composi/core",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "A JavaScript library for creating websites, PWAs and hybrid apps.",
   "main": "src/index.js",
   "module": "dist/composi-core.mjs",
   "type": "module",
   "scripts": {
     "bundle": "rollup -c",
-    "build": "run-s format lint checkjs bundle gzip gzip-mjs",
+    "build": "run-s lint checkjs bundle gzip gzip-mjs",
     "checkjs": "tsc",
     "start": "npm run build",
     "gzip": "gzip dist/composi-core.js --output=dist",

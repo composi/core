@@ -17,12 +17,10 @@ export function h(type, props, ...children) {
 
   while (length-- > 0) tempBox.push(children[length])
 
-  if (props.children) {
-    if (tempBox.length <= 0) {
-      tempBox.push(props.children)
-    }
-    delete props.children
-  }
+  props.children
+    ? (tempBox.length <= 0)
+    : tempBox.push(props.children)
+  props.children && delete props.children
 
   while (tempBox.length > 0) {
     if (Array.isArray((node = tempBox.pop()))) {
@@ -36,8 +34,7 @@ export function h(type, props, ...children) {
     }
   }
 
-  if (typeof type === 'function') {
-    return type(props, childNodes)
-  }
-  return createVNode(type, props, childNodes, null, key)
+  return (typeof type === 'function')
+    ? type(props, childNodes)
+    : createVNode(type, props, childNodes, null, key)
 }

@@ -166,9 +166,9 @@ function removeElement(parent, vnode) {
 function patchNode(parent, node, oldVNode, newVNode, isSVG) {
   if (oldVNode === newVNode) {
   } else if (
-    oldVNode != null &&
-    oldVNode.flag === TEXT_NODE &&
-    newVNode.flag === TEXT_NODE
+    oldVNode != null
+      && oldVNode.flag === TEXT_NODE
+      && newVNode.flag === TEXT_NODE
   ) {
     if (oldVNode.type !== newVNode.type) {
       node.nodeValue = newVNode.type

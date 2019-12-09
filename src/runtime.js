@@ -68,16 +68,16 @@ export function run(program) {
    */
   function send(message, data) {
     let msg = message
-    if (isRunning) {
-      /**
-       * message is a function from a tagged union that
-       * can be called to return a message object.
-       */
-      if (typeof message === 'function') {
-        msg = /** @type {Function} */ (message)(data)
-      }
-      return updateView(update(state, msg, send))
-    }
+    /**
+     * message is a function from a tagged union that
+     * can be called to return a message object.
+     */
+    isRunning
+     && (typeof message === 'function') 
+     && (msg = /** @type {Function} */ (message)(data))
+    
+    return isRunning &&
+      updateView(update(state, msg, send))
   }
 
   /**
@@ -92,16 +92,20 @@ export function run(program) {
    * @param {any} update
    * @return {void} undefined
    */
-  function updateView(update) {
-    if (update) {
-      state = update
-    } else if (init) {
-      state = init()
-    }
-    if (subscriptions && isFirstRun) {
-      if (typeof subscriptions === 'function') subscriptions(send, getState)
-      isFirstRun = false
-    }
+  const updateView = update => {
+    update 
+      ? state = update 
+      : init 
+      ? state = init() 
+      : state = undefined
+
+    isFirstRun
+      && subscriptions
+      && typeof subscriptions === 'function'
+      && subscriptions(send, getState)
+
+    isFirstRun = false
+    
     view(state, send)
   }
   updateView(state)
@@ -111,11 +115,10 @@ export function run(program) {
    * @return {void} undefined
    */
   return () => {
-    if (isRunning) {
-      isRunning = false
-      if (done) {
-        done(state)
-      }
-    }
+    isRunning
+      && done
+      && done(state)
+      
+    isRunning = false
   }
 }
