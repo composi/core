@@ -1,5 +1,14 @@
 # composi/core Changelog
 
+## 2.7.3 (December 10, 2019)
+
+### src/union.js, src/vdom.js
+
+* Replaced some `if/else` statements with logical expressions where possible.
+
+* Refactored some functions in vdom into arrow functions for simplicity.
+
+
 ## 2.7.2 (December 8, 2019)
 
 ## src/h.js, src/runtime.js, src/union.js, src/vdom.js

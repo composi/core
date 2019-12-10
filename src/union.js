@@ -15,8 +15,8 @@ const hasOwnProperty = Object.prototype.hasOwnProperty
  */
 function match(tag, handlers, catchAll) {
   const {type, data} = tag
-  if (type) {
-    return (type => {
+  return type
+    ? (type => {
       const match = hasOwnProperty.call(handlers, type) && handlers[type]
       return match
         ? match(data)
@@ -26,14 +26,13 @@ function match(tag, handlers, catchAll) {
           `The message you sent has no matching action method. Check the spelling for the message or the action method. The message type was "${type}".`
         )
     })(type)
-  } else {
-    console.error(
-      "The message you provided was not valid. Messages have the format: {type: 'whatever', data?: 'something'}"
-    )
-    console.error('The tag you provided was:')
-    console.dir(tag)
-    return
-  }
+    : (() => {
+      console.error(
+        "The message you provided was not valid. Messages have the format: {type: 'whatever', data?: 'something'}"
+      )
+      console.error('The tag you provided was:')
+      console.dir(tag)
+    })()
 }
 
 /**

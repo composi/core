@@ -7,9 +7,7 @@ import { createTextVNode, createVNode } from './vnode'
  * @param {Props} oldVProps
  * @param {Props} newVProps
  */
-function areNotEqual(oldVProps, newVProps) {
-  return JSON.stringify(oldVProps) !== JSON.stringify(newVProps)
-}
+const areNotEqual = (oldVProps, newVProps) => (JSON.stringify(oldVProps) !== JSON.stringify(newVProps))
 
 /**
  * @typedef {import('./vnode').VNode} VNode
@@ -19,9 +17,7 @@ function areNotEqual(oldVProps, newVProps) {
  * @param {Object<string, any>} a
  * @param {Object<string, any>} b
  */
-export function mergeObjects(a, b) {
-  return Object.assign({}, a, b)
-}
+export const mergeObjects = (a, b) => Object.assign({}, a, b)
 
 /**
  * Handle inline events.
@@ -44,22 +40,17 @@ function patchProperty(node, prop, oldValue, newValue, isSVG) {
   } else if (prop === 'style' && typeof newValue === 'object') {
     for (let i in mergeObjects(oldValue, newValue)) {
       const style = newValue == null || newValue[i] == null ? '' : newValue[i]
-      if (i[0] === '-') {
-        node[prop].setProperty(i, style)
-      } else {
-        node[prop][i] = style
-      }
+      i[0] === '-'
+        ? node[prop].setProperty(i, style)
+        : node[prop][i] = style
     }
   } else if (prop[0] === 'o' && prop[1] === 'n') {
-    if (
-      !((node['handlers'] || (node['handlers'] = {}))[
-        (prop = prop.slice(2))
-      ] = newValue)
-    ) {
-      node.removeEventListener(prop, listener)
-    } else if (!oldValue) {
-      node.addEventListener(prop, listener)
-    }
+    !((node['handlers'] || (node['handlers'] = {}))[(prop = prop.slice(2))] = newValue)
+      ? node.removeEventListener(prop, listener)
+      : null;
+    (!oldValue)
+      ? node.addEventListener(prop, listener)
+      : null
   } else if (
     prop !== 'list' &&
     prop !== 'form' &&
@@ -114,9 +105,7 @@ function createNode(vnode, LIFECYCLE, isSVG) {
  * @param {VNode} vnode
  * @returns {null | string | number} null | string | number
  */
-function getKey(vnode) {
-  return vnode == null ? null : vnode.key
-}
+const getKey = vnode => vnode == null ? null : vnode.key
 
 /**
  * Remove child node.
@@ -129,9 +118,7 @@ function removeChildren(vnode) {
   }
 
   const cb = vnode.props['ondestroy']
-  if (cb != null) {
-    cb(vnode.node)
-  }
+  cb != null && cb(vnode.node)
 
   return vnode.node
 }
@@ -148,11 +135,9 @@ function removeElement(parent, vnode) {
   }
 
   const cb = vnode.props && vnode.props['onunmount']
-  if (cb != null) {
-    cb(vnode.node, remove)
-  } else {
-    remove()
-  }
+  cb != null
+    ? cb(vnode.node, remove)
+    : remove()
 }
 
 /**
@@ -199,27 +184,26 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
     isSVG = isSVG || newVNode.type === 'svg'
 
     for (let i in mergeObjects(oldVProps, newVProps)) {
-      if (
+      (
         (i === 'value' || i === 'selected' || i === 'checked'
           ? node[i]
           : oldVProps[i]) !== newVProps[i]
-      ) {
-        patchProperty(
-          /** @type{Element} */ (node),
-          i,
-          oldVProps[i],
-          newVProps[i],
-          isSVG
-        )
-        const cb = newVProps.onupdate
-        if (cb != null) {
-          if (areNotEqual(oldVProps, newVProps)) {
-            LIFECYCLE.push(function() {
+      )
+        && (() => {
+          patchProperty(
+          /** @type{Element} */(node),
+            i,
+            oldVProps[i],
+            newVProps[i],
+            isSVG
+          )
+          const cb = newVProps.onupdate
+          cb != null
+            && (areNotEqual(oldVProps, newVProps))
+            && LIFECYCLE.push(function () {
               cb(node, oldVProps, newVProps)
             })
-          }
-        }
-      }
+        })()
     }
 
     while (newHead <= newTail && oldHead <= oldTail) {
@@ -268,7 +252,9 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
         removeElement(node, oldVKids[oldHead++])
       }
     } else {
-      let i, keyed, newKeyed
+      let i
+      let keyed
+      let newKeyed
       for (i = oldHead, keyed = {}, newKeyed = {}; i <= oldTail; i++) {
         if ((oldKey = oldVKids[i].key) != null) {
           keyed[oldKey] = oldVKids[i]
@@ -332,15 +318,13 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
       }
 
       while (oldHead <= oldTail) {
-        if (getKey((oldVKid = oldVKids[oldHead++])) == null) {
-          removeElement(node, oldVKid)
-        }
+        (getKey((oldVKid = oldVKids[oldHead++])) == null)
+          && removeElement(node, oldVKid)
       }
 
       for (let i in keyed) {
-        if (newKeyed[i] == null) {
-          removeElement(node, keyed[i])
-        }
+        (newKeyed[i] == null)
+          && removeElement(node, keyed[i])
       }
     }
   }
