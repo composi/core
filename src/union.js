@@ -3,13 +3,9 @@
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty
 
+
 /**
- * @typedef {Object} Tag
- * @prop {string} type
- * @prop {any} [data]
- */
-/**
- * @param {Tag} tag
+ * @param {import('./types').Tag} tag
  * @param {Object<string, Function>} handlers
  * @param {() => void} [catchAll]
  */

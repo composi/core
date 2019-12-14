@@ -1,35 +1,15 @@
-import { EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE } from './constants'
+import {EMPTY_OBJECT, EMPTY_ARRAY, TEXT_NODE} from './constants'
+import * as Composi from './types' // eslint-disable-line no-unused-vars
 
-/**
- * @typedef {Object<string, any> | {}} Props
- * @prop {Children} Props.children
- * @prop {(element: Element) => void} [Props.onmount]
- * @prop {(element: Element, oldProps: Object, newProps: Object) => void} [Props.onupdate]
- * @prop {(element: Element, done: (State) => void) => void} [Props.onunmount]
- */
-/**
- * @typedef {VNode[]} Children
- */
-/**
- * @typedef {string | number | Function} Type
- * @typedef {number | string | null} Key
- * @typedef {Object} VNode
- * @prop {Type} [type]
- * @prop {Props} [props]
- * @prop {Children} [children]
- * @prop {Element} [node]
- * @prop {Key} [key]
- * @prop {number} [flag]
- */
 /**
  * Create a virtual node with the provided properties.
  * @param {string | Function} type
- * @param {Props} props
- * @param {Children} children
+ * @param {Composi.Props} props
+ * @param {Composi.Children} children
  * @param {Element} node
  * @param {string | number | null} key
- * @param {number} [flag]
- * @return {VNode} VNode
+ * @param {number | null} [flag]
+ * @return {Composi.VNode} VNode
  */
 export function createVNode(
   type,
@@ -53,7 +33,7 @@ export function createVNode(
  * Create a virtual text node.
  * @param {string} value
  * @param {Element} [node]
- * @return {VNode} VNode
+ * @return {Composi.VNode} VNode
  */
 export function createTextVNode(value, node) {
   return createVNode(value, EMPTY_OBJECT, EMPTY_ARRAY, node, null, TEXT_NODE)

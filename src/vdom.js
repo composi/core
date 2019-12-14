@@ -3,14 +3,14 @@ import { createTextVNode, createVNode } from './vnode'
 
 /**
  * Determin whether the old and new props are identical.
- * @typedef {import('./vnode').Props} Props
+ * @typedef {import('./types').Props} Props
  * @param {Props} oldVProps
  * @param {Props} newVProps
  */
 const areNotEqual = (oldVProps, newVProps) => (JSON.stringify(oldVProps) !== JSON.stringify(newVProps))
 
 /**
- * @typedef {import('./vnode').VNode} VNode
+ * @typedef {import('./types').VNode} VNode
  */
 /**
  * Return the combination of two objects of props.

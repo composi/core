@@ -2,7 +2,7 @@ import { createVNode, createTextVNode } from './vnode'
 
 /**
  * Creates a virtual node representing an element node or text node to be created. This function must be imported into any file that contains JSX. Babel uses this function to convert JSX into JavaScript.
- * @typedef {import('./vnode').VNode} VNode
+ * @typedef {import('./types').VNode} VNode
  * @param {string | Function} type
  * @param {Object.<string, any>} [props]
  * @return {VNode}

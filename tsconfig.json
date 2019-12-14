@@ -3,10 +3,28 @@
     "target": "es6",
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true,
     "moduleResolution": "node",
+    "alwaysStrict": true,
+    "strictNullChecks": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "types",
+    "removeComments": false
   },
-  "include": [
-    "src/*.js",
+  "files": [
+    "src/constants.js",
+    "src/effects.js",
+    "src/fragment.js",
+    "src/h.js",
+    "src/render.js",
+    "src/runtime.js",
+    "src/union.js",
+    "src/vdom.js",
+    "src/vnode.js",
+    "src/index.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "types"
   ]
 }

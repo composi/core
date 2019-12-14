@@ -1,26 +1,4 @@
-/**
- * @typedef {Object<string, any>} Message
- * @prop {string} type
- * @prop {any} [data]
- * @typedef {(msg?: Message | Function, data?: any) => Message} Send
- * @typedef {() => State} GetState
- */
-/**
- * @typedef {any} State Simple or complex types for application state.
- */
-/**
- * @typedef {State | void} InitResult Return result of program init method.
- */
-/**
- * @typedef {Object<string, any>} Program A program to run.
- * @prop {() => InitResult} init Method to set up initial state.
- * @prop {(state: State, send?: Send) => void} view Method to present the current application state.
- * @prop {(state: State, msg?: Message, send?: Send) => any} update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
- * @prop {(send?: Send, getState?: GetState) => void} [subscriptions] Method to run effects when the program starts. These run independently from the rest of the program.
- * @prop {(send?: Send, getState?: GetState) => void} [subs] Shortcut for subscriptions.
- * @prop {(state: State) => void} [done] Method to do clean up when shutting down a program.
- * @prop {Send} [send] A static send function for dispatching message to a program. Used with routers and in composition.
- */
+
 /**
  * The @composi/runtime.
  * @example
@@ -47,7 +25,7 @@
  * // Run the program:
  * run(program)
  * ```
- * @param {Program} program A program to run with five methods: `init`, `view`, `update`, `subscriptions` and `done`.
+ * @param {import('./types').Program} program A program to run with five methods: `init`, `view`, `update`, `subscriptions` and `done`.
  * @return {() => void} Function to terminate runtime.
  */
 export function run(program) {
@@ -63,7 +41,7 @@ export function run(program) {
 
   /**
    * Send a message.
-   * @param {Message} message
+   * @param {import('./types').Message} message
    *
    */
   function send(message, data) {

@@ -1,7 +1,7 @@
 /**
- * @typedef {import('./runtime').Send} Send
- * @typedef {import('./runtime').Message} Message
- * @typedef {Object} State
+ * @typedef {import('./types').Send} Send
+ * @typedef {import('./types').Message} Message
+ * @typedef {import('./types').State} State
  * @typedef {() => State} GetState
  * @typedef {(send?: Send, getState?: GetState) => any} Effect
  */

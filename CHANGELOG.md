@@ -1,5 +1,23 @@
 # composi/core Changelog
 
+## 2.7.4 (December 14, 2019)
+
+### src/index.d.ts
+
+* Renamed to `jsx.d.ts`.
+
+### src/types.js
+
+* Amalgamated all types into a single file. Use import and namespaced batch imports of types in source files.
+
+### package.json
+
+* Update TypeScript to version 3.7.3. This added new capabilities for type support, enabling batch imports mentioned above, as well as automatic generation of `d.ts` files from JavaScript using JSDoc comments.
+
+### types: constants.d.ts, effects.d.ts, fragment.d.ts, h.d.ts, index.d.ts, render.d.ts, runtime.d.ts, types.d.ts, union.d.ts, vdom.d.ts, vnode.d.ts
+
+* These are all auto-generated when running build script.
+
 ## 2.7.3 (December 10, 2019)
 
 ### src/union.js, src/vdom.js
