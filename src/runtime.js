@@ -29,11 +29,8 @@
  * @return {() => void} Function to terminate runtime.
  */
 export function run(program) {
-  let init = program.init
-  const view = program.view
-  const update = program.update
-  const subscriptions = program.subscriptions || program.subs
-  const done = program.done
+  const {init, view, update, subs, done} = program
+  const subscriptions = subs || program.subscriptions
   let state
   let isRunning = true
   let isFirstRun = true

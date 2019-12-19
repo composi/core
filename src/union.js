@@ -1,7 +1,7 @@
 /**
  * Helper function for testing whether message type exists on actions object.
  */
-const hasOwnProperty = Object.prototype.hasOwnProperty
+const {hasOwnProperty} = Object
 
 
 /**

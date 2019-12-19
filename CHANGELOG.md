@@ -1,5 +1,15 @@
 # composi/core Changelog
 
+## 2.7.5 (December 18, 2019)
+
+## .eslinrc.json
+
+* Updated Eslint rules to include modern JavaScript features like const and destructuring.
+
+## src/h.js, src/runtime.js, src/union.js, src/vdom.js
+
+* Updated to use more const and destructuring.
+
 ## 2.7.4 (December 14, 2019)
 
 ### src/index.d.ts

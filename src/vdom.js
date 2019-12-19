@@ -38,7 +38,7 @@ function listener(event) {
 function patchProperty(node, prop, oldValue, newValue, isSVG) {
   if (prop === 'key') {
   } else if (prop === 'style' && typeof newValue === 'object') {
-    for (let i in mergeObjects(oldValue, newValue)) {
+    for (const i in mergeObjects(oldValue, newValue)) {
       const style = newValue == null || newValue[i] == null ? '' : newValue[i]
       i[0] === '-'
         ? node[prop].setProperty(i, style)
@@ -82,14 +82,12 @@ function createNode(vnode, LIFECYCLE, isSVG) {
       : (isSVG = isSVG || type === 'svg') // eslint-disable-line no-cond-assign
       ? document.createElementNS('http://www.w3.org/2000/svg', type)
       : document.createElement(type)
-  const props = vnode.props
+  const {props} = vnode
   if (props['onmount']) {
-    LIFECYCLE.push(function() {
-      props['onmount'](node)
-    })
+    LIFECYCLE.push(() => props['onmount'](node))
   }
 
-  for (let k in props) {
+  for (const k in props) {
     patchProperty(/** @type {Element} */ (node), k, null, props[k], isSVG)
   }
 
@@ -113,7 +111,7 @@ const getKey = vnode => vnode == null ? null : vnode.key
  * @returns {Node} node
  */
 function removeChildren(vnode) {
-  for (let i = 0, length = vnode.children.length; i < length; i++) {
+  for (let i = 0, {length} = vnode.children; i < length; i++) {
     removeChildren(vnode.children[i])
   }
 
@@ -183,7 +181,7 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
 
     isSVG = isSVG || newVNode.type === 'svg'
 
-    for (let i in mergeObjects(oldVProps, newVProps)) {
+    for (const i in mergeObjects(oldVProps, newVProps)) {
       (
         (i === 'value' || i === 'selected' || i === 'checked'
           ? node[i]
@@ -200,9 +198,7 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
           const cb = newVProps.onupdate
           cb != null
             && (areNotEqual(oldVProps, newVProps))
-            && LIFECYCLE.push(function () {
-              cb(node, oldVProps, newVProps)
-            })
+            && LIFECYCLE.push( () => cb(node, oldVProps, newVProps))
         })()
     }
 
@@ -322,7 +318,7 @@ function patchNode(parent, node, oldVNode, newVNode, isSVG) {
           && removeElement(node, oldVKid)
       }
 
-      for (let i in keyed) {
+      for (const i in keyed) {
         (newKeyed[i] == null)
           && removeElement(node, keyed[i])
       }
@@ -353,9 +349,7 @@ function recycleNode(node) {
 export function patch(node, vdom) {
   if (!node['vdom']) {
     if (vdom.props['onmount']) {
-      LIFECYCLE.push(function() {
-        vdom.props['onmount'](node)
-      })
+      LIFECYCLE.push(() => vdom.props['onmount'](node))
     }
   }
   const vnode = (patchNode(

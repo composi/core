@@ -12,8 +12,8 @@ export function h(type, props, ...children) {
   let node
   const tempBox = []
   const childNodes = []
-  let length = children.length
-  const key = props.key
+  let {length} = children
+  const {key} = props
 
   while (length-- > 0) tempBox.push(children[length])
 
@@ -24,7 +24,7 @@ export function h(type, props, ...children) {
 
   while (tempBox.length > 0) {
     if (Array.isArray((node = tempBox.pop()))) {
-      let length = node.length
+      let {length} = node
       while (length-- > 0) {
         tempBox.push(node[length])
       }
