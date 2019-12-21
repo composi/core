@@ -246,11 +246,11 @@
       })
 
       describe('Should be able to pass data with tagged union function.', () => {
-        const Msg4 = union('click')
+        const {match, click} = union('click')
         function Component(state, send) {
           return html`
             <div>
-              <button id='send-msg4' onclick=${() => send(Msg4.click('button was clicked'))}></button>
+              <button id='send-msg4' onclick=${() => send(click, 'button was clicked')}></button>
               <p id='click-result4'>${state}</p>
             </div>
           `
@@ -261,7 +261,7 @@
             return 'no message'
           },
           update(state, msg) {
-            return Msg4.match(msg, {
+            return match(msg, {
               'click': message => {
                 taggedEffectFired = message
                 return state
