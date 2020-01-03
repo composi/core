@@ -69,10 +69,10 @@ export function run(program) {
    */
   const updateView = update => {
     update 
-      ? state = update 
-      : init 
-      ? state = init() 
-      : state = undefined
+      && (state = update) 
+      || init 
+      && (state = init())
+      || (state = undefined)
 
     isFirstRun
       && subscriptions

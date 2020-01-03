@@ -1,12 +1,18 @@
 # composi/core Changelog
 
+## 2.7.6 (January 3, 2020)
+
+### src/runtime.js
+
+* Updated updateView function to use AND/OR expressions instead of ternary operators.
+
 ## 2.7.5 (December 18, 2019)
 
 ## .eslinrc.json
 
 * Updated Eslint rules to include modern JavaScript features like const and destructuring.
 
-## src/h.js, src/runtime.js, src/union.js, src/vdom.js
+### src/h.js, src/runtime.js, src/union.js, src/vdom.js
 
 * Updated to use more const and destructuring.
 
