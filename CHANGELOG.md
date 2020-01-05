@@ -1,5 +1,11 @@
 # composi/core Changelog
 
+## 2.7.6 (January 5, 2020)
+
+###  src/types.js
+
+* Simplified @typedef declarations.
+
 ## 2.7.6 (January 3, 2020)
 
 ### src/runtime.js

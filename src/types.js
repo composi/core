@@ -26,13 +26,13 @@ export {}
  */
 
 /**
- * @typedef {Object} Tag
+ * @typedef Tag
  * @prop {string} type
  * @prop {any} [data]
  */
 
 /**
- * @typedef {Object<string, any>} Message
+ * @typedef Message
  * @prop {string} type
  * @prop {any} [data]
  * @typedef {(msg?: Message | Function, data?: any) => Message} Send
@@ -45,7 +45,7 @@ export {}
  * @typedef {State | void} InitResult Return result of program init method.
  */
 /**
- * @typedef {Object<string, any>} Program A program to run.
+ * @typedef Program A program to run.
  * @prop {() => InitResult} init Method to set up initial state.
  * @prop {(state: State, send?: Send) => void} view Method to present the current application state.
  * @prop {(state: State, msg?: Message, send?: Send) => any} update Method to capture messages sent from view or subscriptions. According to the message, an action will transform application state and pass it the the program view method.
