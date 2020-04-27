@@ -1,5 +1,9 @@
 # composi/core Changelog
 
+## 2.7.9 (April 27, 2020)
+
+### Updated dependencies.
+
 ## 2.7.6 (January 5, 2020)
 
 ###  src/types.js
